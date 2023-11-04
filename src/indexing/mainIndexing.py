@@ -4,10 +4,6 @@ class mainIndexing:
         # lexicon (to store the vocabulary terms and their information) 
         # document table (to store docid to docno mapping and document lengths)
 
-    # compile flags:
-        # ASCII format or binary format during debugging and for performance, respectively
-        # enalbe/disble stemming & stopword removal
-
     def main(self):
     
         # uncompress documents 

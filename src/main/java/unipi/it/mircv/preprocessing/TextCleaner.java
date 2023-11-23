@@ -38,7 +38,7 @@ public class TextCleaner {
 
         // Remove any leading or trailing spaces
         text = text.trim();
-
+        text = text.toLowerCase();
         return text;
     }
 

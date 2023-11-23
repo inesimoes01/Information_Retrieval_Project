@@ -4,6 +4,8 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import unipi.it.mircv.preprocessing.Preprocessing;
+import unipi.it.mircv.preprocessing.Tokenization;
+
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -16,9 +18,9 @@ import java.util.regex.Pattern;
 
 class Doc {
     private int id;
-    private String text;
+    private String[] text;
 
-    public Doc(int id, String text) {
+    public Doc(int id, String[] text) {
         this.id = id;
         this.text = text;
     }
@@ -27,12 +29,12 @@ class Doc {
         return id;
     }
 
-    public String getText() {
+    public String[] getText() {
         return text;
     }
     @Override
-    public String toString(){
-        return this.id+"    "+this.text;
+    public String toString() {
+        return this.id + "    " + String.join(", ", this.text);
     }
 }
 
@@ -45,6 +47,7 @@ public class Reader {
     public static List<Doc> processCollection(String file) {
         Preprocessing preprocessing = new Preprocessing();
         List<Doc> docList = new ArrayList<>();
+        Tokenization tokenization= new Tokenization();
 
         // Use a regular expression to match the document ID in the entry name
         Pattern pattern = Pattern.compile("^(\\d+)\\s+(.*)$");
@@ -76,7 +79,9 @@ public class Reader {
                                 int id = Integer.parseInt(matcher.group(1));
                                 String text = matcher.group(2);
                                 // Create a Doc object and add it to the list
-                                Doc doc = new Doc(id, preprocessing.clean(text));
+                                text = preprocessing.clean(text);
+
+                                Doc doc = new Doc(id, Tokenization.tokenize(text));
                                 System.out.println(doc);
                                 docList.add(doc);
                             }
@@ -106,4 +111,3 @@ public class Reader {
     }
 }
 //Tokenization and lowercase!
-//fhdhss

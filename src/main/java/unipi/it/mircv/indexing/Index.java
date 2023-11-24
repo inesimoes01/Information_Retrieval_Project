@@ -32,11 +32,13 @@ public class Index {
         }
         //read doc and do indexing
         for (String term : termcounter.keySet()) {
+            lexicon.updateLexicon(term,termcounter.get(term));
             invertedIndex.addPosting(term, doc.getId(),termcounter.get(term) );
 
         }
         System.out.println("This is the Document  "+ doc.getId() );
         System.out.println(invertedIndex);
+        System.out.println(lexicon);
     }
 
     }

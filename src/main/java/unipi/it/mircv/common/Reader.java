@@ -5,7 +5,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import unipi.it.mircv.preprocessing.Preprocessing;
 import unipi.it.mircv.preprocessing.Tokenization;
-
+import unipi.it.mircv.indexing.Index;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -16,41 +16,20 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class Doc {
-    private int id;
-    private String[] text;
-
-    public Doc(int id, String[] text) {
-        this.id = id;
-        this.text = text;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String[] getText() {
-        return text;
-    }
-    @Override
-    public String toString() {
-        return this.id + "    " + String.join(", ", this.text);
-    }
-}
-
-
 
 public class Reader {
-
     private static final int BUFFER_SIZE = 4096;
 
     public static List<Doc> processCollection(String file) {
+        Index index = new Index();
         Preprocessing preprocessing = new Preprocessing();
         List<Doc> docList = new ArrayList<>();
-        Tokenization tokenization= new Tokenization();
+        Tokenization tokenization = new Tokenization();
 
         // Use a regular expression to match the document ID in the entry name
         Pattern pattern = Pattern.compile("^(\\d+)\\s+(.*)$");
+
+        int documentCount = 0;  // Counter to track the number of processed documents
 
         try (InputStream fileStream = new FileInputStream(file);
              InputStream gzipStream = new GzipCompressorInputStream(fileStream);
@@ -60,6 +39,7 @@ public class Reader {
             byte[] buffer = new byte[BUFFER_SIZE];
 
             while ((entry = tarStream.getNextTarEntry()) != null) {
+
                 if (!entry.isDirectory()) {
                     // Create a ByteArrayOutputStream to store the content in chunks
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -76,20 +56,55 @@ public class Reader {
                             Matcher matcher = pattern.matcher(line);
 
                             if (matcher.find()) {
-                                int id = Integer.parseInt(matcher.group(1));
+
+                                int id;
+                                try {
+                                    id = Integer.parseInt(matcher.group(1));
+                                } catch (NumberFormatException e) {
+                                    // If the parsing fails (e.g., the string is not a valid integer), continue to the next iteration.
+                                    continue;
+                                }
+
+                                // If the second column in the 'columns' array is an empty string, continue to the next iteration.
+                                if (matcher.group(2).length() == 0) {
+                                    continue;
+                                }
+
+                                // The code continues here if the parsing is successful and the second column is not empty.
+                                // You can use 'docNo' and 'columns[1]' for further processing.
+
                                 String text = matcher.group(2);
                                 // Create a Doc object and add it to the list
                                 text = preprocessing.clean(text);
 
                                 Doc doc = new Doc(id, Tokenization.tokenize(text));
-                                System.out.println(doc);
+                                index.createIndex(doc);
+
                                 docList.add(doc);
+
+                                // Increment the document count
+                                documentCount++;
+
+                                // Break out of the loop if the 4th document is processed
+                                if (documentCount >= 4) {
+                                    break;
+                                }
                             }
                         }
 
                         // Reset the ByteArrayOutputStream after processing the chunk
                         byteArrayOutputStream.reset();
+
+                        // Break out of the loop if the 4th document is processed
+                        if (documentCount >= 4) {
+                            break;
+                        }
                     }
+                }
+
+                // Break out of the loop if the 4th document is processed
+                if (documentCount >= 4) {
+                    break;
                 }
             }
         } catch (IOException e) {
@@ -98,16 +113,4 @@ public class Reader {
 
         return docList;
     }
-
-    public static void main(String[] args) {
-        List<Doc> docList = processCollection("path/to/your/collection.tar.gz");
-
-        // Print the extracted documents
-        for (Doc doc : docList) {
-            System.out.println("ID: " + doc.getId());
-            System.out.println("Text: " + doc.getText());
-            System.out.println("---------------");
-        }
-    }
 }
-//Tokenization and lowercase!

@@ -6,6 +6,8 @@ import java.util.HashMap;
 
 public class Lexicon {
 
+
+
     public static class TermStats{
         public int collectionFrequency;//how many times term appearn is collection
         public int documentFrequency;//in how many documents the term appears

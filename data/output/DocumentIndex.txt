@@ -1,0 +1,27 @@
+DocID: 0
+Document Length: 24
+
+DocID: 1
+Document Length: 16
+
+DocID: 2
+Document Length: 16
+
+DocID: 3
+Document Length: 23
+
+DocID: 4
+Document Length: 21
+
+DocID: 5
+Document Length: 21
+
+DocID: 6
+Document Length: 16
+
+DocID: 7
+Document Length: 43
+
+DocID: 8
+Document Length: 12
+

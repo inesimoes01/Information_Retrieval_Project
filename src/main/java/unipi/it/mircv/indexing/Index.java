@@ -7,8 +7,34 @@ import java.util.HashMap;
 public class Index {
     private static int blockNumber = 1;
     private static InvertedIndex invertedIndex = new InvertedIndex();
+
+    public static void setInvertedIndex(InvertedIndex invertedIndex) {
+        Index.invertedIndex = invertedIndex;
+    }
+
+    public static InvertedIndex getInvertedIndex() {
+        return invertedIndex;
+    }
+
     private static Lexicon lexicon = new Lexicon();
+    public static void setLexicon(Lexicon lexicon) {
+        Index.lexicon = lexicon;
+    }
+
+    public static Lexicon getLexicon() {
+        return lexicon;
+    }
+
     private static DocumentIndex documentIndex = new DocumentIndex();
+
+    public static void setDocumentIndex(DocumentIndex documentIndex) {
+        Index.documentIndex = documentIndex;
+    }
+
+    public static DocumentIndex getDocumentIndex() {
+        return documentIndex;
+    }
+
     public void setBlockNumber(int blockNumber) {
         this.blockNumber = blockNumber;
     }
@@ -22,17 +48,26 @@ public class Index {
         util.printUsage();
         HashMap<String, Integer> termcounter = new HashMap<>();
 
-        documentIndex.updateDocumentIndex(doc.getId(),doc.getText().length);
-
         for (String term : doc.getText()){
             termcounter.put(term, termcounter.containsKey(term) ? termcounter.get(term) + 1 : 1);
         }
 
-        if (util.isMemoryFull(50.0)){
+        if (util.isMemoryFull(0.1)){
+            //writeBlock(lexicon, lexicon.sortLexicon(), documentIndex.sortDocumentIndex()); //writes the current block to disk
+            util. writeBlockToDisk(0,"0",documentIndex);
+            util. writeBlockToDisk(0,"0",lexicon);
+            util. writeBlockToDisk(0,"0",invertedIndex);
+            //lexicon = new Lexicon();
+            //invertedIndex = new InvertedIndex();
+            //documentIndex = new DocumentIndex();
+
+            setBlockNumber(blockNumber + 1);
+            System.gc(); //calls the garbage collector to force to free memory.
             //Write to the disk
             //Increment blockNumber
-            setBlockNumber(blockNumber + 1);
+
         }
+        documentIndex.updateDocumentIndex(doc.getId(),doc.getText().length);
         //read doc and do indexing
         for (String term : termcounter.keySet()) {
             lexicon.updateLexicon(term,termcounter.get(term));

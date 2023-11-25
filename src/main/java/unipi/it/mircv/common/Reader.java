@@ -86,7 +86,7 @@ public class Reader {
                                 documentCount++;
 
                                 // Break out of the loop if the 4th document is processed
-                                if (documentCount >= 4) {
+                                if (documentCount >= 10) {
                                     break;
                                 }
                             }
@@ -96,14 +96,14 @@ public class Reader {
                         byteArrayOutputStream.reset();
 
                         // Break out of the loop if the 4th document is processed
-                        if (documentCount >= 4) {
+                        if (documentCount >= 10) {
                             break;
                         }
                     }
                 }
 
                 // Break out of the loop if the 4th document is processed
-                if (documentCount >= 4) {
+                if (documentCount >= 10) {
                     break;
                 }
             }

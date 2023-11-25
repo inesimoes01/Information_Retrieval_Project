@@ -22,9 +22,12 @@ public class Index {
         util.printUsage();
         HashMap<String, Integer> termcounter = new HashMap<>();
 
+        documentIndex.updateDocumentIndex(doc.getId(),doc.getText().length);
+
         for (String term : doc.getText()){
             termcounter.put(term, termcounter.containsKey(term) ? termcounter.get(term) + 1 : 1);
         }
+
         if (util.isMemoryFull(50.0)){
             //Write to the disk
             //Increment blockNumber
@@ -34,11 +37,11 @@ public class Index {
         for (String term : termcounter.keySet()) {
             lexicon.updateLexicon(term,termcounter.get(term));
             invertedIndex.addPosting(term, doc.getId(),termcounter.get(term) );
-
         }
         System.out.println("This is the Document  "+ doc.getId() );
-        System.out.println(invertedIndex);
-        System.out.println(lexicon);
+        //System.out.println(invertedIndex);
+        //System.out.println(lexicon);
+        System.out.println(documentIndex);
     }
 
     }

@@ -117,6 +117,8 @@ public class Util {
     public void writeBlockToDisk(int blockCounter, String encodingType, Lexicon lexicon, InvertedIndex invertedIndex) {
         String directoryPath = "data/output/";
         String filePath = directoryPath + "Lexicon.txt";
+        invertedIndex.sortInvertedIndexByDocId();
+        lexicon.sortLexicon();  //why it doesn't 
 
         // Creazione della directory se non esiste
         File directory = new File(directoryPath);
@@ -149,6 +151,8 @@ public class Util {
             e.printStackTrace();
         }
     }
+
+
 
 
         //myWriterDocIds = new TextWriter("Data/Output/DocIds/docIds" + blockCounter + ".txt");

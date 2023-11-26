@@ -4,6 +4,8 @@ package unipi.it.mircv.common;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+
 import unipi.it.mircv.common.TermStats;
 public class Lexicon {
 
@@ -35,11 +37,37 @@ public class Lexicon {
 
     }
 
-    public ArrayList<String> sortLexicon(){
-        ArrayList<String> sortedTerms = new ArrayList<>(lexicon.keySet());
-        Collections.sort(sortedTerms);
-        return sortedTerms;
+    public void sortLexiconByKey() {
+        // Ottieni le chiavi e ordina le chiavi
+        List<String> sortedKeys = new ArrayList<>(lexicon.keySet());
+        Collections.sort(sortedKeys);
+
+        // Crea una nuova HashMap ordinata
+        HashMap<String, TermStats> sortedLexicon = new HashMap<>();
+        for (String key : sortedKeys) {
+            sortedLexicon.put(key, lexicon.get(key));
+        }
+
+        lexicon = sortedLexicon; // Aggiorna la HashMap ordinata
+        System.out.println(lexicon);
     }
+
+    public HashMap<String, TermStats> sortLexicon(){
+        ArrayList<String> sortedTerms = new ArrayList<>(lexicon.keySet());
+        HashMap<String, TermStats> sortedLexicon = new HashMap<String, TermStats>();
+        Collections.sort(sortedTerms);
+        System.out.println(sortedTerms);
+        for (String term : sortedTerms){
+
+            sortedLexicon.put(term,lexicon.get(term));
+
+        }
+
+        System.out.println(sortedLexicon);
+
+        return sortedLexicon;
+    }
+
 
     @Override
     public String toString() {
@@ -55,5 +83,8 @@ public class Lexicon {
 
         return sb.toString();
     }
+
+
+
 
 }

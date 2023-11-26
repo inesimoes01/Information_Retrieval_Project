@@ -19,5 +19,13 @@ public class TermStats {
     public int getDocumentFrequency() {
         return documentFrequency;
     }
+
+    @Override
+    public String toString() {
+        return "TS{" +
+                "cF=" + collectionFrequency +
+                ", dF=" + documentFrequency +
+                '}';
+    }
 }
 

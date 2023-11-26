@@ -18,6 +18,8 @@ public class InvertedIndex {
         invertedIndex.get(term).add(new Posting(docId, freq));
     }
 
+    public void sortInvertedIndexByDocId() {
+    }
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -47,8 +49,6 @@ public class InvertedIndex {
 
         return result;
     }
-
-
 
 
 }

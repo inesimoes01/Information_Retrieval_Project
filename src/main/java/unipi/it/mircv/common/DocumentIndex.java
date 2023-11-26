@@ -38,6 +38,7 @@ public class DocumentIndex {
     public ArrayList<Integer> sortDocumentIndex(){
         ArrayList<Integer> sortedDocIds = new ArrayList<>(documentIndex.keySet());
         Collections.sort(sortedDocIds);
+
         return sortedDocIds;
     }
 

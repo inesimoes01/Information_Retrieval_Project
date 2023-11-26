@@ -1,6 +1,7 @@
 package unipi.it.mircv.common;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class DocumentIndex {
@@ -34,6 +35,12 @@ public class DocumentIndex {
         }
     }
 
+    public ArrayList<Integer> sortDocumentIndex(){
+        ArrayList<Integer> sortedDocIds = new ArrayList<>(documentIndex.keySet());
+        Collections.sort(sortedDocIds);
+        return sortedDocIds;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -47,5 +54,8 @@ public class DocumentIndex {
 
         return sb.toString();
     }
+
+
+
 }
 

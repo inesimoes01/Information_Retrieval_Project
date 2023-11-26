@@ -55,8 +55,7 @@ public class Index {
         if (util.isMemoryFull(0.1)){
             //writeBlock(lexicon, lexicon.sortLexicon(), documentIndex.sortDocumentIndex()); //writes the current block to disk
             util. writeBlockToDisk(0,"0",documentIndex);
-            util. writeBlockToDisk(0,"0",lexicon);
-            util. writeBlockToDisk(0,"0",invertedIndex);
+            util. writeBlockToDisk(0,"0",lexicon,invertedIndex);
             //lexicon = new Lexicon();
             //invertedIndex = new InvertedIndex();
             //documentIndex = new DocumentIndex();

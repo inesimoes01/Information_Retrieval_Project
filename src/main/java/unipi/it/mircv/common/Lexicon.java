@@ -2,16 +2,15 @@ package unipi.it.mircv.common;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-
+import unipi.it.mircv.common.TermStats;
 public class Lexicon {
 
 
 
-    public static class TermStats{
-        public int collectionFrequency;//how many times term appearn is collection
-        public int documentFrequency;//in how many documents the term appears
-    }
+    public HashMap<String, TermStats> getLexicon(){ return lexicon; }
+
     private static HashMap<String, TermStats> lexicon = new HashMap<>();
     public Lexicon(){
         this.lexicon= new HashMap<>();
@@ -21,21 +20,26 @@ public class Lexicon {
         if(!lexicon.containsKey(term)){
             //Create a new "record" with cf=freq and df=1
             TermStats termStats = new TermStats();
-            termStats.collectionFrequency = freq;
-            termStats.documentFrequency = 1;
+            termStats.setCollectionFrequency(freq);
+            termStats.setDocumentFrequency(1);
             lexicon.put(term, termStats);
         }
         else{
             //Add to the Lexicon
             TermStats termStats = lexicon.get(term);
-            termStats.collectionFrequency += freq;
-            termStats.documentFrequency++;
+            termStats.setCollectionFrequency(termStats.getCollectionFrequency() + freq);
+            termStats.setDocumentFrequency(termStats.getDocumentFrequency()+1);
         }
 
 
 
     }
 
+    public ArrayList<String> sortLexicon(){
+        ArrayList<String> sortedTerms = new ArrayList<>(lexicon.keySet());
+        Collections.sort(sortedTerms);
+        return sortedTerms;
+    }
 
     @Override
     public String toString() {
@@ -45,8 +49,8 @@ public class Lexicon {
             TermStats termStats = lexicon.get(term);
 
             sb.append("Term: ").append(term).append("\n");
-            sb.append("Collection Frequency: ").append(termStats.collectionFrequency).append("\n");
-            sb.append("Document Frequency: ").append(termStats.documentFrequency).append("\n\n");
+            sb.append("Collection Frequency: ").append(termStats.getCollectionFrequency()).append("\n");
+            sb.append("Document Frequency: ").append(termStats.getDocumentFrequency()).append("\n\n");
         }
 
         return sb.toString();

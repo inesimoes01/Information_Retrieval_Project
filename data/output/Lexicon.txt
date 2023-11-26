@@ -1,440 +1,110 @@
-Term: nation
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: gadget
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: bring
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: led
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: 194
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: attempt
-Collection Frequency: 2
-Document Frequency: 1
-
-Term: compon
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: volum
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: ii
-Collection Frequency: 4
-Document Frequency: 4
-
-Term: period
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: intellect
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: began
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: 16
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: gener
-Collection Frequency: 2
-Document Frequency: 2
-
-Term: ag
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: director
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: impact
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: version
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: secur
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: physicist
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: classifi
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: alamo
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: 2
-Collection Frequency: 2
-Document Frequency: 2
-
-Term: lesli
-Collection Frequency: 2
-Document Frequency: 2
-
-Term: juli
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: manmad
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: engin
-Collection Frequency: 3
-Document Frequency: 3
-
-Term: hang
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: document
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: direct
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: secret
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: robert
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: impress
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: power
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: resourc
-Collection Frequency: 2
-Document Frequency: 1
-
-Term: meant
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: mind
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: manhattan
-Collection Frequency: 12
-Document Frequency: 9
-
-Term: nicknam
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: help
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: photograph
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: mexico
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: grove
-Collection Frequency: 2
-Document Frequency: 2
-
-Term: june
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: atom
-Collection Frequency: 9
-Document Frequency: 7
-
-Term: desert
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: thousand
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: heritag
-Collection Frequency: 2
-Document Frequency: 1
-
-Term: extraordinarili
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: deton
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: lo
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: corp
-Collection Frequency: 3
-Document Frequency: 3
-
-Term: featur
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: offic
-Collection Frequency: 2
-Document Frequency: 1
-
-Term: innoc
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: undertak
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: project
-Collection Frequency: 17
-Document Frequency: 9
-
-Term: bomb
-Collection Frequency: 7
-Document Frequency: 7
-
-Term: research
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: cloud
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: major
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: commun
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: engineersbegan
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: armi
-Collection Frequency: 4
-Document Frequency: 3
-
-Term: administr
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: actual
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: obliter
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: laboratori
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: essai
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: develop
-Collection Frequency: 3
-Document Frequency: 3
-
-Term: presenc
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: substitut
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: 1942
-Collection Frequency: 2
-Document Frequency: 2
-
-Term: unit
-Collection Frequency: 3
-Document Frequency: 2
-
-Term: legaci
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: canada
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: success
-Collection Frequency: 3
-Document Frequency: 2
-
-Term: histori
-Collection Frequency: 4
-Document Frequency: 2
-
-Term: produc
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: 1946
-Collection Frequency: 2
-Document Frequency: 2
-
-Term: collect
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: support
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: achiev
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: 1945
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: hundr
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: scienc
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: websit
-Collection Frequency: 3
-Document Frequency: 1
-
-Term: scientist
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: origin
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: continu
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: interact
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: literatur
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: scientif
-Collection Frequency: 2
-Document Frequency: 1
-
-Term: weapon
-Collection Frequency: 2
-Document Frequency: 2
-
-Term: design
-Collection Frequency: 2
-Document Frequency: 1
-
-Term: nuclear
-Collection Frequency: 4
-Document Frequency: 3
-
-Term: make
-Collection Frequency: 2
-Document Frequency: 1
-
-Term: live
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: peac
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: war
-Collection Frequency: 4
-Document Frequency: 4
-
-Term: rich
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: control
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: kingdom
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: energi
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: equal
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: conduct
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: refer
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: chang
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: oppenheim
-Collection Frequency: 1
-Document Frequency: 1
-
-Term: complementari
-Collection Frequency: 1
-Document Frequency: 1
-
+nation/1 1/4 1 
+gadget/1 1/5 1 
+bring/1 1/1 1 
+led/1 1/7 1 
+194/1 1/3 1 
+attempt/2 1/6 2 
+compon/1 1/7 1 
+volum/1 1/4 1 
+ii/4 4/1 1 3 1 6 1 7 1 
+period/1 1/3 1 
+intellect/1 1/0 1 
+began/1 1/5 1 
+16/1 1/5 1 
+gener/2 2/3 1 7 1 
+ag/1 1/5 1 
+director/1 1/7 1 
+impact/1 1/1 1 
+version/1 1/4 1 
+secur/1 1/4 1 
+physicist/1 1/7 1 
+classifi/1 1/5 1 
+alamo/1 1/7 1 
+2/2 2/3 1 8 1 
+lesli/2 2/3 1 7 1 
+juli/1 1/5 1 
+manmad/1 1/2 1 
+engin/3 3/0 1 3 1 7 1 
+hang/1 1/0 1 
+document/1 1/6 1 
+direct/1 1/7 1 
+secret/1 1/8 1 
+robert/1 1/7 1 
+impress/1 1/0 1 
+power/1 1/2 1 
+resourc/2 1/4 2 
+meant/1 1/0 1 
+mind/1 1/0 1 
+manhattan/12 9/0 1 1 1 2 3 3 1 4 1 5 1 6 1 7 2 8 1 
+nicknam/1 1/5 1 
+help/1 1/1 1 
+photograph/1 1/5 1 
+mexico/1 1/5 1 
+grove/2 2/3 1 7 1 
+june/1 1/8 1 
+atom/9 7/0 1 1 2 2 1 3 1 5 2 6 1 8 1 
+desert/1 1/5 1 
+thousand/1 1/0 1 
+heritag/2 1/4 2 
+extraordinarili/1 1/6 1 
+deton/1 1/5 1 
+lo/1 1/7 1 
+corp/3 3/3 1 7 1 8 1 
+featur/1 1/5 1 
+offic/2 1/4 2 
+innoc/1 1/0 1 
+undertak/1 1/7 1 
+project/17 9/0 1 1 1 2 4 3 3 4 1 5 1 6 1 7 4 8 1 
+bomb/7 7/1 1 2 1 3 1 5 1 6 1 7 1 8 1 
+research/1 1/0 1 
+cloud/1 1/0 1 
+major/1 1/7 1 
+commun/1 1/0 1 
+engineersbegan/1 1/8 1 
+armi/4 3/3 1 7 2 8 1 
+administr/1 1/3 1 
+actual/1 1/7 1 
+obliter/1 1/0 1 
+laboratori/1 1/7 1 
+essai/1 1/2 1 
+develop/3 3/3 1 6 1 7 1 
+presenc/1 1/0 1 
+substitut/1 1/6 1 
+1942/2 2/7 1 8 1 
+unit/3 2/7 2 8 1 
+legaci/1 1/1 1 
+canada/1 1/7 1 
+success/3 2/0 2 2 1 
+histori/4 2/1 1 4 3 
+produc/1 1/7 1 
+1946/2 2/3 1 7 1 
+collect/1 1/6 1 
+support/1 1/7 1 
+achiev/1 1/0 1 
+1945/1 1/5 1 
+hundr/1 1/0 1 
+scienc/1 1/1 1 
+websit/3 1/4 3 
+scientist/1 1/5 1 
+origin/1 1/6 1 
+continu/1 1/1 1 
+interact/1 1/4 1 
+literatur/1 1/6 1 
+scientif/2 1/0 2 
+weapon/2 2/5 1 7 1 
+design/2 1/7 2 
+nuclear/4 3/4 1 5 1 7 2 
+make/2 1/2 2 
+live/1 1/0 1 
+peac/1 1/1 1 
+war/4 4/1 1 3 1 6 1 7 1 
+rich/1 1/6 1 
+control/1 1/3 1 
+kingdom/1 1/7 1 
+energi/1 1/1 1 
+equal/1 1/0 1 
+conduct/1 1/3 1 
+refer/1 1/3 1 
+chang/1 1/2 1 
+oppenheim/1 1/7 1 
+complementari/1 1/4 1 

@@ -5,6 +5,7 @@ import java.util.*;
 public class InvertedIndex {
     private HashMap<String, ArrayList<Posting>> invertedIndex;
 
+    public HashMap<String, ArrayList<Posting>> getInvertedIndex(){ return invertedIndex; }
     public InvertedIndex() {
         this.invertedIndex = new HashMap<>();
     }

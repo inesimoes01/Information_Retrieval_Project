@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
+import java.util.ArrayList;
 
 
 public class Util {
@@ -58,6 +59,24 @@ public class Util {
         System.out.println("Percentage Used: " + percentageUsed + "%");
     }
 
+    public void  writeBlockToDisk(int blockCounter, String encodingType, Lexicon lexicon) {
+        String directoryPath = "data/output/";
+        String filePath = directoryPath + "Lexicon.txt";
+
+        // Create the directories if they don't exist
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            directory.mkdirs(); // Creates parent directories as needed
+        }
+
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
+            // Writing to the file
+            bufferedWriter.write(lexicon.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void  writeBlockToDisk(int blockCounter, String encodingType, DocumentIndex documentIndex) {
         String directoryPath = "data/output/";
@@ -77,23 +96,6 @@ public class Util {
         }
     }
 
-    public void  writeBlockToDisk(int blockCounter, String encodingType, Lexicon lexicon) {
-        String directoryPath = "data/output/";
-        String filePath = directoryPath + "Lexicon.txt";
-
-        // Create the directories if they don't exist
-        File directory = new File(directoryPath);
-        if (!directory.exists()) {
-            directory.mkdirs(); // Creates parent directories as needed
-        }
-
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
-            // Writing to the file
-            bufferedWriter.write(lexicon.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
         public void writeBlockToDisk (int blockCounter, String encodingType, InvertedIndex invertedIndex){
             String directoryPath = "data/output/";
             String filePath = directoryPath + "InvertedIndex.txt";
@@ -111,6 +113,42 @@ public class Util {
                 e.printStackTrace();
             }
         }
+
+    public void writeBlockToDisk(int blockCounter, String encodingType, Lexicon lexicon, InvertedIndex invertedIndex) {
+        String directoryPath = "data/output/";
+        String filePath = directoryPath + "Lexicon.txt";
+
+        // Creazione della directory se non esiste
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            directory.mkdirs(); // Crea le directory necessarie
+        }
+
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
+            // Scrittura nel file
+
+            for (String term : lexicon.getLexicon().keySet()) {
+                TermStats termStats = lexicon.getLexicon().get(term);
+
+                // Scrivi il termine seguito dalle statistiche del termine
+                bufferedWriter.write(term + "/" + termStats.getCollectionFrequency() + " " + termStats.getDocumentFrequency() + "/");
+
+                // Ottieni la posting list dal tuo inverted index
+                ArrayList<Posting> postingList = invertedIndex.getInvertedIndex().get(term);
+
+                // Scrivi le informazioni sulla posting list
+                for (Posting posting : postingList) {
+                    bufferedWriter.write(posting.getDocId() + " " + posting.getFreq() + " ");
+                }
+
+                // Vai a capo per il prossimo termine
+                bufferedWriter.newLine();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
         //myWriterDocIds = new TextWriter("Data/Output/DocIds/docIds" + blockCounter + ".txt");

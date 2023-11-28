@@ -106,7 +106,20 @@ public class Reader {
                         }
                     }
 
-                    System.out.println("This should be Printed 1 time" );
+                    //Generate the last Block
+                    util.writeBlockToDisk(index.getBlockNumber(),index.getDocumentIndex());
+                    util.writeBlockToDisk(index.getBlockNumber(),index.getLexicon(),index.getInvertedIndex());
+
+
+                    index.setLexicon(new Lexicon());
+                    index.setInvertedIndex(new InvertedIndex());
+                    index.setDocumentIndex(new DocumentIndex());
+
+                    index.setBlockNumber(index.getBlockNumber() + 1);
+                    System.gc(); //calls the garbage collector to force to free memory.
+                    //Write to the disk
+                    //Increment blockNumber
+
 
                     util.readBlockFromDisk(index.getBlockNumber());
                     util.mergeDocumentIndex(index.getBlockNumber());

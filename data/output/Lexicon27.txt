@@ -1,38 +1,29 @@
-anil/1 1/2264 1 
-cochlear/2 1/2265 2 
-consult/1 1/2264 1 
-content/1 1/2264 1 
-dental/2 1/2264 2 
-doctor/2 1/2264 2 
-don/1 1/2265 1 
-dr/1 1/2264 1 
-enjoi/1 1/2264 1 
-explain/1 1/2264 1 
-facil/1 1/2265 1 
-function/1 1/2264 1 
-health/1 1/2264 1 
-imag/1 1/2265 1 
-implant/4 2/2264 2 2265 2 
-issu/1 1/2264 1 
-life/1 1/2264 1 
-lost/1 1/2264 1 
-magnet/3 1/2265 3 
-medic/1 1/2265 1 
-mri/2 1/2265 2 
-natur/1 1/2264 1 
-onlin/1 1/2264 1 
-order/1 1/2265 1 
-peopl/1 1/2264 1 
-phone/1 1/2264 1 
-procedur/1 1/2265 1 
-remov/1 1/2265 1 
-restor/1 1/2264 1 
-simpl/1 1/2265 1 
-sympler/1 1/2264 1 
-talk/1 1/2264 1 
-test/1 1/2265 1 
-tooth/2 1/2264 2 
-type/1 1/2265 1 
-watch/1 1/2264 1 
-worri/1 1/2264 1 
-yadav/1 1/2264 1 
+africa/1 1/2073 1 
+allig/2 2/2074 1 2075 1 
+america/1 1/2073 1 
+aquat/1 1/2073 1 
+asia/1 1/2073 1 
+australia/1 1/2073 1 
+bask/1 1/2074 1 
+behavior/1 1/2075 1 
+belong/1 1/2075 1 
+biolog/1 1/2073 1 
+call/3 2/2074 2 2075 1 
+classifi/1 1/2073 1 
+complex/1 1/2075 1 
+confus/1 1/2074 1 
+congreg/1 1/2074 1 
+consid/1 1/2073 1 
+crocodil/5 3/2073 3 2074 1 2075 1 
+crocodilian/2 1/2075 2 
+crocodylina/2 1/2073 2 
+float/1 1/2074 1 
+group/3 2/2074 2 2075 1 
+larg/1 1/2073 1 
+largest/1 1/2075 1 
+live/2 2/2073 1 2075 1 
+member/1 1/2073 1 
+reptil/3 2/2073 1 2075 2 
+subfamili/2 1/2073 2 
+tropic/1 1/2073 1 
+true/2 1/2073 2 

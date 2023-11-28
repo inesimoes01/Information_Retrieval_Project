@@ -1,0 +1,11 @@
+contractor/1 1/3040 1 
+control/1 1/3040 1 
+court/1 1/3040 1 
+determin/1 1/3040 1 
+econom/1 1/3040 1 
+employe/1 1/3040 1 
+independ/1 1/3040 1 
+individu/1 1/3040 1 
+qualifi/1 1/3040 1 
+realiti/1 1/3040 1 
+test/3 1/3040 3 

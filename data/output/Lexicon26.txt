@@ -1,0 +1,16 @@
+1/1 1/2263 1 
+complic/1 1/2263 1 
+dental/2 1/2263 2 
+eventu/1 1/2263 1 
+implant/1 1/2263 1 
+lose/1 1/2263 1 
+move/1 1/2263 1 
+number/1 1/2263 1 
+option/1 1/2263 1 
+reason/1 1/2263 1 
+replac/1 1/2263 1 
+shift/1 1/2263 1 
+space/2 1/2263 2 
+surround/1 1/2263 1 
+teeth/2 1/2263 2 
+tooth/2 1/2263 2 

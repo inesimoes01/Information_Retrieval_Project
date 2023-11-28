@@ -1,0 +1,61 @@
+50/1 1/63 1 
+95/1 1/63 1 
+abil/1 1/62 1 
+ag/1 1/63 1 
+alcohol/1 1/63 1 
+attack/1 1/63 1 
+autoimmun/1 1/63 1 
+bile/9 2/62 8 63 1 
+biliari/4 2/62 1 63 3 
+cancer/1 1/63 1 
+carcinoma/1 1/63 1 
+case/1 1/63 1 
+cell/3 2/62 2 63 1 
+chronic/1 1/62 1 
+cirrhosi/9 2/62 4 63 5 
+damag/2 1/62 2 
+destroi/4 2/62 3 63 1 
+digest/3 1/62 3 
+diseas/1 1/62 1 
+disord/1 1/63 1 
+duct/6 2/62 5 63 1 
+factor/1 1/63 1 
+fat/2 1/62 2 
+fatti/2 1/62 2 
+function/1 1/62 1 
+gradual/2 1/62 2 
+help/2 1/62 2 
+hemochromatosi/1 1/63 1 
+hepat/2 1/63 2 
+hepatocellular/1 1/63 1 
+immun/1 1/63 1 
+increas/1 1/62 1 
+inflamm/2 1/62 2 
+injuri/2 1/62 2 
+intestin/2 1/62 2 
+lead/1 1/63 1 
+liquid/1 1/62 1 
+liver/13 2/62 11 63 2 
+long/1 1/62 1 
+lose/1 1/62 1 
+major/1 1/63 1 
+medium/1 1/62 1 
+occur/1 1/63 1 
+patient/2 1/62 2 
+pbc/6 2/62 3 63 3 
+peopl/1 1/63 1 
+primari/3 2/62 1 63 2 
+progress/1 1/62 1 
+remain/2 1/62 2 
+risk/1 1/63 1 
+scar/3 1/62 3 
+size/1 1/62 1 
+slowli/1 1/62 1 
+small/2 1/62 2 
+term/1 1/62 1 
+tissu/1 1/62 1 
+travel/2 1/62 2 
+unit/1 1/63 1 
+unknown/1 1/63 1 
+vitamin/2 1/62 2 
+women/1 1/63 1 

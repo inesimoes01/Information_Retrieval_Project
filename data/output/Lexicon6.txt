@@ -1,0 +1,156 @@
+00/1 1/176 1 
+01am/1 1/179 1 
+09/1 1/179 1 
+1/2 2/176 1 179 1 
+11/1 1/179 1 
+1541/1 1/173 1 
+1989/1 1/177 1 
+2/2 2/176 1 179 1 
+2013/1 1/179 1 
+3/1 1/176 1 
+700/1 1/176 1 
+adult/1 1/180 1 
+america/1 1/178 1 
+american/2 2/174 1 175 1 
+anchor/1 1/177 1 
+anger/1 1/180 1 
+appalachian/1 1/174 1 
+appear/1 1/177 1 
+archaeologi/1 1/174 1 
+area/1 1/174 1 
+arkansa/1 1/173 1 
+arriv/2 2/173 1 178 1 
+balanc/2 2/179 1 180 1 
+bartow/1 1/177 1 
+bloodier/1 1/179 1 
+broadli/2 2/179 1 180 1 
+build/2 2/176 1 178 1 
+builder/3 2/174 1 175 2 
+built/3 3/174 1 175 1 176 1 
+buri/1 1/175 1 
+caddo/1 1/173 1 
+caus/1 1/179 1 
+charact/1 1/179 1 
+charnel/1 1/178 1 
+chief/1 1/178 1 
+chieftain/1 1/177 1 
+clinic/1 1/180 1 
+concentr/1 1/174 1 
+contrast/2 2/179 1 180 1 
+control/1 1/180 1 
+counti/1 1/177 1 
+cover/1 1/176 1 
+cultur/2 2/177 1 178 1 
+danc/1 1/178 1 
+dead/1 1/175 1 
+depart/1 1/177 1 
+depress/2 1/180 2 
+dirt/1 1/176 1 
+document/1 1/178 1 
+earth/1 1/178 1 
+earthwork/1 1/175 1 
+east/1 1/177 1 
+eastern/1 1/173 1 
+energi/1 1/180 1 
+engag/2 2/179 1 180 1 
+enjoy/2 2/179 1 180 1 
+etowah/1 1/177 1 
+european/1 1/178 1 
+explor/1 1/173 1 
+extens/1 1/175 1 
+fatigu/1 1/180 1 
+feel/2 2/179 1 180 1 
+feet/2 1/176 2 
+field/3 1/176 3 
+fire/1 1/179 1 
+footbal/3 1/176 3 
+game/7 2/179 4 180 3 
+gamei/1 1/179 1 
+geometr/1 1/176 1 
+georgia/3 1/177 3 
+great/2 2/174 1 175 1 
+greatest/1 1/174 1 
+ground/1 1/178 1 
+gulf/2 2/174 1 175 1 
+happi/2 2/179 1 180 1 
+hard/1 1/176 1 
+healthi/2 2/179 1 180 1 
+histor/1 1/177 1 
+hous/3 1/178 3 
+huge/2 1/176 2 
+hundr/1 1/176 1 
+includ/3 3/177 1 178 1 180 1 
+increas/3 2/179 1 180 2 
+indian/3 2/175 1 177 2 
+influenc/1 1/180 1 
+intact/1 1/177 1 
+interior/1 1/177 1 
+kill/1 1/179 1 
+kolomoki/1 1/177 1 
+lake/2 2/174 1 175 1 
+larg/2 2/174 1 175 1 
+lead/2 2/179 1 180 1 
+life/1 1/179 1 
+list/1 1/177 1 
+locat/1 1/177 1 
+lodg/1 1/178 1 
+long/3 1/176 3 
+love/2 1/179 2 
+mcgamer/1 1/179 1 
+mexico/2 2/174 1 175 1 
+mississippi/3 2/174 2 175 1 
+mississippian/4 3/173 1 177 1 178 2 
+mortuari/1 1/178 1 
+mound/14 6/173 2 174 3 175 3 176 3 177 1 178 2 
+moundbuild/1 1/177 1 
+mt/1 1/174 1 
+name/1 1/175 1 
+north/2 2/174 1 178 1 
+northwest/1 1/177 1 
+note/1 1/177 1 
+ohio/1 1/174 1 
+pack/1 1/176 1 
+pain/1 1/179 1 
+pattern/1 1/176 1 
+peopl/4 4/173 1 174 1 178 1 179 1 
+plai/2 2/179 1 180 1 
+platform/11 2/176 1 178 10 
+posit/1 1/180 1 
+practic/1 1/175 1 
+prehistor/1 1/175 1 
+public/2 1/178 2 
+randomis/1 1/180 1 
+real/2 1/179 2 
+reason/1 1/179 1 
+recogn/1 1/177 1 
+red/1 1/173 1 
+reduct/1 1/180 1 
+region/1 1/175 1 
+resid/1 1/178 1 
+river/3 3/173 1 174 1 175 1 
+rotunda/1 1/178 1 
+sampl/1 1/180 1 
+satisfi/2 2/179 1 180 1 
+semi/1 1/178 1 
+site/7 1/177 7 
+sort/2 1/179 2 
+soto/1 1/177 1 
+southern/1 1/177 1 
+spanish/1 1/173 1 
+spent/1 1/176 1 
+squar/1 1/178 1 
+steep/1 1/176 1 
+templ/1 1/178 1 
+tension/1 1/180 1 
+town/1 1/178 1 
+trail/2 1/177 2 
+transit/1 1/177 1 
+trial/1 1/180 1 
+vallei/3 3/173 1 174 1 175 1 
+video/7 2/179 4 180 3 
+vigour/1 1/180 1 
+violent/1 1/179 1 
+weapon/1 1/179 1 
+wide/3 1/176 3 
+woodland/1 1/177 1 
+year/2 2/175 1 176 1 

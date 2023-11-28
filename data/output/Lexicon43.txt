@@ -1,0 +1,13 @@
+claus/1 1/3041 1 
+compani/1 1/3041 1 
+compet/2 1/3041 2 
+contract/1 1/3041 1 
+contractor/1 1/3041 1 
+employe/1 1/3041 1 
+independ/1 1/3041 1 
+main/1 1/3041 1 
+proprietari/1 1/3041 1 
+provis/1 1/3041 1 
+purpos/1 1/3041 1 
+safeguard/1 1/3041 1 
+sign/1 1/3041 1 

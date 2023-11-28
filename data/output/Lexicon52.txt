@@ -1,0 +1,71 @@
+2016/1 1/3934 1 
+22/1 1/3934 1 
+acquisit/1 1/3934 1 
+analyt/1 1/3935 1 
+atf/2 1/3934 2 
+autom/2 2/3934 1 3935 1 
+benchmark/1 1/3935 1 
+brasstrax/2 1/3934 2 
+brasstrrax/1 1/3934 1 
+build/1 1/3935 1 
+busi/1 1/3935 1 
+cartridg/1 1/3934 1 
+case/1 1/3934 1 
+challeng/1 1/3935 1 
+collect/1 1/3934 1 
+commiss/1 1/3935 1 
+complex/1 1/3933 1 
+continu/1 1/3935 1 
+coordin/1 1/3933 1 
+cost/1 1/3935 1 
+crime/1 1/3934 1 
+daili/1 1/3935 1 
+databas/1 1/3934 1 
+design/1 1/3935 1 
+desktop/1 1/3934 1 
+devic/1 1/3935 1 
+effect/1 1/3935 1 
+effici/1 1/3935 1 
+energi/1 1/3935 1 
+engin/1 1/3935 1 
+enterpris/1 1/3935 1 
+environ/1 1/3935 1 
+equip/1 1/3935 1 
+era/1 1/3934 1 
+face/1 1/3935 1 
+fight/1 1/3934 1 
+fire/1 1/3934 1 
+forward/1 1/3934 1 
+health/1 1/3933 1 
+highli/2 2/3933 1 3934 1 
+ibi/6 2/3934 3 3935 3 
+imag/1 1/3934 1 
+implement/1 1/3935 1 
+level/1 1/3935 1 
+long/1 1/3935 1 
+manag/3 2/3933 1 3935 2 
+multipl/1 1/3935 1 
+newest/1 1/3934 1 
+nibin/2 1/3934 2 
+process/1 1/3935 1 
+purchas/1 1/3934 1 
+region/1 1/3935 1 
+review/1 1/3934 1 
+search/1 1/3934 1 
+septemb/1 1/3934 1 
+site/1 1/3935 1 
+small/1 1/3935 1 
+solut/1 1/3935 1 
+sophist/1 1/3933 1 
+span/1 1/3935 1 
+station/1 1/3934 1 
+support/2 2/3933 1 3935 1 
+sustain/1 1/3935 1 
+system/3 2/3934 1 3935 2 
+team/2 2/3933 1 3935 1 
+tech/1 1/3933 1 
+technologi/2 1/3934 2 
+term/1 1/3935 1 
+tool/1 1/3935 1 
+util/1 1/3934 1 
+vital/1 1/3935 1 

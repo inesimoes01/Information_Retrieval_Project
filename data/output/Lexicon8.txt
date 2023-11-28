@@ -1,0 +1,416 @@
+00/1 1/442 1 
+1/2 2/440 1 443 1 
+10/2 1/446 2 
+100/1 1/446 1 
+100m/1 1/420 1 
+11/1 1/425 1 
+11a/1 1/426 1 
+11b/1 1/426 1 
+11g/1 1/426 1 
+12/1 1/421 1 
+14/1 1/431 1 
+189/1 1/431 1 
+1980/3 2/416 1 423 2 
+1982/1 1/416 1 
+1985/1 1/425 1 
+1986/1 1/417 1 
+199/3 2/423 2 429 1 
+1990/1 1/427 1 
+1991/3 2/423 2 426 1 
+1mbp/1 1/426 1 
+2/5 5/421 1 424 1 425 1 440 1 446 1 
+2008/2 1/417 2 
+22/1 1/432 1 
+254/1 1/438 1 
+2mbp/1 1/426 1 
+34/1 1/435 1 
+38/1 1/438 1 
+4/5 5/421 1 425 1 439 1 443 1 444 1 
+43/1 1/442 1 
+45/1 1/435 1 
+487/1 1/417 1 
+5/6 4/421 1 425 1 439 2 443 2 
+540/1 1/417 1 
+6/1 1/421 1 
+60/2 2/439 1 443 1 
+63/1 1/437 1 
+7/2 2/434 1 438 1 
+8/1 1/430 1 
+802/4 2/425 1 426 3 
+819/1 1/431 1 
+900/1 1/425 1 
+abil/1 1/418 1 
+accent/1 1/419 1 
+access/1 1/420 1 
+accross/1 1/444 1 
+actress/1 1/419 1 
+address/3 3/442 1 444 1 445 1 
+ager/1 1/426 1 
+ak/1 1/443 1 
+al/2 2/439 1 443 1 
+alabama/2 2/439 1 443 1 
+alaska/1 1/443 1 
+alphanumer/2 1/446 2 
+altern/1 1/423 1 
+amazebal/1 1/435 1 
+america/1 1/442 1 
+answer/2 1/432 2 
+ap/2 1/420 2 
+appear/1 1/417 1 
+applic/1 1/424 1 
+area/1 1/445 1 
+articl/2 1/431 2 
+assist/1 1/442 1 
+attempt/1 1/441 1 
+averag/1 1/417 1 
+axi/1 1/418 1 
+bad/1 1/441 1 
+band/2 2/421 1 425 1 
+base/1 1/416 1 
+beacon/1 1/420 1 
+beauti/1 1/419 1 
+beef/1 1/437 1 
+began/2 1/423 2 
+bertragungsgesetz/1 1/437 1 
+berwachungsaufgaben/1 1/437 1 
+bezirksschornsteinfegermeist/1 1/429 1 
+bind/1 1/417 1 
+board/4 2/417 1 418 3 
+bombshel/1 1/419 1 
+boot/1 1/417 1 
+broadcast/2 1/420 2 
+brought/1 1/426 1 
+burton/1 1/416 1 
+cabl/2 1/428 2 
+call/2 2/420 1 425 1 
+canada/2 2/440 1 441 1 
+canadian/1 1/441 1 
+captain/1 1/436 1 
+case/1 1/445 1 
+cashier/1 1/426 1 
+chairman/1 1/427 1 
+charact/1 1/446 1 
+chemic/2 2/431 1 433 1 
+chose/1 1/427 1 
+cite/1 1/432 1 
+citi/5 2/444 2 445 3 
+clarifi/1 1/434 1 
+classic/1 1/436 1 
+click/2 1/445 2 
+client/1 1/420 1 
+cm/2 1/421 2 
+code/32 9/439 4 440 2 441 5 442 3 443 3 444 5 445 5 446 3 447 2 
+coin/1 1/434 1 
+coll/1 1/435 1 
+commerci/3 2/417 1 423 2 
+commiss/1 1/425 1 
+commonli/1 1/447 1 
+commun/2 1/425 2 
+commut/1 1/441 1 
+compani/1 1/436 1 
+compound/1 1/440 1 
+connect/1 1/421 1 
+connectin/1 1/433 1 
+consid/1 1/424 1 
+consist/2 2/429 1 437 1 
+continent/1 1/447 1 
+convers/1 1/434 1 
+corpor/1 1/426 1 
+countri/7 4/440 2 442 1 444 1 447 3 
+cowan/1 1/419 1 
+creat/1 1/424 1 
+current/1 1/445 1 
+danub/1 1/436 1 
+data/1 1/424 1 
+definit/1 1/432 1 
+deleg/1 1/437 1 
+deliveri/2 2/439 1 443 1 
+depend/1 1/432 1 
+design/1 1/426 1 
+develop/1 1/427 1 
+devic/1 1/421 1 
+dictionari/2 2/434 1 435 1 
+differenti/1 1/418 1 
+digit/3 2/446 2 447 1 
+direct/2 2/418 1 427 1 
+distinguish/1 1/444 1 
+donaudampfschiffahrtsgesellschaftskapit/1 1/436 1 
+downhil/1 1/418 1 
+dreadfulli/1 1/424 1 
+earn/1 1/430 1 
+effici/1 1/424 1 
+eircod/1 1/440 1 
+electron/1 1/421 1 
+encod/1 1/446 1 
+english/10 7/430 1 431 3 433 1 434 1 435 1 436 2 440 1 
+equip/2 1/417 2 
+establish/1 1/429 1 
+ethernet/1 1/428 1 
+euouae/1 1/430 1 
+europ/1 1/447 1 
+everydai/1 1/434 1 
+exact/1 1/445 1 
+except/2 2/419 1 444 1 
+exist/1 1/423 1 
+exot/1 1/419 1 
+extent/1 1/436 1 
+extrem/1 1/436 1 
+ey/1 1/419 1 
+fa/1 1/421 1 
+face/1 1/418 1 
+fact/1 1/426 1 
+famou/2 2/432 1 435 1 
+father/2 2/426 1 427 1 
+feder/1 1/425 1 
+feet/2 1/418 2 
+fi/8 5/420 1 421 1 423 2 426 3 427 1 
+find/1 1/441 1 
+firmwar/1 1/422 1 
+folk/1 1/419 1 
+foot/1 1/418 1 
+form/2 2/427 1 436 1 
+format/1 1/447 1 
+french/1 1/417 1 
+frenemi/1 1/435 1 
+gener/2 2/440 1 445 1 
+german/8 4/429 1 436 3 437 1 438 3 
+germani/2 2/439 1 443 1 
+ghz/2 1/425 2 
+gigahertz/2 1/421 2 
+glide/1 1/418 1 
+guin/2 1/430 2 
+haunt/1 1/419 1 
+hay/3 2/426 1 427 2 
+hedi/2 1/419 2 
+held/1 1/416 1 
+help/1 1/427 1 
+heyman/1 1/441 1 
+histori/2 2/419 1 428 1 
+hold/1 1/430 1 
+hollywood/1 1/419 1 
+hong/1 1/444 1 
+hour/2 2/433 1 441 1 
+human/1 1/431 1 
+idea/2 1/423 2 
+identifi/1 1/420 1 
+iee/2 2/426 1 427 1 
+includ/2 2/417 1 436 1 
+industri/1 1/417 1 
+initi/1 1/426 1 
+inlin/1 1/418 1 
+intern/2 2/416 1 447 1 
+internet/1 1/428 1 
+introduc/1 1/416 1 
+invent/4 3/419 1 423 2 426 1 
+inventor/2 2/419 1 426 1 
+involv/1 1/426 1 
+ireland/2 2/440 1 444 1 
+ism/1 1/421 1 
+isn/2 2/432 1 438 1 
+isoleucin/1 1/433 1 
+jonatan/1 1/441 1 
+keep/1 1/437 1 
+kind/1 1/419 1 
+kinder/1 1/419 1 
+kong/1 1/444 1 
+label/1 1/437 1 
+lamarr/2 1/419 2 
+lan/1 1/421 1 
+languag/8 7/429 1 430 1 432 1 433 1 434 1 436 2 437 1 
+laptop/1 1/428 1 
+largest/1 1/433 1 
+law/1 1/437 1 
+lead/1 1/417 1 
+lee/1 1/419 1 
+legaci/1 1/424 1 
+legisl/1 1/429 1 
+lengthi/2 2/429 1 437 1 
+letter/9 7/430 2 431 1 432 1 435 2 437 1 438 1 446 1 
+limit/1 1/445 1 
+link/1 1/419 1 
+list/1 1/432 1 
+locat/4 2/445 2 446 2 
+long/7 5/418 1 430 1 435 2 437 1 438 2 
+longest/15 10/429 1 430 1 431 3 432 4 433 1 434 1 435 1 436 1 437 1 438 1 
+longitud/1 1/418 1 
+longwai/1 1/418 1 
+lucent/1 1/426 1 
+mail/5 5/439 1 442 1 443 1 444 1 447 1 
+man/1 1/433 1 
+map/1 1/445 1 
+mari/1 1/435 1 
+market/2 2/426 1 427 1 
+match/1 1/419 1 
+maximum/1 1/424 1 
+mbp/1 1/424 1 
+meant/1 1/426 1 
+measur/1 1/429 1 
+megabit/1 1/424 1 
+methionylthreonylthreonylglutaminylarginyl/1 1/433 1 
+mhz/1 1/425 1 
+militari/2 1/423 2 
+minor/1 1/417 1 
+monitor/1 1/437 1 
+monoski/3 1/418 3 
+monosyllab/1 1/430 1 
+movi/1 1/419 1 
+mummi/1 1/435 1 
+name/1 1/426 1 
+ncr/1 1/426 1 
+need/1 1/441 1 
+netherland/2 2/426 1 440 1 
+network/2 2/420 1 421 1 
+nfzig/1 1/438 1 
+nieuwegein/1 1/426 1 
+number/7 5/438 3 440 1 442 1 444 1 446 1 
+numer/4 2/446 2 447 2 
+obsolet/2 2/424 1 429 1 
+oper/1 1/424 1 
+option/1 1/428 1 
+organ/2 2/439 1 443 1 
+oxford/1 1/435 1 
+packet/1 1/420 1 
+parallel/1 1/418 1 
+parliament/1 1/429 1 
+phone/1 1/428 1 
+place/2 2/419 1 441 1 
+plug/1 1/428 1 
+pneumonoultramicroscopicsilicovolcanoconiosi/1 1/435 1 
+point/3 3/420 1 434 1 445 1 
+poppin/1 1/435 1 
+popular/1 1/440 1 
+popularli/1 1/427 1 
+porn/1 1/435 1 
+possess/1 1/419 1 
+postal/11 5/440 2 441 4 442 3 446 1 447 1 
+postcod/2 2/440 1 447 1 
+precursor/2 1/423 2 
+prefix/1 1/447 1 
+pretti/1 1/441 1 
+problem/1 1/441 1 
+process/2 2/439 1 443 1 
+product/1 1/426 1 
+pronounc/1 1/433 1 
+protein/2 2/431 1 433 1 
+protocol/2 2/424 1 427 1 
+prototyp/1 1/416 1 
+question/1 1/432 1 
+race/1 1/416 1 
+radio/2 2/421 1 425 1 
+rate/1 1/424 1 
+real/1 1/416 1 
+reason/1 1/438 1 
+recogn/1 1/419 1 
+record/4 3/430 2 431 1 433 1 
+recordbook/1 1/432 1 
+region/1 1/429 1 
+releas/1 1/425 1 
+render/1 1/429 1 
+repeal/1 1/429 1 
+report/1 1/419 1 
+resort/1 1/417 1 
+result/1 1/445 1 
+revolut/1 1/428 1 
+ridicul/2 2/429 1 437 1 
+rindfleischetikettierung/1 1/437 1 
+rule/1 1/425 1 
+scientif/1 1/434 1 
+search/2 2/444 1 445 1 
+select/1 1/434 1 
+sell/1 1/417 1 
+send/2 2/444 1 447 1 
+sensual/1 1/419 1 
+servic/2 2/420 1 441 1 
+set/1 1/420 1 
+setup/1 1/420 1 
+share/1 1/445 1 
+shf/1 1/421 1 
+short/1 1/438 1 
+siebentausendzweihundertvierundf/1 1/438 1 
+simo/1 1/432 1 
+singl/2 1/438 2 
+ski/2 2/416 1 417 1 
+slow/1 1/424 1 
+smolder/1 1/419 1 
+snow/1 1/418 1 
+snowboard/7 3/416 2 417 2 418 3 
+solid/1 1/440 1 
+solv/1 1/441 1 
+sort/2 2/419 1 442 1 
+span/1 1/431 1 
+spanish/1 1/432 1 
+spare/1 1/419 1 
+speak/1 1/440 1 
+specif/2 2/440 1 441 1 
+spectrum/1 1/425 1 
+speed/2 2/424 1 426 1 
+spend/1 1/433 1 
+sport/1 1/417 1 
+spot/1 1/445 1 
+ssid/1 1/420 1 
+stanc/1 1/418 1 
+stand/2 1/418 2 
+standard/4 3/424 1 426 1 440 2 
+star/1 1/419 1 
+start/2 2/417 1 434 1 
+steamship/1 1/436 1 
+stockholm/1 1/441 1 
+string/1 1/436 1 
+suicid/1 1/416 1 
+supercalifragilisticexpialidoci/1 1/435 1 
+superextraordinar/1 1/432 1 
+superextraordinari/1 1/432 1 
+supposedli/1 1/433 1 
+swedish/1 1/441 1 
+synonym/1 1/440 1 
+system/4 2/426 2 446 2 
+sytem/1 1/444 1 
+take/1 1/436 1 
+talent/1 1/419 1 
+team/1 1/426 1 
+technologi/4 4/416 1 421 1 425 1 427 1 
+term/5 3/434 1 437 1 440 3 
+tex/1 1/416 1 
+thought/1 1/434 1 
+time/2 2/419 1 428 1 
+titin/2 2/431 1 433 1 
+todai/2 1/424 2 
+tongu/2 2/429 1 437 1 
+tool/1 1/442 1 
+track/1 1/437 1 
+train/1 1/441 1 
+transfer/1 1/424 1 
+transvers/1 1/418 1 
+travel/1 1/418 1 
+turn/1 1/419 1 
+typic/1 1/420 1 
+uhf/1 1/421 1 
+uniqu/1 1/444 1 
+unit/1 1/442 1 
+useful/2 2/439 1 443 1 
+user/3 1/418 3 
+ve/2 1/441 2 
+vermont/1 1/416 1 
+version/1 1/424 1 
+vic/2 2/426 1 427 1 
+vocabulari/1 1/436 1 
+vowel/1 1/430 1 
+wa/1 1/421 1 
+want/1 1/428 1 
+war/1 1/419 1 
+wavelan/1 1/426 1 
+websit/3 1/441 3 
+wi/8 5/420 1 421 1 423 2 426 3 427 1 
+width/1 1/418 1 
+wifi/4 4/419 1 421 1 426 1 428 1 
+winterstick/1 1/416 1 
+wireless/6 6/421 1 424 1 425 1 426 1 427 1 428 1 
+wlan/1 1/421 1 
+woodstock/1 1/416 1 
+word/17 9/429 2 430 1 431 2 432 5 433 1 435 1 436 1 437 1 438 3 
+worldwid/1 1/427 1 
+write/1 1/438 1 
+written/1 1/438 1 
+year/1 1/427 1 
+zip/21 6/439 4 441 2 442 1 443 3 444 6 445 5 
+zipcod/4 2/442 2 445 2 

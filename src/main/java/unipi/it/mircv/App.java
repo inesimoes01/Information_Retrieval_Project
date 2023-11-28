@@ -7,7 +7,7 @@ public class App
     /*
     public static void main( String[] args )
     {
-        String inputText = "\80\x90 https://www.example.com aaaaaa <div></div> abc   abc ";
+        String inputText = "\80\x90 https://www.example.com aaaaaa <div></div> abc abc ";
         TextCleaner cleaner = new TextCleaner();
         String x = cleaner.cleanText(inputText);
 

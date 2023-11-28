@@ -8,6 +8,14 @@ public class DocumentIndex {
 
     private HashMap<Integer, DocumentStats> documentIndex = new HashMap<>();
 
+    public HashMap<Integer, DocumentStats> getDocumentIndex() {
+        return documentIndex;
+    }
+
+    public void setDocumentIndex(HashMap<Integer, DocumentStats> documentIndex) {
+        this.documentIndex = documentIndex;
+    }
+
     public DocumentIndex() {
         // No need to initialize documentIndex here
     }
@@ -21,6 +29,11 @@ public class DocumentIndex {
 
         public int getLen() {
             return len;
+        }
+
+        @Override
+        public String toString() {
+            return ""+len+"";
         }
     }
 
@@ -38,7 +51,6 @@ public class DocumentIndex {
     public ArrayList<Integer> sortDocumentIndex(){
         ArrayList<Integer> sortedDocIds = new ArrayList<>(documentIndex.keySet());
         Collections.sort(sortedDocIds);
-
         return sortedDocIds;
     }
 
@@ -46,11 +58,11 @@ public class DocumentIndex {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        for (int docId : documentIndex.keySet()) {
+        for (Integer docId : documentIndex.keySet()) {
             DocumentStats documentStats = documentIndex.get(docId);
 
-            sb.append("DocID: ").append(docId).append("\n");
-            sb.append("Document Length: ").append(documentStats.getLen()).append("\n\n");
+            sb.append(docId).append(" ");
+            sb.append(documentStats.getLen()).append("\n");
         }
 
         return sb.toString();

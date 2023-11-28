@@ -43,24 +43,27 @@ public class Index {
         return blockNumber;
     }
 
-    public void createIndex(Doc doc) {
+    public int createIndex(Doc doc) {
         Util util = new Util();
-        util.printUsage();
+        //util.printUsage();
         HashMap<String, Integer> termcounter = new HashMap<>();
 
         for (String term : doc.getText()){
             termcounter.put(term, termcounter.containsKey(term) ? termcounter.get(term) + 1 : 1);
         }
 
-        if (util.isMemoryFull(0.1)){
+        if (util.isMemoryFull(20)){
             //writeBlock(lexicon, lexicon.sortLexicon(), documentIndex.sortDocumentIndex()); //writes the current block to disk
-            util. writeBlockToDisk(0,"0",documentIndex);
-            util.writeBlockToDisk(0,"0",lexicon,invertedIndex);
-            //lexicon = new Lexicon();
-            //invertedIndex = new InvertedIndex();
-            //documentIndex = new DocumentIndex();
 
-            setBlockNumber(blockNumber + 1);
+            util.writeBlockToDisk(getBlockNumber(),documentIndex);
+            util.writeBlockToDisk(getBlockNumber(),lexicon,invertedIndex);
+
+
+            lexicon = new Lexicon();
+            invertedIndex = new InvertedIndex();
+            documentIndex = new DocumentIndex();
+
+            setBlockNumber(getBlockNumber() + 1);
             System.gc(); //calls the garbage collector to force to free memory.
             //Write to the disk
             //Increment blockNumber
@@ -72,10 +75,10 @@ public class Index {
             lexicon.updateLexicon(term,termcounter.get(term));
             invertedIndex.addPosting(term, doc.getId(),termcounter.get(term) );
         }
-        System.out.println("This is the Document  "+ doc.getId() );
+        //System.out.println("This is the Document  "+ doc.getId() );
         //System.out.println(invertedIndex);
         //System.out.println(lexicon);
-        System.out.println(documentIndex);
+        return getBlockNumber();
     }
 
     }

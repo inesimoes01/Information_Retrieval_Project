@@ -6,6 +6,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import unipi.it.mircv.preprocessing.Preprocessing;
 import unipi.it.mircv.preprocessing.Tokenization;
 import unipi.it.mircv.indexing.Index;
+import unipi.it.mircv.common.Util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -22,6 +23,7 @@ public class Reader {
 
     public static List<Doc> processCollection(String file) {
         Index index = new Index();
+        Util util = new Util();
         Preprocessing preprocessing = new Preprocessing();
         List<Doc> docList = new ArrayList<>();
         Tokenization tokenization = new Tokenization();
@@ -86,24 +88,32 @@ public class Reader {
                                 documentCount++;
 
                                 // Break out of the loop if the 4th document is processed
-                                if (documentCount >= 10) {
+                                if (documentCount >= 5000) {
                                     break;
                                 }
                             }
+
                         }
+
+
 
                         // Reset the ByteArrayOutputStream after processing the chunk
                         byteArrayOutputStream.reset();
 
                         // Break out of the loop if the 4th document is processed
-                        if (documentCount >= 10) {
+                        if (documentCount >= 5000) {
                             break;
                         }
                     }
+
+                    System.out.println("This should be Printed 1 time" );
+
+                    util.readBlockFromDisk(index.getBlockNumber());
+                    util.mergeDocumentIndex(index.getBlockNumber());
                 }
 
                 // Break out of the loop if the 4th document is processed
-                if (documentCount >= 10) {
+                if (documentCount >= 5000) {
                     break;
                 }
             }

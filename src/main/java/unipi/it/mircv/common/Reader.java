@@ -3,10 +3,9 @@ package unipi.it.mircv.common;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import unipi.it.mircv.indexing.Index;
 import unipi.it.mircv.preprocessing.Preprocessing;
 import unipi.it.mircv.preprocessing.Tokenization;
-import unipi.it.mircv.indexing.Index;
-import unipi.it.mircv.common.Util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -123,6 +122,8 @@ public class Reader {
 
                     util.readBlockFromDisk(index.getBlockNumber());
                     util.mergeDocumentIndex(index.getBlockNumber());
+                    util.invertedIndexMerge(index.getBlockNumber());
+                    util.lexiconMerge(index.getBlockNumber());
                 }
 
                 // Break out of the loop if the 4th document is processed

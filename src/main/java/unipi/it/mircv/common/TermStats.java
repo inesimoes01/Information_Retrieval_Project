@@ -19,13 +19,22 @@ public class TermStats {
     public int getDocumentFrequency() {
         return documentFrequency;
     }
+    public void addToCollectionFrequency(int value) {
+        this.collectionFrequency += value;
+    }
 
+    public TermStats(){}
+    public TermStats(int collectionFrequency, int documentFrequency) {
+        this.collectionFrequency = collectionFrequency;
+        this.documentFrequency = documentFrequency;
+    }
+    public void addToDocumentFrequency(int value) {
+        this.documentFrequency += value;
+    }
     @Override
     public String toString() {
-        return "TS{" +
-                "cF=" + collectionFrequency +
-                ", dF=" + documentFrequency +
-                '}';
+        return collectionFrequency +
+                " " + documentFrequency;
     }
 }
 

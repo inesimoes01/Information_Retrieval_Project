@@ -56,7 +56,9 @@ public class Index {
             //writeBlock(lexicon, lexicon.sortLexicon(), documentIndex.sortDocumentIndex()); //writes the current block to disk
 
             util.writeBlockToDisk(getBlockNumber(),documentIndex);
-            util.writeBlockToDisk(getBlockNumber(),lexicon,invertedIndex);
+            util.writeBlockToDisk(getBlockNumber(),lexicon);
+            util.writeBlockToDisk(getBlockNumber(),invertedIndex);
+            //util.writeBlockToDisk(getBlockNumber(),lexicon,invertedIndex);
 
 
             lexicon = new Lexicon();

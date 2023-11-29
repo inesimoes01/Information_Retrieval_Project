@@ -4,10 +4,7 @@ import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 
 public class Util {
@@ -15,9 +12,9 @@ public class Util {
     private BufferedReader[] documentIndexReaders;
     private BufferedWriter myWriterDocumentIndex;
     private ArrayList<String> documentIndexEntries;
-    public BufferedReader[] getLexiconScanners() {
-        return lexiconScanners;
-    }
+    private BufferedReader[] lexiconReaders;
+    private BufferedWriter myWriterLexicon;
+    private ArrayList<String> lexiconEntries;
     public void setLexiconScanners(BufferedReader[] lexiconScanners) {
         this.lexiconScanners = lexiconScanners;
     }
@@ -111,11 +108,74 @@ public class Util {
         }
     }
 
+    public void writeBlockToDisk(int blockCounter, Lexicon lexicon) {
+        String directoryPath = "data/output/";
+        String filePath = directoryPath + "Lexicon" + blockCounter + ".txt";
+
+        // Create the directories if they don't exist
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            if (directory.mkdirs()) {
+                System.out.println("Directories created successfully.");
+            } else {
+                System.err.println("Failed to create directories.");
+                return;  // Exit the method if directories cannot be created
+            }
+        }
+
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
+            // Writing to the file
+            ArrayList<String> docLexiconKey = lexicon.sortLexicon();
+            for (String i:docLexiconKey) {
+                // Write information to the bufferedWriter
+                bufferedWriter.write(i + " " + lexicon.getLexicon().get(i));
+                bufferedWriter.newLine();  // Move to the next line
+            }
+
+        } catch (IOException e) {
+            System.err.println("Error writing to the file:");
+            e.printStackTrace();
+        }
+    }
+
+
+    public void writeBlockToDisk(int blockCounter, InvertedIndex invertedIndex) {
+        String directoryPath = "data/output/";
+        String filePath = directoryPath + "InvertedIndex" + blockCounter + ".txt";
+
+        // Create the directories if they don't exist
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            if (directory.mkdirs()) {
+                System.out.println("Directories created successfully.");
+            } else {
+                System.err.println("Failed to create directories.");
+                return;  // Exit the method if directories cannot be created
+            }
+        }
+
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
+            // Writing to the file
+            invertedIndex.sortPostingList();
+            ArrayList<String> docLexiconKey = invertedIndex.sortInvertedIndexByTerm();
+            for (String i:docLexiconKey) {
+                // Write information to the bufferedWriter
+                bufferedWriter.write(i + " " + invertedIndex.getInvertedIndex().get(i).toString().replaceAll("[^a-zA-Z0-9\\s]", "")  );
+                bufferedWriter.newLine();  // Move to the next line
+            }
+
+        } catch (IOException e) {
+            System.err.println("Error writing to the file:");
+            e.printStackTrace();
+        }
+    }
+
+
     public void writeBlockToDisk(int blockCounter, Lexicon lexicon, InvertedIndex invertedIndex) {
         String directoryPath = "data/output/";
         String filePath = directoryPath + "Lexicon"+blockCounter+".txt";
-        invertedIndex.sortInvertedIndexByDocId();
-        lexicon.sortLexicon();  //why it doesn't
+        invertedIndex.sortInvertedIndexByTerm();
+        lexicon.sortLexicon();
 
         // Creazione della directory se non esiste
         File directory = new File(directoryPath);
@@ -130,7 +190,7 @@ public class Util {
                 TermStats termStats = lexicon.getLexicon().get(term);
 
                 // Scrivi il termine seguito dalle statistiche del termine
-                bufferedWriter.write(term + "/" + termStats.getCollectionFrequency() + " " + termStats.getDocumentFrequency() + "/");
+                bufferedWriter.write(term + "/" + termStats.getCollectionFrequency() + " " + termStats.getDocumentFrequency() + "-");
 
                 // Ottieni la posting list dal tuo inverted index
                 ArrayList<Posting> postingList = invertedIndex.getInvertedIndex().get(term);
@@ -213,6 +273,50 @@ public class Util {
     }
 
 
+/*
+    public void mergeLexicon(int blockCounter) {
+        myWriterLexicon = null;
+        lexiconEntries = new ArrayList<>();
+
+        // Initialize the writer
+        try {
+            myWriterLexicon = new BufferedWriter(new FileWriter("data/output/LexiconMerged.txt"));
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle the exception appropriately
+        }
+
+        // Read from lexicon files and merge
+        try {
+            for (int i = 1; i < blockCounter; i++) {
+                String line = lexiconReaders[i].readLine(); // read the first line
+                while (line != null) { // continue until the file is not ended
+                    //String[] parts = line.split("/"); // split by one or more whitespace characters
+
+                    // Assuming the first part is a string or int
+                    //String term = parts[0];
+
+                    // Assuming the second part is an int
+                    //String lexandpost = parts[1];
+                    lexiconEntries.add(line);
+
+                    line = lexiconReaders[i].readLine();
+                }
+            }
+            // Write the merged entries to the output file
+            for (String entry : lexiconEntries) {
+                if (entry != null) {
+                    myWriterLexicon.write(entry);
+                    myWriterLexicon.newLine();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle the exception appropriately
+        } finally {
+            closeReadersAndWriter(blockCounter);
+        }
+    }
+*/
+
 
     public void closeReadersAndWriter(int blockCounter) {
         try {
@@ -229,6 +333,150 @@ public class Util {
         }
     }
 
+
+    public void invertedIndexMerge(int blockCounter) {
+        // Output file path for merged inverted index
+        String outputPath = "data/output/InvertedIndexMerged.txt";
+
+        // Create the directories if they don't exist
+        File directory = new File("data/output/");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath))) {
+            // Priority queue to efficiently merge and sort entries
+            PriorityQueue<String> priorityQueue = new PriorityQueue<>(Comparator.naturalOrder());
+
+            // Initialize inverted index readers and iterators
+            BufferedReader[] invertedIndexReaders = new BufferedReader[blockCounter];
+            Iterator<String>[] iterators = new Iterator[blockCounter];
+
+            // Open inverted index readers and create iterators
+            for (int i = 1; i < blockCounter; i++) {
+                invertedIndexReaders[i] = new BufferedReader(new FileReader("data/output/InvertedIndex" + i + ".txt"));
+                iterators[i] = invertedIndexReaders[i].lines().iterator();
+            }
+
+            // Initialize inverted index entries from the first entry of each block
+            for (int i = 1; i < blockCounter; i++) {
+                if (iterators[i].hasNext()) {
+                    priorityQueue.add(iterators[i].next());
+                }
+            }
+
+            // Continue merging and sorting until the PriorityQueue is empty
+            while (!priorityQueue.isEmpty()) {
+                String smallestEntry = priorityQueue.poll();
+                bufferedWriter.write(smallestEntry);
+                bufferedWriter.newLine();
+
+                // Determine the block index for the next entry
+                int blockIndex = (priorityQueue.size() % (blockCounter - 1)) + 1;
+
+                // Add the next entry from the corresponding block to the PriorityQueue
+                if (iterators[blockIndex].hasNext()) {
+                    priorityQueue.add(iterators[blockIndex].next());
+                }
+            }
+
+            // Close readers
+            for (int i = 1; i < blockCounter; i++) {
+                invertedIndexReaders[i].close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void lexiconMerge(int blockCounter) {
+        // Output file path for merged lexicon
+        String outputPath = "data/output/LexiconMerged.txt";
+
+        // Create the directories if they don't exist
+        File directory = new File("data/output/");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath))) {
+            // TreeMap to store the accumulated statistics for each term (sorted by term)
+            TreeMap<String, TermStats> termStatsMap = new TreeMap<>();
+
+            // Priority queue to efficiently merge and sort entries
+            PriorityQueue<String> priorityQueue = new PriorityQueue<>(Comparator.naturalOrder());
+
+            // Initialize lexicon readers and iterators
+            BufferedReader[] lexiconReaders = new BufferedReader[blockCounter];
+            Iterator<String>[] iterators = new Iterator[blockCounter];
+
+            // Open lexicon readers and create iterators
+            for (int i = 1; i < blockCounter; i++) {
+                lexiconReaders[i] = new BufferedReader(new FileReader("data/output/Lexicon" + i + ".txt"));
+                iterators[i] = lexiconReaders[i].lines().iterator();
+            }
+
+            // Initialize lexicon entries from the first entry of each block
+            for (int i = 1; i < blockCounter; i++) {
+                if (iterators[i].hasNext()) {
+                    priorityQueue.add(iterators[i].next());
+                }
+            }
+
+            // Continue merging and sorting until the PriorityQueue is empty
+            while (!priorityQueue.isEmpty()) {
+                String currentEntry = priorityQueue.poll();
+                String[] parts = currentEntry.split(" ");
+
+                String term = parts[0];
+                int cf = Integer.parseInt(parts[1]);
+                int df = Integer.parseInt(parts[2]);
+
+                TermStats termStats = termStatsMap.getOrDefault(term, new TermStats(0, 0));
+                termStats.addToCollectionFrequency(cf);
+                termStats.addToDocumentFrequency(df);
+                termStatsMap.put(term, termStats);
+
+                // Determine the block index for the next entry
+                int blockIndex = (priorityQueue.size() % (blockCounter - 1)) + 1;
+
+                // Add the next entry from the corresponding block to the PriorityQueue
+                if (iterators[blockIndex].hasNext()) {
+                    priorityQueue.add(iterators[blockIndex].next());
+                }
+            }
+
+            // Write the merged and sorted entries to the output file
+            for (Map.Entry<String, TermStats> entry : termStatsMap.entrySet()) {
+                String term = entry.getKey();
+                TermStats termStats = entry.getValue();
+
+                bufferedWriter.write(term + " " + termStats.getCollectionFrequency() + " " + termStats.getDocumentFrequency());
+                bufferedWriter.newLine();
+            }
+
+            // Close readers
+            for (int i = 1; i < blockCounter; i++) {
+                lexiconReaders[i].close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void closeLexiconReadersAndWriter(int blockCounter) {
+        try {
+            for (int i = 0; i < blockCounter; i++) {
+                if (lexiconReaders[i] != null) {
+                    lexiconReaders[i].close();
+                }
+            }
+            if (myWriterLexicon != null) {
+                myWriterLexicon.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle the exception appropriately
+        }
+    }
 
 
 

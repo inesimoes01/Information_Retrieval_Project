@@ -170,7 +170,7 @@ public class Util {
         }
     }
 
-
+/*
     public void writeBlockToDisk(int blockCounter, Lexicon lexicon, InvertedIndex invertedIndex) {
         String directoryPath = "data/output/";
         String filePath = directoryPath + "Lexicon"+blockCounter+".txt";
@@ -208,7 +208,7 @@ public class Util {
             e.printStackTrace();
         }
     }
-
+*/
     public void readBlockFromDisk(int blockCounter) {
         lexiconScanners = new BufferedReader[blockCounter];
         documentIndexReaders = new BufferedReader[blockCounter];
@@ -333,7 +333,7 @@ public class Util {
         }
     }
 
-
+/*
     public void invertedIndexMerge(int blockCounter) {
         // Output file path for merged inverted index
         String outputPath = "data/output/InvertedIndexMerged.txt";
@@ -388,7 +388,7 @@ public class Util {
             e.printStackTrace();
         }
     }
-
+*/
     public void lexiconMerge(int blockCounter) {
         // Output file path for merged lexicon
         String outputPath = "data/output/LexiconMerged.txt";

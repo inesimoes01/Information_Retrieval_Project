@@ -107,7 +107,8 @@ public class Reader {
 
                     //Generate the last Block
                     util.writeBlockToDisk(index.getBlockNumber(),index.getDocumentIndex());
-                    util.writeBlockToDisk(index.getBlockNumber(),index.getLexicon(),index.getInvertedIndex());
+                    util.writeBlockToDisk(index.getBlockNumber(),index.getLexicon());
+                    util.writeBlockToDisk(index.getBlockNumber(),index.getInvertedIndex());
 
 
                     index.setLexicon(new Lexicon());
@@ -122,7 +123,7 @@ public class Reader {
 
                     util.readBlockFromDisk(index.getBlockNumber());
                     util.mergeDocumentIndex(index.getBlockNumber());
-                    util.invertedIndexMerge(index.getBlockNumber());
+                    //util.invertedIndexMerge(index.getBlockNumber());
                     util.lexiconMerge(index.getBlockNumber());
                 }
 

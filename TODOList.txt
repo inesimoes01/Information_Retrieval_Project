@@ -1,0 +1,10 @@
+1. merging blocks of the document index into the disk
+2. merging blocks of the lexicon and inverted index into the disk
+3. create unit tests
+
+
+QUESTIONS
+1. do we need to sort the blocks of the document index? (because it takes time)
+2. difference between docid and docno
+
+method in java to implement encoding

@@ -1,7 +1,7 @@
 package unipi.it.mircv.common;
 
 public class Flags {
-    private static boolean flagIsConjunctive = false;
+    private static boolean flagIsConjunctive;
     private static boolean flagIsTFIDF;
     private static boolean flagIsASCII;
     private static int numberOfDocuments;

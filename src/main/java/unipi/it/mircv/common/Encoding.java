@@ -17,6 +17,18 @@ package unipi.it.mircv.common;
             return unary.toString();
         }
 
+        public int fromUnary(String unary) {
+            int count = 0;
+            for (char c : unary.toCharArray()) {
+                if (c == '1') {
+                    count++;
+                } else {
+                    break; // Interrompe il conteggio quando incontra un carattere diverso da '1'
+                }
+            }
+            return count;
+        }
+
 
         public static String toBinaryString(int number, int bitLength) {
             if (bitLength <= 0) {

@@ -1,13 +1,20 @@
 package unipi.it.mircv.queryProcessing;
 
 
+import unipi.it.mircv.common.Flags;
+
 import java.io.IOException;
+
 
 import static java.lang.Math.log;
 
 
 public class Scoring {
 
+    public double computeScoring(TermQP term, DocumentQP docId){
+        if (Flags.isIsTFIDF_flag()) return computeTFIDF(term, docId);
+        else return computeBM25(term, docId);
+    }
     /**
      * TF(t, d) = n / N
      * - n is the number of times term t appears in the document d.
@@ -29,27 +36,37 @@ public class Scoring {
     }
 
 
-    public double computeTFIDF(String term, int docId) {
+    private double computeTFIDF(TermQP term, DocumentQP doc) {
         double value = 0.0;
         try {
-            OutputResultsReader outputResultsReader = new OutputResultsReader();
-            outputResultsReader.searchTermInInvertedIndex(term);
-            outputResultsReader.saveTotalNumberDocs();
-            outputResultsReader.searchDocIdInDocumentIndex(docId);
+            OutputResultsReader.saveTotalNumberDocs();
+//            System.out.println("TF " + term.getDocIdFreq().get(doc.getDocId()) + " / " + doc.getLength());
+//            System.out.println("IDF " + OutputResultsReader.getnTotalDocuments() + " / " + term.getDocumentFrequency());
+            value = computeTF(term.getDocIdFreq().get(doc.getDocId()), doc.getLength()) * computeIDF(OutputResultsReader.getnTotalDocuments(), term.getDocumentFrequency());
+            return value;
 
-            if (outputResultsReader.searchTermInLexicon(term, true)) {
-                //System.out.println("TF VALUES "+ outputResultsReader.getTermDocidFreq().get(term).indexOf(docId) + " " + outputResultsReader.getDocumentLens().get(docId));
-                value = computeTF(outputResultsReader.getTermDocidFreq().get(term).get(1),
-                        outputResultsReader.getDocumentLens().get(docId))*computeIDF(outputResultsReader.getNTotalDocuments(),
-                        outputResultsReader.getDocumentFrequency().get(term));
-                return value;
-            } else return 0;
-        }catch (NullPointerException e){
-            return 0;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
+
+
+    private double computeBM25(TermQP term, DocumentQP doc){
+        return 0.0;
+    }
+
+    //            OutputResultsReader outputResultsReader = new OutputResultsReader();
+//            outputResultsReader.searchTermInInvertedIndex(term);
+//            outputResultsReader.saveTotalNumberDocs();
+//            outputResultsReader.searchDocIdInDocumentIndex(docId);
+
+
+//                //System.out.println("TF VALUES "+ outputResultsReader.getTermDocidFreq().get(term).indexOf(docId) + " " + outputResultsReader.getDocumentLens().get(docId));
+//            value = computeTF(outputResultsReader.getTermDocidFreq().get(term).get(1),
+//                    outputResultsReader.getDocumentLens().get(docId))*computeIDF(outputResultsReader.getNTotalDocuments(),
+//                    outputResultsReader.getDocumentFrequency().get(term));
+    //termList.
 
 
 }

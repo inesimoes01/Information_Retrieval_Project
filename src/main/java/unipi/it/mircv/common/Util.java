@@ -417,7 +417,23 @@ public class Util {
         //myWriterDocIds = new TextWriter("Data/Output/DocIds/docIds" + blockCounter + ".txt");
         //myWriterFreq = new TextWriter("Data/Output/Frequencies/freq" + blockCounter + ".txt");
         //myWriterDocumentIndex = new TextWriter("Data/Output/DocumentIndex/documentIndex" + blockCounter + ".txt");
+        public static ArrayList<String> mergeArrayLists(ArrayList<String> list1, ArrayList<String> list2) {
+            if (list1 == null || list2 == null) {
+                throw new IllegalArgumentException("Le liste non possono essere nulli");
+            }
 
+            if (list1.size() != list2.size()) {
+                throw new IllegalArgumentException("Le liste devono avere la stessa dimensione");
+            }
+
+            ArrayList<String> mergedList = new ArrayList<>();
+            for (int i = 0; i < list1.size(); i++) {
+                mergedList.add(list1.get(i) + "" + list2.get(i));
+            }
+            return mergedList;
+        }
     }
+
+
 
 

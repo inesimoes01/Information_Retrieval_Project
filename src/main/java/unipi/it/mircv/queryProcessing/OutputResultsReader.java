@@ -52,6 +52,7 @@ public class OutputResultsReader {
             term.setDocumentsWithTerm(doc);
         }
 
+
         // fill the list
         listToFill.add(term);
         return term;
@@ -102,18 +103,28 @@ public class OutputResultsReader {
     // saves DocId and Freq
     private static boolean searchTermInInvertedIndex(TermQP term){
         try {
-
             List<String> lines = Files.readAllLines(PATH_INVERTED_INDEX, StandardCharsets.UTF_8);
             for (String line : lines) {
-                String[] parts = line.split(" ");
+                String[] parts = line.split("/");
 
-                // term found in collection
-                if (parts.length >= 2 && parts[0].equalsIgnoreCase(term.getTerm())) {
-                    for (int i = 1; i < parts.length; i+=2) {
-                        term.getDocIdFreq().put(Integer.valueOf(parts[i]), Integer.valueOf(parts[i+1]));
-                    }
-                    return true;
+                String[] docIdStr = parts[0].trim().split("\\s+");
+                String[] frequenciesStr = parts[1].trim().split("\\s+");
+
+                int[] frequencies = new int[frequenciesStr.length];
+                for (int i = 0; i < frequenciesStr.length; i++) {
+                    frequencies[i] = Integer.parseInt(frequenciesStr[i]);
                 }
+
+                int[] docIds = new int[docIdStr.length - 1]; // -1 to ignore the initial "field"
+                for (int i = 1; i < docIdStr.length; i++) {
+                    docIds[i - 1] = Integer.parseInt(docIdStr[i]);
+                }
+
+                for (int i = 0; i < docIds.length; i++) {
+                    term.getDocIdFreq().put(docIds[i], frequencies[i]);
+                }
+                return true;
+
             }
             // term not found in collection
             return false;

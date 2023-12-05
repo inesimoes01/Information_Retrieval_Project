@@ -1,5 +1,8 @@
 package unipi.it.mircv.common;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 public class Unary {
 
     // Metodo per codificare un numero in unario
@@ -23,14 +26,24 @@ public class Unary {
         return unary.length(); // La lunghezza della stringa unaria è il numero decodificato
     }
 
+    public static ArrayList<String> encodeArrayList(ArrayList<String> strings) {
+        return strings.stream()
+                .map(s -> encode(Integer.parseInt(s)))
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
     // Esempio di utilizzo
     public static void main(String[] args) {
-        int number = 7;
-        String encoded = encode(number);
-        System.out.println("Numero codificato in unario: " + encoded);
+        ArrayList<String> strings = new ArrayList<>();
+        strings.add("1");
+        strings.add("2");
+        strings.add("3");
+        strings.add("4");
+        strings.add("5");
 
-        int decoded = decode(encoded);
-        System.out.println("Numero decodificato dall'unario: " + decoded);
+        ArrayList<String> encodedStrings = encodeArrayList(strings);
+        System.out.println("Stringhe codificate in unario: " + encodedStrings);
     }
+
 }
 

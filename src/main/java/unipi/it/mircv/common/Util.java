@@ -397,7 +397,28 @@ public class Util {
                 String term = entry.getKey();
                 ArrayList<Posting> postingList2 = entry.getValue();
 
-                bufferedWriter.write(term + " "+ postingList2.toString().replaceAll("[^a-zA-Z0-9\\s]", ""));
+                // Creare liste separate per docId e freq
+                ArrayList<Integer> docIds = new ArrayList<>();
+                ArrayList<Integer> freqs = new ArrayList<>();
+
+                // Popolare le liste con i valori corrispondenti
+                for (Posting p : postingList2) {
+                    docIds.add(p.getDocId());
+                    freqs.add(p.getFreq());
+                }
+
+                // Scrivere prima tutti i docId, poi tutte le freq
+                bufferedWriter.write(term + " ");
+                for (int docId : docIds) {
+                    bufferedWriter.write(docId + " ");
+                }
+
+                // Aggiungere il separatore
+                bufferedWriter.write("/ ");
+
+                for (int freq : freqs) {
+                    bufferedWriter.write(freq + " ");
+                }
                 bufferedWriter.newLine();
             }
 

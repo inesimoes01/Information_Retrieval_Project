@@ -381,6 +381,13 @@ public class Util {
 
                 }
 
+                Collections.sort(postingList, new Comparator<Posting>() {
+                    @Override
+                    public int compare(Posting p1, Posting p2) {
+                        return Integer.compare(p1.getDocId(), p2.getDocId()); // Ordine crescente
+                    }
+                });
+
                 postingListMap.put(term, postingList);
 
                 // Determine the block index for the next entry

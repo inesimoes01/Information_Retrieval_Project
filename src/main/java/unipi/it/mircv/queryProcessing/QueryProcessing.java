@@ -38,8 +38,13 @@ public class QueryProcessing {
         else relevantDocs = disjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
 
         if (relevantDocs != null){
+            // remove terms that do not exist in the collection
             String[] queryPartsFiltered = removeTerms(queryPartsOriginal, termsToRemove);
             System.out.println("FINAL QUERY " + Arrays.toString(queryPartsFiltered));
+
+            for (DocumentQP doc : relevantDocs){
+                System.out.print(doc.getDocId() + " ");
+            }
 
             // scoring results using DAAT or MaxScore and TFDIF or BM25
             ScoringStrategy strategy = new ScoringStrategy();
@@ -77,12 +82,18 @@ public class QueryProcessing {
                 }
             }
         }
+//        Set<DocumentQP> documentSet = new HashSet<>(documentList);
+//        documentList = new ArrayList<>(documentSet);
+
+        Set<DocumentQP> docsWithTermsSet = new HashSet<>(docsWithTerms);
+        docsWithTerms = new ArrayList<>(docsWithTermsSet); // Convert Set back to List
+
         System.out.println("Finished");
         for (DocumentQP doc : docsWithTerms){
             System.out.println("Result: " + doc.getDocId());
         }
 
-        return docsWithTerms;
+        return removeDuplicates(docsWithTerms);
     }
 
 
@@ -102,7 +113,7 @@ public class QueryProcessing {
             }
         }
 
-        return docsWithTerms;
+        return removeDuplicates(docsWithTerms);
     }
 
     private static String[] removeTerms(String[] original, List<String > termsToRemove){
@@ -119,6 +130,23 @@ public class QueryProcessing {
         }
         return filteredList.toArray(new String[0]);
     }
+
+    public static List<DocumentQP> removeDuplicates(List<DocumentQP> list) {
+        List<DocumentQP> uniqueList = new ArrayList<>();
+        boolean exist = false;
+        for (DocumentQP element : list) {
+            exist = false;
+            for (DocumentQP uniqueElement : uniqueList){
+                if (uniqueElement.getDocId().equals(element.getDocId())){
+                    exist = true;
+                    break;
+                }
+            }
+            if (!exist) uniqueList.add(element);
+        }
+        return uniqueList;
+    }
+
 //    private static List<Integer> saveDocIds(List<Set<Integer>> docsWithTerms){
 //        List<Integer> selectedElements = new ArrayList<>();
 //        for (int i = 0; i < docsWithTerms.size(); i++) {

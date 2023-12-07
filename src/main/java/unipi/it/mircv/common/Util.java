@@ -421,7 +421,7 @@ public class Util {
                 }
 
                 // Aggiungere il separatore
-                bufferedWriter.write("/ ");
+                bufferedWriter.write(" ");
 
                 for (int freq : freqs) {
                     bufferedWriter.write(freq + " ");
@@ -460,6 +460,7 @@ public class Util {
             }
             return mergedList;
         }
+
     }
 
 

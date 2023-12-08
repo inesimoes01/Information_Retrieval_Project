@@ -36,22 +36,23 @@ public class OutputResultsReader {
     private static final Path PATH_INVERTED_INDEX = Paths.get("data/output/InvertedIndexMerged.txt");
     private static final Path PATH_DOCUMENT_INDEX = Paths.get("data/output/DocumentIndexMerged.txt");
 
-    public static TermQP fillTermQP(List<TermQP> listToFill, String queryTerm){
-        TermQP term = new TermQP();
-        // verifies if term exists, saves it in the TermQP and saves the other values
-        // return false if the value does not exist in collection
+    public static TermDictionary fillTermDictionary(List<TermDictionary> listToFill, String queryTerm){
+        TermDictionary term = new TermDictionary();
+
+        // verifies if term exists in collection
+        // saves term, CollectionFrequency, DocumentFrequency, TermUpperBounds, Offset
         if (!searchTermInLexicon(term, queryTerm)) return null;
-        // saves other values
+
+        // saves PostingList (DocId Freq)
         if (!searchTermInInvertedIndex(term)) return null;
 
         // para cada docid, criar um DocumentQP
-        for (Integer docid : term.getDocIdFreq().keySet()){
+        for (TermDictionary.Posting posting : term.getPostingList()) {
             DocumentQP doc = new DocumentQP();
-            doc.setDocId(docid);
+            doc.setDocId(posting.getDocId());
             searchDocIdInDocumentIndex(doc);
             term.setDocumentsWithTerm(doc);
         }
-
 
         // fill the list
         listToFill.add(term);
@@ -64,7 +65,7 @@ public class OutputResultsReader {
 
 
     // saves Collection Frequency and Document Frequency
-    private static boolean searchTermInLexicon(TermQP term, String queryTerm){
+    private static boolean searchTermInLexicon(TermDictionary term, String queryTerm){
         try {
             List<String> lines = Files.readAllLines(PATH_LEXICON, StandardCharsets.UTF_8);
             for (String line : lines) {
@@ -74,6 +75,7 @@ public class OutputResultsReader {
                     term.setTerm(queryTerm);
                     term.setCollectionFrequency(Integer.parseInt(parts[1].trim()));
                     term.setDocumentFrequency(Integer.parseInt(parts[2].trim()));
+                    //System.out.println("Found term in Lexicon");
                     return true;
                 }
             }
@@ -101,29 +103,37 @@ public class OutputResultsReader {
     }
 
     // saves DocId and Freq
-    private static boolean searchTermInInvertedIndex(TermQP term){
+    private static boolean searchTermInInvertedIndex(TermDictionary term){
         try {
             List<String> lines = Files.readAllLines(PATH_INVERTED_INDEX, StandardCharsets.UTF_8);
             for (String line : lines) {
-                String[] parts = line.split("/");
+                String[] checkTerm = line.split(" ");
+                if (checkTerm[0].equalsIgnoreCase(term.getTerm())){
+                    String[] parts = line.split("  ");
 
-                String[] docIdStr = parts[0].trim().split("\\s+");
-                String[] frequenciesStr = parts[1].trim().split("\\s+");
+                    String[] docIdStr = parts[0].trim().split("\\s+");
+                    String[] frequenciesStr = parts[1].trim().split("\\s+");
 
-                int[] frequencies = new int[frequenciesStr.length];
-                for (int i = 0; i < frequenciesStr.length; i++) {
-                    frequencies[i] = Integer.parseInt(frequenciesStr[i]);
+                    int[] frequencies = new int[frequenciesStr.length];
+                    for (int i = 0; i < frequenciesStr.length; i++) {
+                        frequencies[i] = Integer.parseInt(frequenciesStr[i]);
+                    }
+
+                    int[] docIds = new int[docIdStr.length - 1]; // -1 to ignore the initial "field"
+                    for (int i = 1; i < docIdStr.length; i++) {
+                        docIds[i - 1] = Integer.parseInt(docIdStr[i]);
+                    }
+
+                    for (int i = 0; i < docIds.length; i++) {
+                        TermDictionary.Posting pL = new TermDictionary.Posting();
+                        pL.setFreq(frequencies[i]);
+                        pL.setDocId(docIds[i]);
+                        term.getPostingList().add(pL);
+                        //System.out.println("Posting list " + term.getTerm() + " " + frequencies[i] + " " + docIds[i]);
+                    }
+                    return true;
                 }
 
-                int[] docIds = new int[docIdStr.length - 1]; // -1 to ignore the initial "field"
-                for (int i = 1; i < docIdStr.length; i++) {
-                    docIds[i - 1] = Integer.parseInt(docIdStr[i]);
-                }
-
-                for (int i = 0; i < docIds.length; i++) {
-                    term.getDocIdFreq().put(docIds[i], frequencies[i]);
-                }
-                return true;
 
             }
             // term not found in collection

@@ -1,9 +1,13 @@
 package unipi.it.mircv.queryProcessing;
 
-public class DocumentQP {
+public class DocumentQP implements Comparable<DocumentQP>{
     private Integer docId;
     private Integer length;
     private Integer upperBoundCase;
+
+
+
+    private double score;
 
     public Integer getDocId() {
         return docId;
@@ -29,4 +33,18 @@ public class DocumentQP {
         this.upperBoundCase = upperBoundCase;
     }
 
+
+    public double getScore() {
+        return score;
+    }
+
+    public void setScore(double score) {
+        this.score = score;
+    }
+
+    @Override
+    public int compareTo(DocumentQP other) {
+        // Sort in descending order of scores
+        return Double.compare(other.score, this.score);
+    }
 }

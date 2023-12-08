@@ -11,7 +11,7 @@ import static java.lang.Math.log;
 
 public class Scoring {
 
-    public double computeScoring(TermQP term, DocumentQP docId){
+    public double computeScoring(TermDictionary term, DocumentQP docId){
         if (Flags.isIsTFIDF_flag()) return computeTFIDF(term, docId);
         else return computeBM25(term, docId);
     }
@@ -36,23 +36,37 @@ public class Scoring {
     }
 
 
-    private double computeTFIDF(TermQP term, DocumentQP doc) {
+    private double computeTFIDF(TermDictionary term, DocumentQP doc) {
         double value = 0.0;
         try {
             OutputResultsReader.saveTotalNumberDocs();
 //            System.out.println("TF " + term.getDocIdFreq().get(doc.getDocId()) + " / " + doc.getLength());
 //            System.out.println("IDF " + OutputResultsReader.getnTotalDocuments() + " / " + term.getDocumentFrequency());
-            value = computeTF(term.getDocIdFreq().get(doc.getDocId()), doc.getLength()) * computeIDF(OutputResultsReader.getnTotalDocuments(), term.getDocumentFrequency());
+            value = computeTF(term.getPostingByDocId(term.getPostingList(), doc.getDocId()).getFreq(),
+                    doc.getLength()) * computeIDF(OutputResultsReader.getnTotalDocuments(), term.getDocumentFrequency());
             return value;
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+//    private double computeTFIDF(TermDictionary term, DocumentQP doc) {
+//        double value = 0.0;
+//        try {
+//            OutputResultsReader.saveTotalNumberDocs();
+////            System.out.println("TF " + term.getDocIdFreq().get(doc.getDocId()) + " / " + doc.getLength());
+////            System.out.println("IDF " + OutputResultsReader.getnTotalDocuments() + " / " + term.getDocumentFrequency());
+//            value = computeTF(term.getPostingList().get(doc.getDocId()), doc.getLength()) * computeIDF(OutputResultsReader.getnTotalDocuments(), term.getDocumentFrequency());
+//            return value;
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
 
-    private double computeBM25(TermQP term, DocumentQP doc){
+    private double computeBM25(TermDictionary term, DocumentQP doc){
         return 0.0;
     }
 

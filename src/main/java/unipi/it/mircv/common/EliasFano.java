@@ -77,7 +77,7 @@ public class EliasFano {
         return l;
     }
 
-    private Encoding encoding = new Encoding();
+    private static Encoding encoding = new Encoding();
 
     public ToReturn encode(ArrayList<Integer> numbers) {
         if (numbers == null || numbers.isEmpty()) {
@@ -166,14 +166,21 @@ public class EliasFano {
 
         EliasFano eliasFano = new EliasFano();
         ToReturn result = eliasFano.encode(numbers);
+        byte[] x = encoding.highBinaryStringsToBytes(result.getHighBits());
+        byte[] y = encoding.lowerBinaryStringsToBytes(result.getLowerBits());
 
         System.out.println("Encoded High Bits: " + result.getHighBits());
-        System.out.println("Encoded Lower Bits: " + result.getLowerBits());
+        System.out.println("Encoded High Bits: " + Arrays.toString(x));
+        System.out.println("split hb: " + encoding.splitHighBytes(x));
 
+
+
+        System.out.println("Encoded High Bits: " + result.getLowerBits());
+        System.out.println("Encoded Lower Bits: " + Arrays.toString(y));
+        System.out.println("Decoded High Bits: " + encoding.splitLowerBytes(encoding.lowerBinaryStringsToBytes(result.getLowerBits()) , encoding.countOnes(result.getHighBits())));
+//DONE THE OUTPUT IS AN ARRAY OF STRING.
         ArrayList<String> highBits = new ArrayList<>(result.getHighBits());
         ArrayList<String> lowerBits = new ArrayList<>(result.getLowerBits());
-
-
 
         ArrayList<String> decodedNumbers = EliasFano.decode(highBits,lowerBits);
 

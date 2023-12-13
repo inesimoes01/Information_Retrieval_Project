@@ -1,12 +1,14 @@
 package unipi.it.mircv.queryProcessing;
 
+import unipi.it.mircv.common.Flags;
+
 import java.util.*;
 
 public class TermDictionary {
     private String term;
     private List<Posting> posting = new ArrayList<>();
     // DocId Freq
-    public Iterator<Posting> iterator = posting.iterator();
+    // public Iterator<Posting> iterator = posting.iterator();
     // iterator to help transverse the postingList
     private Integer collectionFrequency; // not being used
     // how many times the term appear in the collection
@@ -46,21 +48,21 @@ public class TermDictionary {
         return posting;
     }
 
-    public void setPostingList(List<Posting> posting) {
-        this.posting = posting;
-    }
+//    public void setPostingList(List<Posting> posting) {
+//        this.posting = posting;
+//    }
 
     public List<DocumentQP> getDocumentsWithTerm() {
         return documentsWithTerm;
     }
 
-    public List<Integer> getDocumentsWithTermDocIDs() {
-        List<Integer> list = new ArrayList<>();
-        for (DocumentQP doc : documentsWithTerm){
-            list.add(doc.getDocId());
-        }
-        return list;
-    }
+//    public List<Integer> getDocumentsWithTermDocIDs() {
+//        List<Integer> list = new ArrayList<>();
+//        for (DocumentQP doc : documentsWithTerm){
+//            list.add(doc.getDocId());
+//        }
+//        return list;
+//    }
 
     public void setDocumentsWithTerm(DocumentQP documentsWithTerm) {
         this.documentsWithTerm.add(documentsWithTerm);
@@ -78,9 +80,9 @@ public class TermDictionary {
 
 
 
-    public Integer getCollectionFrequency() {
-        return collectionFrequency;
-    }
+//    public Integer getCollectionFrequency() {
+//        return collectionFrequency;
+//    }
 
     public void setCollectionFrequency(Integer collectionFrequency) {
         this.collectionFrequency = collectionFrequency;
@@ -94,19 +96,26 @@ public class TermDictionary {
         this.documentFrequency = documentFrequency;
     }
 
-    public Double getTermUpperBoundTFIDF() {
-        return termUpperBoundTFIDF;
+    public Double getTermUpperBound() {
+        if (Flags.isIsTFIDF_flag()) return termUpperBoundTFIDF;
+        else return termUpperBoundBM25;
     }
 
-    public void setTermUpperBoundTFIDF(Double termUpperBoundTFIDF) {
-        this.termUpperBoundTFIDF = termUpperBoundTFIDF;
+    public void setTermUpperBound(Double termUpperBound) {
+        if (Flags.isIsTFIDF_flag()) this.termUpperBoundTFIDF = termUpperBound;
+        else this.termUpperBoundBM25 = termUpperBound;
     }
 
-    public Double getTermUpperBoundBM25() {
-        return termUpperBoundBM25;
-    }
+//    @Override
+//    public double compareTo(TermDictionary other) {
+//        return Double.compare(this.termUpperBoundBM25, other.termUpperBoundBM25);
+//    }
 
-    public void setTermUpperBoundBM25(Double termUpperBoundBM25) {
-        this.termUpperBoundBM25 = termUpperBoundBM25;
-    }
+//    public Double getTermUpperBoundBM25() {
+//        return termUpperBoundBM25;
+//    }
+
+//    public void setTermUpperBoundBM25(Double termUpperBoundBM25) {
+//        this.termUpperBoundBM25 = termUpperBoundBM25;
+//    }
 }

@@ -15,14 +15,19 @@ public class Scoring {
         if (Flags.isIsTFIDF_flag()) return computeTFIDF(term, docId);
         else return computeBM25(term, docId);
     }
+    public double computeTermUpperBound(TermDictionary term, DocumentQP docId){
+        if (Flags.isIsTFIDF_flag()) return computeTFIDF(term, docId);
+        else return computeBM25(term, docId);
+    }
     /**
-     * TF(t, d) = n / N
+     * TF(t, d) = 1 + log(n)
      * - n is the number of times term t appears in the document d.
-     * - N is the total number of terms in the document d.
      */
-    private double computeTF(int nTermInDocument, int nTotalTermsInDocument){
+    private double computeTF(int nTermInDocument){
         //System.out.println("TF: " + nTermInDocument + " / " + nTotalTermsInDocument);
-        return (double) nTermInDocument/nTotalTermsInDocument;
+        //return (double) nTermInDocument/nTotalTermsInDocument;
+        if (nTermInDocument > 0) return 1 + log(nTermInDocument);
+        else return 0;
     }
 
     /**
@@ -37,19 +42,20 @@ public class Scoring {
 
 
     private double computeTFIDF(TermDictionary term, DocumentQP doc) {
-        double value = 0.0;
+        double value;
         try {
             OutputResultsReader.saveTotalNumberDocs();
-//            System.out.println("TF " + term.getDocIdFreq().get(doc.getDocId()) + " / " + doc.getLength());
+//            System.out.println("TF " + term.getPostingByDocId(term.getPostingList(), doc.getDocId()).getFreq() + " / " + doc.getLength());
 //            System.out.println("IDF " + OutputResultsReader.getnTotalDocuments() + " / " + term.getDocumentFrequency());
-            value = computeTF(term.getPostingByDocId(term.getPostingList(), doc.getDocId()).getFreq(),
-                    doc.getLength()) * computeIDF(OutputResultsReader.getnTotalDocuments(), term.getDocumentFrequency());
+            value = computeTF(term.getPostingByDocId(term.getPostingList(), doc.getDocId()).getFreq())
+                    * computeIDF(OutputResultsReader.getnTotalDocuments(), term.getDocumentFrequency());
             return value;
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
 //    private double computeTFIDF(TermDictionary term, DocumentQP doc) {
 //        double value = 0.0;
 //        try {
@@ -59,7 +65,7 @@ public class Scoring {
 //            value = computeTF(term.getPostingList().get(doc.getDocId()), doc.getLength()) * computeIDF(OutputResultsReader.getnTotalDocuments(), term.getDocumentFrequency());
 //            return value;
 //
-//        } catch (IOException e) {
+ //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
 //    }

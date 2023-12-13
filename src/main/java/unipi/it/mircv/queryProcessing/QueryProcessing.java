@@ -1,4 +1,5 @@
 package unipi.it.mircv.queryProcessing;
+
 import unipi.it.mircv.common.*;
 
 import unipi.it.mircv.preprocessing.Preprocessing;
@@ -7,18 +8,15 @@ import java.util.*;
 
 public class QueryProcessing {
 
-    public static void mainQueryProcessing(){
+    public void mainQueryProcessing(){
         Scanner input = new Scanner(System.in);
         Preprocessing preprocessing = new Preprocessing();
-        Scoring scoring = new Scoring();
+        ScoringStrategy strategy = new ScoringStrategy();
 
         List<TermDictionary> termList = new ArrayList<>();
-        List<DocumentQP> documentList = new ArrayList<>();
 
         System.out.println("Insert query: ");
         String query = input.nextLine();
-        System.out.println("Conjunctive (c) or disjunctive (d) processing? ");
-        Flags.setIsConjunctive_flag(input.nextLine().equals("c"));
         System.out.println("DAAT (d) or MaxScore (m) processing? ");
         Flags.setIsDAAT_flag(input.nextLine().equals("d"));
         System.out.println("TFIDF (t) or BM25 (b) processing? ");
@@ -28,33 +26,28 @@ public class QueryProcessing {
         long start_time = System.currentTimeMillis();
 
         // clean text by prepocessing
-        preprocessing.clean(query);
+        query = preprocessing.clean(query);
         String[] queryPartsOriginal = query.split(" ");
 
-        // conjunctive (all terms must appear) or disjunctive (at least one term must appear)
+        // save relevant docs
         List<DocumentQP> relevantDocs;
         List<String> termsToRemove = new ArrayList<>();
-        if(Flags.isIsConjunctive_flag()) relevantDocs = conjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
-        else relevantDocs = disjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
+        relevantDocs = ScoringStrategy.disjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
 
+        // TODO remove later, only temporary
+        calculateTermUpperBounds(termList, relevantDocs);
 
-        if (relevantDocs != null){
-            // remove terms that do not exist in the collection
-            String[] queryPartsFiltered = removeTerms(queryPartsOriginal, termsToRemove);
-            System.out.println("FINAL QUERY " + Arrays.toString(queryPartsFiltered));
+        if (!relevantDocs.isEmpty()){
+            // remove terms that do not exist in the collection from query
+//            String[] queryPartsFiltered = removeTerms(queryPartsOriginal, termsToRemove);
+//            System.out.println("Final Query " + Arrays.toString(queryPartsFiltered));
 
-            for (DocumentQP doc : relevantDocs) System.out.print(doc.getDocId() + " ");
-            System.out.println();
             // scoring results using DAAT or MaxScore and TFDIF or BM25
-            ScoringStrategy strategy = new ScoringStrategy();
-            List<DocumentQP> scoredResults = strategy.scoringStrategy(termList, relevantDocs, queryPartsFiltered, Flags.getNumberOfDocuments());
-//            List<DocumentQP> topDocuments = new ArrayList<>();
-//            while (!scoredResults.isEmpty()) {
-//                topDocuments.add(0, scoredResults.poll()); // Add to the beginning to maintain descending order
-//            }
+            List<DocumentQP> scoredResults = strategy.scoringStrategy(termList, relevantDocs, Flags.getNumberOfDocuments());
+
+            // print results
             for (DocumentQP doc : scoredResults) System.out.println(doc.getDocId() + " " + doc.getScore());
         }
-
 
         long end_time = System.currentTimeMillis();
         long processingTime = end_time - start_time;
@@ -62,95 +55,46 @@ public class QueryProcessing {
     }
 
 
-
-    // save only the documents that match all the query terms
-    private static List<DocumentQP> conjunctiveProcessing(List<TermDictionary> termList, String[] query, List<String> termNonExistent){
-        List<DocumentQP> docsWithTerms = new ArrayList<>();
-
-        for (String term : query) {
-            // fills the term list
-            TermDictionary termInstance = OutputResultsReader.fillTermDictionary(termList, term);
-
-            // if query term does not exist in the collection, return null
-            if (termInstance == null){
-                System.out.println("Term \"" + term + "\" not found");
-                termNonExistent.add(term);
-                docsWithTerms.clear();
-                return null;
-            } else {
-                // keeps only documents with all query terms
-                if (docsWithTerms.isEmpty()) {
-                    docsWithTerms.addAll(termInstance.getDocumentsWithTerm());
-                } else {
-                    docsWithTerms.retainAll(termInstance.getDocumentsWithTerm());
-                }
-            }
-        }
-//        Set<DocumentQP> documentSet = new HashSet<>(documentList);
-//        documentList = new ArrayList<>(documentSet);
-
-        Set<DocumentQP> docsWithTermsSet = new HashSet<>(docsWithTerms);
-        docsWithTerms = new ArrayList<>(docsWithTermsSet); // Convert Set back to List
-
-        System.out.println("Finished");
-//        for (DocumentQP doc : docsWithTerms){
-//            System.out.println("Result: " + doc.getDocId());
+//    private String[] removeTerms(String[] original, List<String > termsToRemove){
+//
+//        List<String> originalTerms = new ArrayList<>(Arrays.asList(original));
+//
+//
+//        List<String> filteredList = new ArrayList<>();
+//
+//        for (String term : originalTerms) {
+//            if (!termsToRemove.contains(term)) {
+//                filteredList.add(term);
+//            }
 //        }
+//        return filteredList.toArray(new String[0]);
+//    }
 
-        return removeDuplicates(docsWithTerms);
-    }
+    private void calculateTermUpperBounds(List<TermDictionary> termList, List<DocumentQP> docList){
+        Scoring scoring = new Scoring();
+        double scoreValue;
+        boolean first;
 
-
-    private static List<DocumentQP> disjunctiveProcessing(List<TermDictionary> termList, String[] query, List<String> termNonExistent){
-        List<DocumentQP> docsWithTerms = new ArrayList<>();
-
-        for (String term : query) {
-            // fills the term list
-            TermDictionary termInstance = OutputResultsReader.fillTermDictionary(termList, term);
-
-            // if query term does not exist in the collection, return null
-            if (termInstance == null){
-                System.out.println("Term \"" + term + "\" not found");
-                termNonExistent.add(term);
-            } else {
-                // keeps all documents
-                docsWithTerms.addAll(termInstance.getDocumentsWithTerm());
-            }
-        }
-
-        return removeDuplicates(docsWithTerms);
-    }
-
-    private static String[] removeTerms(String[] original, List<String > termsToRemove){
-
-        List<String> originalTerms = new ArrayList<>(Arrays.asList(original));
-        //List<String> termsToRemoveList = Arrays.asList(termsToRemove);
-
-        List<String> filteredList = new ArrayList<>();
-
-        for (String term : originalTerms) {
-            if (!termsToRemove.contains(term)) {
-                filteredList.add(term);
-            }
-        }
-        return filteredList.toArray(new String[0]);
-    }
-
-    public static List<DocumentQP> removeDuplicates(List<DocumentQP> list) {
-        List<DocumentQP> uniqueList = new ArrayList<>();
-        boolean exist = false;
-        for (DocumentQP element : list) {
-            exist = false;
-            for (DocumentQP uniqueElement : uniqueList){
-                if (uniqueElement.getDocId().equals(element.getDocId())){
-                    exist = true;
-                    break;
+        for (TermDictionary term : termList){
+            for (TermDictionary.Posting doc : term.getPostingList()){
+                first = true;
+                for (DocumentQP doc2 : docList){
+                    if (doc2.getDocId().equals(doc.getDocId())){
+                        scoreValue = scoring.computeTermUpperBound(term, doc2);
+                        if (first) {
+                            term.setTermUpperBound(scoreValue);
+                            first = false;
+                        }
+                        if (scoreValue > term.getTermUpperBound()) term.setTermUpperBound(scoreValue);
+                    }
                 }
             }
-            if (!exist) uniqueList.add(element);
         }
-        return uniqueList;
+
     }
+
+}
+
 
 //    private static List<Integer> saveDocIds(List<Set<Integer>> docsWithTerms){
 //        List<Integer> selectedElements = new ArrayList<>();
@@ -162,17 +106,16 @@ public class QueryProcessing {
 //        return selectedElements;
 //    }
 
-    private static boolean termAlreadySaved(List<TermDictionary> termList, String queryTerm){
-        boolean termExists = false;
-        for (TermDictionary term : termList) {
-            if (term.getTerm().equals(queryTerm)) {
-                termExists = true;
-                break;
-            }
-        }
-        return termExists;
-    }
-}
+//    private static boolean termAlreadySaved(List<TermDictionary> termList, String queryTerm){
+//        boolean termExists = false;
+//        for (TermDictionary term : termList) {
+//            if (term.getTerm().equals(queryTerm)) {
+//                termExists = true;
+//                break;
+//            }
+//        }
+//        return termExists;
+//    }
 
 //        // check if query terms are in the collection
 //        for (String term : queryParts) {

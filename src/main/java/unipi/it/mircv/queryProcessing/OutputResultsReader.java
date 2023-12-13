@@ -9,29 +9,12 @@ import java.util.*;
 
 public class OutputResultsReader {
 
+    private static int nTotalDocuments;
 
     public static int getnTotalDocuments() {
         return nTotalDocuments;
     }
 
-    //    private Map<String, List<Integer>> termDocidFreq = new HashMap<>();
-//    // Map<term, List<DocId Freq DocId Freq DocId Freq...>>
-//    private static Map<String, Integer> collectionFrequency = new HashMap<>(); // not being used
-//    // Map<term, TimesTermAppearsInCollection>
-//    // how many times the term appear in the collection
-//    private static Map<String, Integer> documentFrequency = new HashMap<>();
-//    // Map<term, HowManyTimesTermAppearsInDocuments>
-//    // how many documents the term appears in
-//    private static Map<Integer, Integer> documentLens = new HashMap<>();
-//    // Map<DocId, LengthOfDocument>
-    private static int nTotalDocuments;
-
-    public boolean isTermExistsInCollection() {
-        return termExistsInCollection;
-    }
-
-    // number of total documents
-    private static boolean termExistsInCollection;
     private static final Path PATH_LEXICON = Paths.get("data/output/LexiconMerged.txt");
     private static final Path PATH_INVERTED_INDEX = Paths.get("data/output/InvertedIndexMerged.txt");
     private static final Path PATH_DOCUMENT_INDEX = Paths.get("data/output/DocumentIndexMerged.txt");
@@ -58,11 +41,6 @@ public class OutputResultsReader {
         listToFill.add(term);
         return term;
     }
-//    public static DocumentQP fillDocumentQP(Integer docId){
-//
-//        return doc;
-//    }
-
 
     // saves Collection Frequency and Document Frequency
     private static boolean searchTermInLexicon(TermDictionary term, String queryTerm){
@@ -71,7 +49,7 @@ public class OutputResultsReader {
             for (String line : lines) {
                 String[] parts = line.split(" ");
                 if (parts.length >= 2 && parts[0].equalsIgnoreCase(queryTerm)) {
-                    termExistsInCollection = true;
+                    //boolean termExistsInCollection = true;
                     term.setTerm(queryTerm);
                     term.setCollectionFrequency(Integer.parseInt(parts[1].trim()));
                     term.setDocumentFrequency(Integer.parseInt(parts[2].trim()));
@@ -190,9 +168,9 @@ public class OutputResultsReader {
 //        return this.documentFrequency;
 //    }
 
-    public int getNTotalDocuments() {
-        return nTotalDocuments;
-    }
+//    public int getNTotalDocuments() {
+//        return nTotalDocuments;
+//    }
 
 //    public Map<Integer, Integer> getDocumentLens() {
 //        return documentLens;

@@ -311,13 +311,24 @@ public class Util {
                 batchEntries.clear();
             }
             long offset=0;
+            long prevoffset=0;
             // Write the merged and sorted entries to the output file
+
             for (Map.Entry<String, TermStats> entry : termStatsMap.entrySet()) {
                 String term = entry.getKey();
                 TermStats termStats = entry.getValue();
-                offset = findOffset(randomAccessFile,term, offset);
-                termStats.setInvertedIndexOffset(offset);
-                bufferedWriter.write(term + " " + termStats.getCollectionFrequency() + " " + termStats.getDocumentFrequency() + " " + termStats.getInvertedIndexOffset());
+
+                // Se è la prima iterazione, setta l'offset a 0
+
+                    // Altrimenti, esegui la tua logica per trovare l'offset
+
+                    offset = findOffset(randomAccessFile, term, offset) ;
+                    termStats.setInvertedIndexOffset(prevoffset);
+
+
+                bufferedWriter.write(term + " " + termStats.getCollectionFrequency() + " " +
+                        termStats.getDocumentFrequency() + " " + termStats.getInvertedIndexOffset());
+                prevoffset = offset;
                 bufferedWriter.newLine();
             }
 

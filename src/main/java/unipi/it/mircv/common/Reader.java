@@ -124,8 +124,9 @@ public class Reader {
                     util.readBlockFromDisk(index.getBlockNumber());
                     util.mergeDocumentIndex(index.getBlockNumber());
                     //util.invertedIndexMerge(index.getBlockNumber());
-                    util.lexiconMerge(index.getBlockNumber());
                     util.mergeInvertedIndex(index.getBlockNumber());
+                    util.lexiconMerge(index.getBlockNumber());
+
                 }
 
                 // Break out of the loop if the 4th document is processed

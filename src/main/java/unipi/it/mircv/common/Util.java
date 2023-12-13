@@ -15,14 +15,17 @@ public class Util {
     private BufferedReader[] lexiconReaders;
     private BufferedWriter myWriterLexicon;
     private ArrayList<String> lexiconEntries;
+
     public void setLexiconScanners(BufferedReader[] lexiconScanners) {
         this.lexiconScanners = lexiconScanners;
     }
 
     private BufferedReader[] documentIndexScanners;
+
     public BufferedReader[] getDocumentIndexScanners() {
         return documentIndexScanners;
     }
+
     public void setDocumentIndexScanners(BufferedReader[] documentIndexScanners) {
         this.documentIndexScanners = documentIndexScanners;
     }
@@ -75,7 +78,6 @@ public class Util {
     }
 
 
-
     public void writeBlockToDisk(int blockCounter, DocumentIndex documentIndex) {
         String directoryPath = "data/output/";
         String filePath = directoryPath + "DocumentIndex" + blockCounter + ".txt";
@@ -94,12 +96,11 @@ public class Util {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
             // Writing to the file
             ArrayList<Integer> docIndexKey = documentIndex.sortDocumentIndex();
-                for (Integer i:docIndexKey) {
-                    // Write information to the bufferedWriter
-                    bufferedWriter.write(i + " " + documentIndex.getDocumentIndex().get(i));
-                    bufferedWriter.newLine();  // Move to the next line
-                }
-
+            for (Integer i : docIndexKey) {
+                // Write information to the bufferedWriter
+                bufferedWriter.write(i + " " + documentIndex.getDocumentIndex().get(i));
+                bufferedWriter.newLine();  // Move to the next line
+            }
 
 
         } catch (IOException e) {
@@ -126,7 +127,7 @@ public class Util {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
             // Writing to the file
             ArrayList<String> docLexiconKey = lexicon.sortLexicon();
-            for (String i:docLexiconKey) {
+            for (String i : docLexiconKey) {
                 // Write information to the bufferedWriter
                 bufferedWriter.write(i + " " + lexicon.getLexicon().get(i));
                 bufferedWriter.newLine();  // Move to the next line
@@ -158,9 +159,9 @@ public class Util {
             // Writing to the file
             invertedIndex.sortPostingList();
             ArrayList<String> docLexiconKey = invertedIndex.sortInvertedIndexByTerm();
-            for (String i:docLexiconKey) {
+            for (String i : docLexiconKey) {
                 // Write information to the bufferedWriter
-                bufferedWriter.write(i + " " + invertedIndex.getInvertedIndex().get(i).toString().replaceAll("[^a-zA-Z0-9\\s]", "")  );
+                bufferedWriter.write(i + " " + invertedIndex.getInvertedIndex().get(i).toString().replaceAll("[^a-zA-Z0-9\\s]", ""));
                 bufferedWriter.newLine();  // Move to the next line
             }
 
@@ -234,8 +235,6 @@ public class Util {
     }
 
 
-
-
     public void closeReadersAndWriter(int blockCounter) {
         try {
             for (int i = 0; i < blockCounter; i++) {
@@ -253,23 +252,18 @@ public class Util {
 
 
     public void lexiconMerge(int blockCounter) {
-        // Output file path for merged lexicon
         String outputPath = "data/output/LexiconMerged.txt";
+        String invertedIndexPath = "data/output/InvertedIndexMerged.txt";
 
-        // Create the directories if they don't exist
         File directory = new File("data/output/");
         if (!directory.exists()) {
             directory.mkdirs();
         }
 
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath))) {
-            // TreeMap to store the accumulated statistics for each term (sorted by term)
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath)); RandomAccessFile randomAccessFile = new RandomAccessFile(invertedIndexPath, "r"); ) {
+
             TreeMap<String, TermStats> termStatsMap = new TreeMap<>();
-
-            // Priority queue to efficiently merge and sort entries
             PriorityQueue<String> priorityQueue = new PriorityQueue<>(Comparator.naturalOrder());
-
-            // Initialize lexicon readers and iterators
             BufferedReader[] lexiconReaders = new BufferedReader[blockCounter];
             Iterator<String>[] iterators = new Iterator[blockCounter];
 
@@ -279,46 +273,55 @@ public class Util {
                 iterators[i] = lexiconReaders[i].lines().iterator();
             }
 
-            // Initialize lexicon entries from the first entry of each block
-            for (int i = 1; i < blockCounter; i++) {
-                if (iterators[i].hasNext()) {
-                    priorityQueue.add(iterators[i].next());
+            // Process lexicon entries in larger batches
+            ArrayList<String> batchEntries = new ArrayList<>();
+            int batchSize = 10000; // Adjust the batch size based on performance testing
+
+            while (true) {
+                for (int i = 1; i < blockCounter; i++) {
+                    if (iterators[i].hasNext()) {
+                        batchEntries.add(iterators[i].next());
+                    }
                 }
-            }
 
-            // Continue merging and sorting until the PriorityQueue is empty
-            while (!priorityQueue.isEmpty()) {
-                String currentEntry = priorityQueue.poll();
-                String[] parts = currentEntry.split(" ");
-
-                String term = parts[0];
-                int cf = Integer.parseInt(parts[1]);
-                int df = Integer.parseInt(parts[2]);
-
-                TermStats termStats = termStatsMap.getOrDefault(term, new TermStats(0, 0));
-                termStats.addToCollectionFrequency(cf);
-                termStats.addToDocumentFrequency(df);
-                termStatsMap.put(term, termStats);
-
-                // Determine the block index for the next entry
-                int blockIndex = (priorityQueue.size() % (blockCounter - 1)) + 1;
-
-                // Add the next entry from the corresponding block to the PriorityQueue
-                if (iterators[blockIndex].hasNext()) {
-                    priorityQueue.add(iterators[blockIndex].next());
+                if (batchEntries.isEmpty()) {
+                    break;
                 }
-            }
 
+                // Sort the batch entries
+                batchEntries.sort(Comparator.naturalOrder());
+
+                // Merge and update termStatsMap
+                for (String currentEntry : batchEntries) {
+                    String[] parts = currentEntry.split(" ");
+                    String term = parts[0];
+                    int cf = Integer.parseInt(parts[1]);
+                    int df = Integer.parseInt(parts[2]);
+
+                    TermStats termStats = termStatsMap.getOrDefault(term, new TermStats(0, 0, 0));
+                    termStats.addToCollectionFrequency(cf);
+                    termStats.addToDocumentFrequency(df);
+                    termStatsMap.put(term, termStats);
+                    System.out.println(blockCounter);
+                    if (blockCounter >= 0 && blockCounter < iterators.length) {
+                        priorityQueue.add(iterators[blockCounter].next());
+                    }
+                }
+
+                batchEntries.clear();
+            }
+            long offset=0;
             // Write the merged and sorted entries to the output file
             for (Map.Entry<String, TermStats> entry : termStatsMap.entrySet()) {
                 String term = entry.getKey();
                 TermStats termStats = entry.getValue();
-
-                bufferedWriter.write(term + " " + termStats.getCollectionFrequency() + " " + termStats.getDocumentFrequency());
+                offset = findOffset(randomAccessFile,term, offset);
+                termStats.setInvertedIndexOffset(offset);
+                bufferedWriter.write(term + " " + termStats.getCollectionFrequency() + " " + termStats.getDocumentFrequency() + " " + termStats.getInvertedIndexOffset());
                 bufferedWriter.newLine();
             }
 
-            // Close readers substitute with function!!!!!!
+            // Close readers
             for (int i = 1; i < blockCounter; i++) {
                 lexiconReaders[i].close();
             }
@@ -326,6 +329,7 @@ public class Util {
             e.printStackTrace();
         }
     }
+
 
     public void mergeInvertedIndex(int blockCounter) {
         // Output file path for merged lexicon
@@ -370,13 +374,12 @@ public class Util {
                 ArrayList<Posting> postingList = new ArrayList<>();
 
 
-
                 postingList = postingListMap.getOrDefault(term, postingList); //get the value otherwise it returns an empty postingList
 
-                for (int i=1; i<size ;i+=2){
+                for (int i = 1; i < size; i += 2) {
                     Posting tempPosting = new Posting();
                     tempPosting.setDocId(Integer.parseInt(parts[i]));
-                    tempPosting.setFreq(Integer.parseInt(parts[i+1]));
+                    tempPosting.setFreq(Integer.parseInt(parts[i + 1]));
                     postingList.add(tempPosting);
 
                 }
@@ -439,30 +442,79 @@ public class Util {
     }
 
 
-
-
-
-        //myWriterDocIds = new TextWriter("Data/Output/DocIds/docIds" + blockCounter + ".txt");
-        //myWriterFreq = new TextWriter("Data/Output/Frequencies/freq" + blockCounter + ".txt");
-        //myWriterDocumentIndex = new TextWriter("Data/Output/DocumentIndex/documentIndex" + blockCounter + ".txt");
-        public static ArrayList<String> mergeArrayLists(ArrayList<String> list1, ArrayList<String> list2) {
-            if (list1 == null || list2 == null) {
-                throw new IllegalArgumentException("Le liste non possono essere nulli");
-            }
-
-            if (list1.size() != list2.size()) {
-                throw new IllegalArgumentException("Le liste devono avere la stessa dimensione");
-            }
-
-            ArrayList<String> mergedList = new ArrayList<>();
-            for (int i = 0; i < list1.size(); i++) {
-                mergedList.add(list1.get(i) + "" + list2.get(i));
-            }
-            return mergedList;
+    //myWriterDocIds = new TextWriter("Data/Output/DocIds/docIds" + blockCounter + ".txt");
+    //myWriterFreq = new TextWriter("Data/Output/Frequencies/freq" + blockCounter + ".txt");
+    //myWriterDocumentIndex = new TextWriter("Data/Output/DocumentIndex/documentIndex" + blockCounter + ".txt");
+    public static ArrayList<String> mergeArrayLists(ArrayList<String> list1, ArrayList<String> list2) {
+        if (list1 == null || list2 == null) {
+            throw new IllegalArgumentException("Le liste non possono essere nulli");
         }
 
+        if (list1.size() != list2.size()) {
+            throw new IllegalArgumentException("Le liste devono avere la stessa dimensione");
+        }
+
+        ArrayList<String> mergedList = new ArrayList<>();
+        for (int i = 0; i < list1.size(); i++) {
+            mergedList.add(list1.get(i) + "" + list2.get(i));
+        }
+        return mergedList;
+    }
+
+
+    public static long findOffset(RandomAccessFile randomAccessFile, String searchTerm, long startOffset) throws IOException {
+        long currentOffset = startOffset;
+        System.out.println(startOffset);
+        System.out.println(searchTerm);
+        // Move to the specified start offset
+        randomAccessFile.seek(startOffset);
+
+        // Read the line from the current offset
+        String line;
+        while ((line = randomAccessFile.readLine()) != null) {
+            // Increment the current offset by the length of the read line plus a newline character
+            currentOffset += line.length() + System.lineSeparator().length();
+
+            // Split the line by spaces and compare the first part with the search term
+            String[] parts = line.split("\\s+");
+            if (parts.length > 0 && parts[0].equals(searchTerm)) {
+                return currentOffset;
+            }
+        }
+
+        // If the search term is not found, return -1
+        return -1;
     }
 
 
 
 
+/*
+
+    public static void main(String[] args) {
+        String filePath = "data/output/InvertedIndexMerged.txt";
+ // Sostituisci con il numero di riga che vuoi leggere
+
+        try {
+            // Apri il file in modalità di sola lettura
+            RandomAccessFile file = new RandomAccessFile(filePath, "r");
+
+            // Calcola l'offset in byte per la riga desiderata
+
+            // Posizionati all'offset desiderato nel file
+            file.seek(32);
+
+            // Leggi la riga
+            String rigaDesiderata = file.readLine();
+            System.out.println(rigaDesiderata);
+
+            // Chiudi il file
+            file.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+*/
+
+
+}

@@ -22,7 +22,7 @@ public class FileOffsetReader {
 
     public static void main(String[] args) {
         try (RandomAccessFile randomAccessFile = new RandomAccessFile("data/output/InvertedIndexMerged.txt", "r")) {
-            long offsetToRead = 668679;  // Replace with the desired offset
+            long offsetToRead = 20699;  // Replace with the desired offset
 
             String line = readLineFromOffset(randomAccessFile, offsetToRead);
 

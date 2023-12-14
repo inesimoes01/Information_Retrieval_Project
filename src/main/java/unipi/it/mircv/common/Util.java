@@ -1,5 +1,7 @@
 package unipi.it.mircv.common;
 
+import unipi.it.mircv.queryProcessing.Ranking;
+
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
@@ -198,7 +200,9 @@ public class Util {
     public void mergeDocumentIndex(int blockCounter) {
         myWriterDocumentIndex = null;
         documentIndexEntries = new ArrayList<>();
-
+        double avgLen = 0.00;
+        int count=0;
+        int totLen=0;
         // Initialize the writer
         try {
             myWriterDocumentIndex = new BufferedWriter(new FileWriter("data/output/DocumentIndexMerged.txt"));
@@ -223,9 +227,21 @@ public class Util {
             // Write the merged entries to the output file
             for (String entry : documentIndexEntries) {
                 if (entry != null) {
+                    String parts[] = entry.split("\\s+");
+                    count++;
+                    totLen += Integer.parseInt(parts[1]);
                     myWriterDocumentIndex.write(entry);
                     myWriterDocumentIndex.newLine();
                 }
+            }
+         avgLen=totLen/count;
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/output/avgDocLen.txt"))) {
+                // Scrivi la stringa nel file
+                writer.write(avgLen +"");
+                writer.newLine();
+                writer.write(count +"");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         } catch (IOException e) {
             e.printStackTrace(); // Handle the exception appropriately
@@ -302,7 +318,6 @@ public class Util {
                     termStats.addToCollectionFrequency(cf);
                     termStats.addToDocumentFrequency(df);
                     termStatsMap.put(term, termStats);
-                    System.out.println(blockCounter);
                     if (blockCounter >= 0 && blockCounter < iterators.length) {
                         priorityQueue.add(iterators[blockCounter].next());
                     }
@@ -312,22 +327,31 @@ public class Util {
             }
             long offset=0;
             long prevoffset=0;
+            double termUpperBound = 0;
             // Write the merged and sorted entries to the output file
 
             for (Map.Entry<String, TermStats> entry : termStatsMap.entrySet()) {
                 String term = entry.getKey();
                 TermStats termStats = entry.getValue();
-
-                // Se è la prima iterazione, setta l'offset a 0
-
                     // Altrimenti, esegui la tua logica per trovare l'offset
 
                     offset = findOffset(randomAccessFile, term, offset) ;
                     termStats.setInvertedIndexOffset(prevoffset);
-
+                try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/output/DocumentIndexMerged.txt"))) {
+                    randomAccessFile.seek(offset);
+                    String line = randomAccessFile.readLine();
+                    System.out.println(line);
+                    if (line != null) {
+                        termUpperBound = computeTermUpperBound(bufferedReader, splitInvertedIndexLine(line), termStats);
+                    } else {
+                        break;
+                    }
+                }catch (IOException e) {
+                    e.printStackTrace();
+                }
 
                 bufferedWriter.write(term + " " + termStats.getCollectionFrequency() + " " +
-                        termStats.getDocumentFrequency() + " " + termStats.getInvertedIndexOffset());
+                        termStats.getDocumentFrequency() + " " + termStats.getInvertedIndexOffset()+" "+ termUpperBound);
                 prevoffset = offset;
                 bufferedWriter.newLine();
             }
@@ -433,9 +457,7 @@ public class Util {
                 for (int docId : docIds) {
                     bufferedWriter.write(docId + " ");
                 }
-
-                // Aggiungere il separatore
-                bufferedWriter.write(" ");
+                bufferedWriter.write( " ");
 
                 for (int freq : freqs) {
                     bufferedWriter.write(freq + " ");
@@ -472,11 +494,75 @@ public class Util {
         return mergedList;
     }
 
+    static ArrayList<String> splitInvertedIndexLine(String line) {
+        String[] parts = line.split("\\s+", 3);
+        System.out.println(parts[0] + " "+ parts[1] + "  "+parts[2]);
+        ArrayList<String> toReturn = new ArrayList<>();
+        if (parts.length == 3) {
+            String term = parts[0];
+
+            String[] numbers = parts[2].split("\\s+");
+
+            if (numbers.length <= 2){
+                toReturn.add(term);
+                toReturn.add(parts[1]);
+                toReturn.add(parts[2]);
+               }
+            else {
+                numbers[0] = parts[1] + " " + numbers[0];
+                int length = numbers.length;
+                int half = length / 2;
+
+                String list1 = String.join(" ", Arrays.copyOfRange(numbers, 0, half));
+                String list2 = String.join(" ", Arrays.copyOfRange(numbers, half, length));
+
+                toReturn.add(term);
+                toReturn.add(list1);
+                toReturn.add(list2);
+
+            }
+        }
+
+        return toReturn;
+    }
+    static double computeTermUpperBound(BufferedReader bufferedReader, ArrayList<String> input, TermStats termStats) throws IOException {
+        String[] docids = input.get(1).split("\\s+");
+        String[] freqs = input.get(2).split("\\s+");
+        String avgDocLen = "";
+        String count = "";
+        ArrayList<String> docidslen = new ArrayList<>(Arrays.asList(docids));
+        docidslen = new ArrayList<>(searchValuesDocumentIndex(bufferedReader,docidslen ));
+
+        try (BufferedReader br = new BufferedReader(new FileReader("data/output/avgDocLen.txt"))){
+            avgDocLen = br.readLine();
+            count = br.readLine();
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+        double maxResult = Integer.MIN_VALUE;
+        Ranking ranking = new Ranking();
+
+        for (int i=0; i<docids.length; i++) {
+            //int num = Integer.parseInt(numStr);
+                      double result = ranking.computeRanking( Integer.parseInt(freqs[i]),Integer.parseInt(count),termStats.getDocumentFrequency(),Integer.parseInt(docidslen.get(i)),Float.parseFloat(avgDocLen));
+            if (result>maxResult){maxResult=result;}
+
+
+            //maxResult = Math.max(maxResult, result);
+        }
+
+        return maxResult;
+    }
+
+
+
 
     public static long findOffset(RandomAccessFile randomAccessFile, String searchTerm, long startOffset) throws IOException {
         long currentOffset = startOffset;
-        System.out.println(startOffset);
-        System.out.println(searchTerm);
         // Move to the specified start offset
         randomAccessFile.seek(startOffset);
 
@@ -497,35 +583,54 @@ public class Util {
         return -1;
     }
 
+    static ArrayList<String> searchValuesDocumentIndex(BufferedReader bufferedReader, ArrayList<String> inputList) throws IOException {
+        ArrayList<String> outputList = new ArrayList<>();
+        HashMap<String, String> map = new HashMap<>();
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] parts = line.split("\\s+");
+if (inputList.contains(parts[0])){
+    outputList.add(parts[1]);
+                }
+            }
+
+
+        return outputList;
+    }
 
 
 
-/*
+    static ArrayList<String> searchValuesLexicon (BufferedReader bufferedReader, String term) throws IOException {
+        ArrayList<String> toReturn = new ArrayList<>();
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            String[] parts = line.split("\\s+");
+            if (parts[0] == term){
+                toReturn.add(parts[1]);
+                toReturn.add(parts[2]);
+                toReturn.add(parts[3]);
+            }
+        }
+return toReturn;
+    }
+
+
+
+
 
     public static void main(String[] args) {
-        String filePath = "data/output/InvertedIndexMerged.txt";
- // Sostituisci con il numero di riga che vuoi leggere
 
-        try {
-            // Apri il file in modalità di sola lettura
-            RandomAccessFile file = new RandomAccessFile(filePath, "r");
+        TermStats termStats = new TermStats();
+        String abc= "ciaooo 20 1 ";
 
-            // Calcola l'offset in byte per la riga desiderata
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/output/DocumentIndexMerged.txt"))) {
+        }catch (IOException e) {
+                e.printStackTrace();
+            }
 
-            // Posizionati all'offset desiderato nel file
-            file.seek(32);
-
-            // Leggi la riga
-            String rigaDesiderata = file.readLine();
-            System.out.println(rigaDesiderata);
-
-            // Chiudi il file
-            file.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
-*/
+
 
 
 }

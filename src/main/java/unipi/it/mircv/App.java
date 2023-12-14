@@ -10,7 +10,7 @@ public class App
         // Example usage:
         String path = "src/main/java/unipi/it/mircv/data/collection.tar.gz";
         Reader.processCollection(path);
-        queryProcessing.mainQueryProcessing();
+        //queryProcessing.mainQueryProcessing();
 
     }
     }

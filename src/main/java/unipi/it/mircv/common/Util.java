@@ -333,27 +333,28 @@ public class Util {
             for (Map.Entry<String, TermStats> entry : termStatsMap.entrySet()) {
                 String term = entry.getKey();
                 TermStats termStats = entry.getValue();
-                    // Altrimenti, esegui la tua logica per trovare l'offset
+                // Altrimenti, esegui la tua logica per trovare l'offset
 
-                    offset = findOffset(randomAccessFile, term, offset) ;
-                    termStats.setInvertedIndexOffset(prevoffset);
+                offset = findOffset(randomAccessFile, term, offset) ;
+                termStats.setInvertedIndexOffset(prevoffset);
+
                 try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/output/DocumentIndexMerged.txt"))) {
-                    randomAccessFile.seek(offset);
+                    randomAccessFile.seek(prevoffset);
                     String line = randomAccessFile.readLine();
                     System.out.println(line);
-                    if (line != null) {
-                        termUpperBound = computeTermUpperBound(bufferedReader, splitInvertedIndexLine(line), termStats);
-                    } else {
-                        break;
-                    }
+
+                    termUpperBound = computeTermUpperBound(bufferedReader, splitInvertedIndexLine(line), termStats);
+
+
+
+                    bufferedWriter.write(term + " " + termStats.getCollectionFrequency() + " " +
+                            termStats.getDocumentFrequency() + " " + termStats.getInvertedIndexOffset()+" "+ termUpperBound);
+                    prevoffset = offset;
+                    bufferedWriter.newLine();
+
                 }catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                bufferedWriter.write(term + " " + termStats.getCollectionFrequency() + " " +
-                        termStats.getDocumentFrequency() + " " + termStats.getInvertedIndexOffset()+" "+ termUpperBound);
-                prevoffset = offset;
-                bufferedWriter.newLine();
             }
 
             // Close readers
@@ -495,67 +496,72 @@ public class Util {
     }
 
     static ArrayList<String> splitInvertedIndexLine(String line) {
-        String[] parts = line.split("\\s+", 3);
-        System.out.println(parts[0] + " "+ parts[1] + "  "+parts[2]);
-        ArrayList<String> toReturn = new ArrayList<>();
-        if (parts.length == 3) {
-            String term = parts[0];
+        if (line!= null) {
+            String[] parts = line.split("\\s+", 3);
+            ArrayList<String> toReturn = new ArrayList<>();
+            if (parts.length == 3) {
+                String term = parts[0];
 
-            String[] numbers = parts[2].split("\\s+");
+                String[] numbers = parts[2].split("\\s+");
 
-            if (numbers.length <= 2){
-                toReturn.add(term);
-                toReturn.add(parts[1]);
-                toReturn.add(parts[2]);
-               }
-            else {
-                numbers[0] = parts[1] + " " + numbers[0];
-                int length = numbers.length;
-                int half = length / 2;
+                if (numbers.length <= 2) {
+                    toReturn.add(term);
+                    toReturn.add(parts[1]);
+                    toReturn.add(parts[2]);
+                } else {
+                    numbers[0] = parts[1] + " " + numbers[0];
+                    int length = numbers.length;
+                    int half = length / 2;
 
-                String list1 = String.join(" ", Arrays.copyOfRange(numbers, 0, half));
-                String list2 = String.join(" ", Arrays.copyOfRange(numbers, half, length));
+                    String list1 = String.join(" ", Arrays.copyOfRange(numbers, 0, half));
+                    String list2 = String.join(" ", Arrays.copyOfRange(numbers, half, length));
 
-                toReturn.add(term);
-                toReturn.add(list1);
-                toReturn.add(list2);
+                    toReturn.add(term);
+                    toReturn.add(list1);
+                    toReturn.add(list2);
 
+                }
             }
-        }
 
-        return toReturn;
+            return toReturn;
+        }
+        return null;
     }
     static double computeTermUpperBound(BufferedReader bufferedReader, ArrayList<String> input, TermStats termStats) throws IOException {
-        String[] docids = input.get(1).split("\\s+");
-        String[] freqs = input.get(2).split("\\s+");
-        String avgDocLen = "";
-        String count = "";
-        ArrayList<String> docidslen = new ArrayList<>(Arrays.asList(docids));
-        docidslen = new ArrayList<>(searchValuesDocumentIndex(bufferedReader,docidslen ));
+        if (input != null) {
+            String[] docids = input.get(1).split("\\s+");
+            String[] freqs = input.get(2).split("\\s+");
+            String avgDocLen = "";
+            String count = "";
+            ArrayList<String> docidslen = new ArrayList<>(Arrays.asList(docids));
+            docidslen = new ArrayList<>(searchValuesDocumentIndex(bufferedReader, docidslen));
 
-        try (BufferedReader br = new BufferedReader(new FileReader("data/output/avgDocLen.txt"))){
-            avgDocLen = br.readLine();
-            count = br.readLine();
+            try (BufferedReader br = new BufferedReader(new FileReader("data/output/avgDocLen.txt"))) {
+                avgDocLen = br.readLine();
+                count = br.readLine();
 
-        }catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            double maxResult = Integer.MIN_VALUE;
+            Ranking ranking = new Ranking();
+
+            for (int i = 0; i < docids.length; i++) {
+                //int num = Integer.parseInt(numStr);
+                double result = ranking.computeRanking(Integer.parseInt(freqs[i]), Integer.parseInt(count), termStats.getDocumentFrequency(), Integer.parseInt(docidslen.get(i)), Float.parseFloat(avgDocLen));
+                if (result > maxResult) {
+                    maxResult = result;
+                }
+
+
+                //maxResult = Math.max(maxResult, result);
+            }
+
+            return maxResult;
         }
-
-
-
-        double maxResult = Integer.MIN_VALUE;
-        Ranking ranking = new Ranking();
-
-        for (int i=0; i<docids.length; i++) {
-            //int num = Integer.parseInt(numStr);
-                      double result = ranking.computeRanking( Integer.parseInt(freqs[i]),Integer.parseInt(count),termStats.getDocumentFrequency(),Integer.parseInt(docidslen.get(i)),Float.parseFloat(avgDocLen));
-            if (result>maxResult){maxResult=result;}
-
-
-            //maxResult = Math.max(maxResult, result);
-        }
-
-        return maxResult;
+        return 0;
     }
 
 

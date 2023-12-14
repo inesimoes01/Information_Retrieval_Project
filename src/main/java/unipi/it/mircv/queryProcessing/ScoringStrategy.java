@@ -17,7 +17,7 @@ public class ScoringStrategy {
 
         // transverse the list of documents in the Posting List by smallest docId
         double documentUpperBound;
-        Scoring scoring = new Scoring();
+        Ranking ranking = new Ranking();
 
         DocumentQP currentDoc;
         int i = 0;
@@ -29,7 +29,7 @@ public class ScoringStrategy {
             for (TermDictionary dictionaryTerm : termList) {
                 for (TermDictionary.Posting pL : dictionaryTerm.getPostingList()){
                     if (currentDoc.getDocId().equals(pL.getDocId())){
-                        documentUpperBound += scoring.computeScoring(dictionaryTerm, relevantDocs.get(i));
+                        documentUpperBound += ranking.computeRanking_QP(dictionaryTerm, relevantDocs.get(i));
                     }
                 }
             }
@@ -47,7 +47,7 @@ public class ScoringStrategy {
 
     private List<DocumentQP> maxScore(List<TermDictionary> termList, List<DocumentQP> relevantDocs, int k){
         List<DocumentQP> topResults = new ArrayList<>();
-        Scoring scoring = new Scoring();
+        Ranking ranking = new Ranking();
         DocumentQP currentDoc;
         int i = 0;
         double score;
@@ -82,7 +82,7 @@ public class ScoringStrategy {
             for (TermDictionary dictionaryTerm : essentialTerms) {
                 for (TermDictionary.Posting pL : dictionaryTerm.getPostingList()){
                     if (currentDoc.getDocId().equals(pL.getDocId())){
-                        score += scoring.computeScoring(dictionaryTerm, currentDoc);
+                        score += ranking.computeRanking_QP(dictionaryTerm, currentDoc);
                     }
                 }
             }
@@ -102,7 +102,7 @@ public class ScoringStrategy {
             for (TermDictionary dictionaryTerm : nonEssentialTerms) {
                 for (TermDictionary.Posting pL : dictionaryTerm.getPostingList()){
                     if (currentDoc.getDocId().equals(pL.getDocId())){
-                        score += scoring.computeScoring(dictionaryTerm, currentDoc);
+                        score += ranking.computeRanking_QP(dictionaryTerm, currentDoc);
                     }
                 }
             }

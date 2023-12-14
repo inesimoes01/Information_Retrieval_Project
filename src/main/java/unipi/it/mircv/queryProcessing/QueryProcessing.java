@@ -71,7 +71,7 @@ public class QueryProcessing {
 //    }
 
     private void calculateTermUpperBounds(List<TermDictionary> termList, List<DocumentQP> docList){
-        Scoring scoring = new Scoring();
+        Ranking ranking = new Ranking();
         double scoreValue;
         boolean first;
 
@@ -80,7 +80,7 @@ public class QueryProcessing {
                 first = true;
                 for (DocumentQP doc2 : docList){
                     if (doc2.getDocId().equals(doc.getDocId())){
-                        scoreValue = scoring.computeTermUpperBound(term, doc2);
+                        scoreValue = ranking.computeTermUpperBound(term, doc2);
                         if (first) {
                             term.setTermUpperBound(scoreValue);
                             first = false;

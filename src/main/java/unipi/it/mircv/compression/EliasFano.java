@@ -1,9 +1,10 @@
-package unipi.it.mircv.common;
+package unipi.it.mircv.compression;
+
+import unipi.it.mircv.common.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 class ToReturn {
     private ArrayList<String> highBits;

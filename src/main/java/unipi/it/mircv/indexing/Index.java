@@ -1,5 +1,10 @@
 package unipi.it.mircv.indexing;
 import unipi.it.mircv.common.*;
+import unipi.it.mircv.indexing.dataStructures.Doc;
+import unipi.it.mircv.indexing.dataStructures.DocumentIndex;
+import unipi.it.mircv.indexing.dataStructures.InvertedIndex;
+import unipi.it.mircv.indexing.dataStructures.Lexicon;
+import unipi.it.mircv.common.MemoryUtil;
 
 import java.util.HashMap;
 
@@ -44,6 +49,8 @@ public class Index {
     }
 
     public int createIndex(Doc doc) {
+        MemoryUtil memoryUtil = new MemoryUtil();
+        IndexUtil indexUtil = new IndexUtil();
         Util util = new Util();
         //util.printUsage();
         HashMap<String, Integer> termcounter = new HashMap<>();
@@ -52,12 +59,12 @@ public class Index {
             termcounter.put(term, termcounter.containsKey(term) ? termcounter.get(term) + 1 : 1);
         }
 
-        if (util.isMemoryFull(20)){
+        if (memoryUtil.isMemoryFull(20)){
             //writeBlock(lexicon, lexicon.sortLexicon(), documentIndex.sortDocumentIndex()); //writes the current block to disk
 
-            util.writeBlockToDisk(getBlockNumber(),documentIndex);
-            util.writeBlockToDisk(getBlockNumber(),lexicon);
-            util.writeBlockToDisk(getBlockNumber(),invertedIndex);
+            indexUtil.writeBlockToDisk(getBlockNumber(),documentIndex);
+            indexUtil.writeBlockToDisk(getBlockNumber(),lexicon);
+            indexUtil.writeBlockToDisk(getBlockNumber(),invertedIndex);
             //util.writeBlockToDisk(getBlockNumber(),lexicon,invertedIndex);
 
 

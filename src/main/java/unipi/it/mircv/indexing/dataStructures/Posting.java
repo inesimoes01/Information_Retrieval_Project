@@ -1,4 +1,4 @@
-package unipi.it.mircv.common;
+package unipi.it.mircv.indexing.dataStructures;
 
 public class Posting {
     private int freq;

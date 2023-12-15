@@ -12,7 +12,6 @@ public class QueryProcessing {
         Scanner input = new Scanner(System.in);
         Preprocessing preprocessing = new Preprocessing();
         ScoringStrategy strategy = new ScoringStrategy();
-
         List<TermDictionary> termList = new ArrayList<>();
 
         System.out.println("Insert query: ");

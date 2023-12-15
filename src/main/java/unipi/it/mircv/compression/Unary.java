@@ -1,4 +1,4 @@
-package unipi.it.mircv.common;
+package unipi.it.mircv.compression;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;

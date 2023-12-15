@@ -1,6 +1,7 @@
 package unipi.it.mircv.common;
 
 import junit.framework.TestCase;
+import unipi.it.mircv.indexing.dataStructures.InvertedIndex;
 
 
 public class InvertedIndexTest extends TestCase {

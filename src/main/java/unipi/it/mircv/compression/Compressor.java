@@ -1,4 +1,4 @@
-package unipi.it.mircv.common;
+package unipi.it.mircv.compression;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

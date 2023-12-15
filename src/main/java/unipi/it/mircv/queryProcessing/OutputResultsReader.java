@@ -88,7 +88,6 @@ public class OutputResultsReader {
                 String[] checkTerm = line.split(" ");
                 if (checkTerm[0].equalsIgnoreCase(term.getTerm())){
                     String[] parts = line.split("  ");
-
                     String[] docIdStr = parts[0].trim().split("\\s+");
                     String[] frequenciesStr = parts[1].trim().split("\\s+");
 

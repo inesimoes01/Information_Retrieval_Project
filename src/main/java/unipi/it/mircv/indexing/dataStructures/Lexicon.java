@@ -1,13 +1,10 @@
-package unipi.it.mircv.common;
+package unipi.it.mircv.indexing.dataStructures;
 
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
-import unipi.it.mircv.common.TermStats;
 public class Lexicon {
 
 

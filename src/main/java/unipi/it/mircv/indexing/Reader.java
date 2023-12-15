@@ -1,9 +1,15 @@
-package unipi.it.mircv.common;
+package unipi.it.mircv.indexing;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import unipi.it.mircv.common.IndexUtil;
+import unipi.it.mircv.common.Util;
 import unipi.it.mircv.indexing.Index;
+import unipi.it.mircv.indexing.dataStructures.Doc;
+import unipi.it.mircv.indexing.dataStructures.DocumentIndex;
+import unipi.it.mircv.indexing.dataStructures.InvertedIndex;
+import unipi.it.mircv.indexing.dataStructures.Lexicon;
 import unipi.it.mircv.preprocessing.Preprocessing;
 import unipi.it.mircv.preprocessing.Tokenization;
 
@@ -23,6 +29,7 @@ public class Reader {
     public static List<Doc> processCollection(String file) {
         Index index = new Index();
         Util util = new Util();
+        IndexUtil indexUtil= new IndexUtil();
         Preprocessing preprocessing = new Preprocessing();
         List<Doc> docList = new ArrayList<>();
         Tokenization tokenization = new Tokenization();
@@ -106,9 +113,9 @@ public class Reader {
                     }
 
                     //Generate the last Block
-                    util.writeBlockToDisk(index.getBlockNumber(),index.getDocumentIndex());
-                    util.writeBlockToDisk(index.getBlockNumber(),index.getLexicon());
-                    util.writeBlockToDisk(index.getBlockNumber(),index.getInvertedIndex());
+                    indexUtil.writeBlockToDisk(index.getBlockNumber(),index.getDocumentIndex());
+                    indexUtil.writeBlockToDisk(index.getBlockNumber(),index.getLexicon());
+                    indexUtil.writeBlockToDisk(index.getBlockNumber(),index.getInvertedIndex());
 
 
                     index.setLexicon(new Lexicon());
@@ -121,11 +128,11 @@ public class Reader {
                     //Increment blockNumber
 
 
-                    util.readBlockFromDisk(index.getBlockNumber());
-                    util.mergeDocumentIndex(index.getBlockNumber());
+                    indexUtil.readBlockFromDisk(index.getBlockNumber());
+                    indexUtil.mergeDocumentIndex(index.getBlockNumber());
                     //util.invertedIndexMerge(index.getBlockNumber());
-                    util.mergeInvertedIndex(index.getBlockNumber());
-                    util.lexiconMerge(index.getBlockNumber());
+                    indexUtil.mergeInvertedIndex(index.getBlockNumber());
+                    indexUtil.lexiconMerge(index.getBlockNumber());
 
                 }
 

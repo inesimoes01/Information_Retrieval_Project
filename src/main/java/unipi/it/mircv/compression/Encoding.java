@@ -1,11 +1,9 @@
-package unipi.it.mircv.common;
+package unipi.it.mircv.compression;
 
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-
-import static java.io.File.separator;
 
 public class Encoding {
 

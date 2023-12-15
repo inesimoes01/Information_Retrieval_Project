@@ -8,7 +8,9 @@ import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
 import java.util.*;
 
-
+/**
+ * Utility class containing various methods for file I/O, memory management, and merging indexes.
+ */
 public class Util {
     private BufferedReader[] lexiconScanners;
     private BufferedReader[] documentIndexReaders;
@@ -41,7 +43,12 @@ public class Util {
     public double getThreshold() {
         return threshold;
     }
-
+    /**
+     * Checks if the memory usage exceeds a specified threshold.
+     *
+     * @param threshold The memory usage threshold as a percentage.
+     * @return True if memory usage exceeds the threshold, false otherwise.
+     */
     public static boolean isMemoryFull(double threshold) {
 
         // Ottieni le informazioni sulla memoria
@@ -61,7 +68,9 @@ public class Util {
         }
         return false;
     }
-
+    /**
+     * Prints the current memory usage statistics.
+     */
     public void printUsage() {
         // Get the runtime object
         Runtime runtime = Runtime.getRuntime();
@@ -79,7 +88,12 @@ public class Util {
         System.out.println("Percentage Used: " + percentageUsed + "%");
     }
 
-
+    /**
+     * Writes a block of DocumentIndex to disk.
+     *
+     * @param blockCounter   The block number.
+     * @param documentIndex  The DocumentIndex to be written.
+     */
     public void writeBlockToDisk(int blockCounter, DocumentIndex documentIndex) {
         String directoryPath = "data/output/";
         String filePath = directoryPath + "DocumentIndex" + blockCounter + ".txt";
@@ -110,7 +124,12 @@ public class Util {
             e.printStackTrace();
         }
     }
-
+    /**
+     * Writes a block of Lexicon to disk.
+     *
+     * @param blockCounter The block number.
+     * @param lexicon      The Lexicon to be written.
+     */
     public void writeBlockToDisk(int blockCounter, Lexicon lexicon) {
         String directoryPath = "data/output/";
         String filePath = directoryPath + "Lexicon" + blockCounter + ".txt";
@@ -141,7 +160,12 @@ public class Util {
         }
     }
 
-
+    /**
+     * Writes a block of InvertedIndex to disk.
+     *
+     * @param blockCounter   The block number.
+     * @param invertedIndex  The InvertedIndex to be written.
+     */
     public void writeBlockToDisk(int blockCounter, InvertedIndex invertedIndex) {
         String directoryPath = "data/output/";
         String filePath = directoryPath + "InvertedIndex" + blockCounter + ".txt";
@@ -172,7 +196,11 @@ public class Util {
             e.printStackTrace();
         }
     }
-
+    /**
+     * Reads a block from disk and initializes scanners for lexicon and document index.
+     *
+     * @param blockCounter The block number.
+     */
     public void readBlockFromDisk(int blockCounter) {
         lexiconScanners = new BufferedReader[blockCounter];
         documentIndexReaders = new BufferedReader[blockCounter];
@@ -196,7 +224,11 @@ public class Util {
         }
     }
 
-
+    /**
+     * Merges DocumentIndex entries from multiple blocks and writes to a merged file.
+     *
+     * @param blockCounter The total number of blocks.
+     */
     public void mergeDocumentIndex(int blockCounter) {
         myWriterDocumentIndex = null;
         documentIndexEntries = new ArrayList<>();
@@ -250,7 +282,11 @@ public class Util {
         }
     }
 
-
+    /**
+     * Closes readers and writer associated with DocumentIndex.
+     *
+     * @param blockCounter The total number of blocks.
+     */
     public void closeReadersAndWriter(int blockCounter) {
         try {
             for (int i = 0; i < blockCounter; i++) {
@@ -266,7 +302,11 @@ public class Util {
         }
     }
 
-
+    /**
+     * Merges Lexicon entries from multiple blocks and writes to a merged file.
+     *
+     * @param blockCounter The total number of blocks.
+     */
     public void lexiconMerge(int blockCounter) {
         String outputPath = "data/output/LexiconMerged.txt";
         String invertedIndexPath = "data/output/InvertedIndexMerged.txt";
@@ -276,7 +316,7 @@ public class Util {
             directory.mkdirs();
         }
 
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath)); RandomAccessFile randomAccessFile = new RandomAccessFile(invertedIndexPath, "r"); ) {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath)); RandomAccessFile randomAccessFile = new RandomAccessFile(invertedIndexPath, "r"); BufferedReader bufferedReader = new BufferedReader(new FileReader("data/output/DocumentIndexMerged.txt")); ) {
 
             TreeMap<String, TermStats> termStatsMap = new TreeMap<>();
             PriorityQueue<String> priorityQueue = new PriorityQueue<>(Comparator.naturalOrder());
@@ -338,10 +378,9 @@ public class Util {
                 offset = findOffset(randomAccessFile, term, offset) ;
                 termStats.setInvertedIndexOffset(prevoffset);
 
-                try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/output/DocumentIndexMerged.txt"))) {
+
                     randomAccessFile.seek(prevoffset);
                     String line = randomAccessFile.readLine();
-                    System.out.println(line);
 
                     termUpperBound = computeTermUpperBound(bufferedReader, splitInvertedIndexLine(line), termStats);
 
@@ -352,9 +391,7 @@ public class Util {
                     prevoffset = offset;
                     bufferedWriter.newLine();
 
-                }catch (IOException e) {
-                    e.printStackTrace();
-                }
+
             }
 
             // Close readers
@@ -366,7 +403,11 @@ public class Util {
         }
     }
 
-
+    /**
+     * Merges InvertedIndex entries from multiple blocks and writes to a merged file.
+     *
+     * @param blockCounter The total number of blocks.
+     */
     public void mergeInvertedIndex(int blockCounter) {
         // Output file path for merged lexicon
         String outputPath = "data/output/InvertedIndexMerged.txt";
@@ -458,7 +499,7 @@ public class Util {
                 for (int docId : docIds) {
                     bufferedWriter.write(docId + " ");
                 }
-                bufferedWriter.write( " ");
+
 
                 for (int freq : freqs) {
                     bufferedWriter.write(freq + " ");
@@ -479,6 +520,12 @@ public class Util {
     //myWriterDocIds = new TextWriter("Data/Output/DocIds/docIds" + blockCounter + ".txt");
     //myWriterFreq = new TextWriter("Data/Output/Frequencies/freq" + blockCounter + ".txt");
     //myWriterDocumentIndex = new TextWriter("Data/Output/DocumentIndex/documentIndex" + blockCounter + ".txt");
+    /**
+     * Merges two ArrayLists element-wise.
+     * @param list1 The first ArrayList.
+     * @param list2 The second ArrayList.
+     * @return The merged ArrayList.
+     */
     public static ArrayList<String> mergeArrayLists(ArrayList<String> list1, ArrayList<String> list2) {
         if (list1 == null || list2 == null) {
             throw new IllegalArgumentException("Le liste non possono essere nulli");
@@ -494,7 +541,12 @@ public class Util {
         }
         return mergedList;
     }
-
+    /**
+     * Splits an InvertedIndex line into its components.
+     *
+     * @param line The InvertedIndex line to be split.
+     * @return An ArrayList containing the split components.
+     */
     static ArrayList<String> splitInvertedIndexLine(String line) {
         if (line!= null) {
             String[] parts = line.split("\\s+", 3);
@@ -527,6 +579,16 @@ public class Util {
         }
         return null;
     }
+
+    /**
+     * Computes the upper bound for a term based on ranking calculations.
+     *
+     * @param bufferedReader The BufferedReader for DocumentIndex.
+     * @param input           The ArrayList containing InvertedIndex components.
+     * @param termStats       The statistics for the term.
+     * @return The computed upper bound.
+     * @throws IOException If an I/O error occurs.
+     */
     static double computeTermUpperBound(BufferedReader bufferedReader, ArrayList<String> input, TermStats termStats) throws IOException {
         if (input != null) {
             String[] docids = input.get(1).split("\\s+");
@@ -548,7 +610,7 @@ public class Util {
             double maxResult = Integer.MIN_VALUE;
             Ranking ranking = new Ranking();
 
-            for (int i = 0; i < docids.length; i++) {
+            for (int i = 0; i < docidslen.size(); i++) {
                 //int num = Integer.parseInt(numStr);
                 double result = ranking.computeRanking(Integer.parseInt(freqs[i]), Integer.parseInt(count), termStats.getDocumentFrequency(), Integer.parseInt(docidslen.get(i)), Float.parseFloat(avgDocLen));
                 if (result > maxResult) {
@@ -564,9 +626,15 @@ public class Util {
         return 0;
     }
 
-
-
-
+    /**
+     * Finds the offset of a term in a RandomAccessFile.
+     *
+     * @param randomAccessFile The RandomAccessFile to search.
+     * @param searchTerm       The term to search for.
+     * @param startOffset      The starting offset for the search.
+     * @return The offset of the term or -1 if not found.
+     * @throws IOException If an I/O error occurs.
+     */
     public static long findOffset(RandomAccessFile randomAccessFile, String searchTerm, long startOffset) throws IOException {
         long currentOffset = startOffset;
         // Move to the specified start offset
@@ -588,7 +656,14 @@ public class Util {
         // If the search term is not found, return -1
         return -1;
     }
-
+    /**
+     * Searches for values in DocumentIndex based on a list of terms.
+     *
+     * @param bufferedReader The BufferedReader for DocumentIndex.
+     * @param inputList      The list of terms to search for.
+     * @return The list of corresponding values from DocumentIndex.
+     * @throws IOException If an I/O error occurs.
+     */
     static ArrayList<String> searchValuesDocumentIndex(BufferedReader bufferedReader, ArrayList<String> inputList) throws IOException {
         ArrayList<String> outputList = new ArrayList<>();
         HashMap<String, String> map = new HashMap<>();
@@ -607,6 +682,14 @@ if (inputList.contains(parts[0])){
 
 
 
+    /**
+     * Searches for values in Lexicon based on a term.
+     *
+     * @param bufferedReader The BufferedReader for Lexicon.
+     * @param term            The term to search for.
+     * @return The list of corresponding values from Lexicon.
+     * @throws IOException If an I/O error occurs.
+     */
     static ArrayList<String> searchValuesLexicon (BufferedReader bufferedReader, String term) throws IOException {
         ArrayList<String> toReturn = new ArrayList<>();
         String line;

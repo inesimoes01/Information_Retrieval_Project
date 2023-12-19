@@ -4,11 +4,12 @@ import unipi.it.mircv.common.*;
 
 import unipi.it.mircv.preprocessing.Preprocessing;
 
+import java.io.IOException;
 import java.util.*;
 
 public class QueryProcessing {
 
-    public void mainQueryProcessing(){
+    public void mainQueryProcessing() throws IOException {
         Scanner input = new Scanner(System.in);
         Preprocessing preprocessing = new Preprocessing();
         ScoringStrategy strategy = new ScoringStrategy();
@@ -34,13 +35,9 @@ public class QueryProcessing {
         relevantDocs = ScoringStrategy.disjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
 
         // TODO remove later, only temporary
-        calculateTermUpperBounds(termList, relevantDocs);
+        //calculateTermUpperBounds(termList, relevantDocs);
 
         if (!relevantDocs.isEmpty()){
-            // remove terms that do not exist in the collection from query
-//            String[] queryPartsFiltered = removeTerms(queryPartsOriginal, termsToRemove);
-//            System.out.println("Final Query " + Arrays.toString(queryPartsFiltered));
-
             // scoring results using DAAT or MaxScore and TFDIF or BM25
             List<DocumentQP> scoredResults = strategy.scoringStrategy(termList, relevantDocs, Flags.getNumberOfDocuments());
 
@@ -69,28 +66,28 @@ public class QueryProcessing {
 //        return filteredList.toArray(new String[0]);
 //    }
 
-    private void calculateTermUpperBounds(List<TermDictionary> termList, List<DocumentQP> docList){
-        Ranking ranking = new Ranking();
-        double scoreValue;
-        boolean first;
+//    private void calculateTermUpperBounds(List<TermDictionary> termList, List<DocumentQP> docList){
+//        Ranking ranking = new Ranking();
+//        double scoreValue;
+//        boolean first;
+//
+//        for (TermDictionary term : termList){
+//            for (TermDictionary.Posting doc : term.getPostingList()){
+//                first = true;
+//                for (DocumentQP doc2 : docList){
+//                    if (doc2.getDocId().equals(doc.getDocId())){
+//                        scoreValue = ranking.computeTermUpperBound(term, doc2);
+//                        if (first) {
+//                            term.setTermUpperBound(scoreValue);
+//                            first = false;
+//                        }
+//                        if (scoreValue > term.getTermUpperBound()) term.setTermUpperBound(scoreValue);
+//                    }
+//                }
+//            }
+//        }
 
-        for (TermDictionary term : termList){
-            for (TermDictionary.Posting doc : term.getPostingList()){
-                first = true;
-                for (DocumentQP doc2 : docList){
-                    if (doc2.getDocId().equals(doc.getDocId())){
-                        scoreValue = ranking.computeTermUpperBound(term, doc2);
-                        if (first) {
-                            term.setTermUpperBound(scoreValue);
-                            first = false;
-                        }
-                        if (scoreValue > term.getTermUpperBound()) term.setTermUpperBound(scoreValue);
-                    }
-                }
-            }
-        }
-
-    }
+    //}
 
 }
 

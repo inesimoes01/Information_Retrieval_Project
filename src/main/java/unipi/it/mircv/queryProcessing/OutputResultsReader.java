@@ -1,6 +1,10 @@
 package unipi.it.mircv.queryProcessing;
 
+import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
+import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
+
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,6 +57,7 @@ public class OutputResultsReader {
                     term.setTerm(queryTerm);
                     term.setCollectionFrequency(Integer.parseInt(parts[1].trim()));
                     term.setDocumentFrequency(Integer.parseInt(parts[2].trim()));
+                    term.setOffset(Integer.parseInt(parts[3].trim()));
                     term.setTermUpperBound(Double.parseDouble(parts[4]));
                     //System.out.println("Found term in Lexicon" + term.getTermUpperBound());
                     return true;
@@ -81,33 +86,53 @@ public class OutputResultsReader {
         }
     }
 
-    // saves DocId and Freq
     private static boolean searchTermInInvertedIndex(TermDictionary term){
         try {
-            List<String> lines = Files.readAllLines(PATH_INVERTED_INDEX, StandardCharsets.UTF_8);
-            for (String line : lines) {
-                String[] checkTerm = line.split(" ");
-                if (checkTerm[0].equalsIgnoreCase(term.getTerm())){
-                    for (int j = 1; j < (checkTerm.length)/2; j++) {
-                        //System.out.println("Values " + checkTerm[j] + " "+ checkTerm[j+(checkTerm.length-1)/2]);
-                        TermDictionary.Posting pL = new TermDictionary.Posting();
-                        pL.setDocId(Integer.valueOf(checkTerm[j]));
-                        pL.setFreq(Integer.valueOf(checkTerm[j+(checkTerm.length-1)/2]));
-                        term.getPostingList().add(pL);
-
-                    }
-                    return true;
+            RandomAccessFile invertedIndexFile = new RandomAccessFile(String.valueOf(PATH_INVERTED_INDEX), "r");
+            invertedIndexFile.seek(term.getOffset());
+            String line = invertedIndexFile.readLine();
+            String[] checkTerm = line.split(" ");
+            if (checkTerm[0].equalsIgnoreCase(term.getTerm())){
+                for (int j = 1; j < (checkTerm.length)/2; j++) {
+                    //System.out.println("Values " + checkTerm[j] + " "+ checkTerm[j+(checkTerm.length-1)/2]);
+                    TermDictionary.Posting pL = new TermDictionary.Posting();
+                    pL.setDocId(Integer.valueOf(checkTerm[j]));
+                    pL.setFreq(Integer.valueOf(checkTerm[j+(checkTerm.length-1)/2]));
+                    term.getPostingList().add(pL);
                 }
-
-
+                return true;
             }
+
+            invertedIndexFile.close();
             // term not found in collection
             return false;
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+    // saves DocId and Freq
+//    private static boolean searchTermInInvertedIndex(TermDictionary term){
+//        try {
+//            List<String> lines = Files.readAllLines(PATH_INVERTED_INDEX, StandardCharsets.UTF_8);
+//            for (String line : lines) {
+//                String[] checkTerm = line.split(" ");
+//                if (checkTerm[0].equalsIgnoreCase(term.getTerm())){
+//                    for (int j = 1; j < (checkTerm.length)/2; j++) {
+//                        //System.out.println("Values " + checkTerm[j] + " "+ checkTerm[j+(checkTerm.length-1)/2]);
+//                        TermDictionary.Posting pL = new TermDictionary.Posting();
+//                        pL.setDocId(Integer.valueOf(checkTerm[j]));
+//                        pL.setFreq(Integer.valueOf(checkTerm[j+(checkTerm.length-1)/2]));
+//                        term.getPostingList().add(pL);
+//                    }
+//                    return true;
+//                }
+//            }
+//            // term not found in collection
+//            return false;
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
 

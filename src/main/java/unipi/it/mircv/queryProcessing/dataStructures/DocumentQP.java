@@ -1,4 +1,4 @@
-package unipi.it.mircv.queryProcessing;
+package unipi.it.mircv.queryProcessing.dataStructures;
 
 public class DocumentQP implements Comparable<DocumentQP>{
     private Integer docId;

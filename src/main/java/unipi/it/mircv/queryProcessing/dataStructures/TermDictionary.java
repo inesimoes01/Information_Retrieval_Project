@@ -1,6 +1,7 @@
-package unipi.it.mircv.queryProcessing;
+package unipi.it.mircv.queryProcessing.dataStructures;
 
 import unipi.it.mircv.common.Flags;
+import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
 
 import java.util.*;
 
@@ -17,7 +18,7 @@ public class TermDictionary {
     // how many documents the term appears in
     private Double termUpperBoundTFIDF;
     private Double termUpperBoundBM25;
-
+    private int offset;
     public static class Posting {
         private Integer docId;
         private Integer freq;
@@ -44,6 +45,14 @@ public class TermDictionary {
 
     private List<DocumentQP> documentsWithTerm = new ArrayList<>();
 
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
     public List<Posting> getPostingList() {
         return posting;
     }
@@ -67,8 +76,6 @@ public class TermDictionary {
     public void setDocumentsWithTerm(DocumentQP documentsWithTerm) {
         this.documentsWithTerm.add(documentsWithTerm);
     }
-
-
 
     public String getTerm() {
         return term;

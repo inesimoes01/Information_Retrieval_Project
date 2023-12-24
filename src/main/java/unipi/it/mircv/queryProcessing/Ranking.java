@@ -2,6 +2,8 @@ package unipi.it.mircv.queryProcessing;
 
 
 import unipi.it.mircv.common.Flags;
+import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
+import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

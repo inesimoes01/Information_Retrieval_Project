@@ -1,10 +1,10 @@
 package unipi.it.mircv.common;
 
 public class Flags {
-    //private static boolean isConjunctive_flag;
-    private static boolean isTFIDF_flag;
-    private static boolean isASCII_flag;
 
+    //private static boolean isConjunctive_flag;
+    private static boolean isEvaluation = true;
+    private static boolean isTFIDF_flag;
     private static boolean isDAAT_flag;
     private static int numberOfDocuments;
 
@@ -15,10 +15,6 @@ public class Flags {
 
     public static void setIsTFIDF_flag(boolean isTFIDF_flag) {
         Flags.isTFIDF_flag = isTFIDF_flag;
-    }
-
-    public static void setIsASCII_flag(boolean isASCII_flag) {
-        Flags.isASCII_flag = isASCII_flag;
     }
 
     public static void setNumberOfDocuments(int numberOfDocuments) {
@@ -41,12 +37,14 @@ public class Flags {
         return isTFIDF_flag;
     }
 
-    public static boolean isIsASCII_flag() {
-        return isASCII_flag;
-    }
 
     public static boolean isIsDAAT_flag() {
         return isDAAT_flag;
     }
+
+    public static boolean isIsEvaluation() {
+        return isEvaluation;
+    }
+
 
 }

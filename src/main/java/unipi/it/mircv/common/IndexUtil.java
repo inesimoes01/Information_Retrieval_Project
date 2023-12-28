@@ -78,6 +78,7 @@ public class IndexUtil {
                 ArrayList<String> docLexiconKey = lexicon.sortLexicon();
                 for (String i : docLexiconKey) {
                     // Write information to the bufferedWriter
+                    System.out.println(i + " " + lexicon.getLexicon().get(i));
                     bufferedWriter.write(i + " " + lexicon.getLexicon().get(i));
                     bufferedWriter.newLine();  // Move to the next line
                 }

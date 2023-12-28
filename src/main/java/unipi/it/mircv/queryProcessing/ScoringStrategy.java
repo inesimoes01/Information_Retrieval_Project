@@ -1,17 +1,21 @@
 package unipi.it.mircv.queryProcessing;
 
 import unipi.it.mircv.common.Flags;
+import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
+import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
 
+import java.io.IOException;
 import java.util.*;
 
 public class ScoringStrategy {
 
-    public List<DocumentQP> scoringStrategy(List<TermDictionary> termList, List<DocumentQP> relevantDocs, int k){
+    public List<DocumentQP> scoringStrategy(List<TermDictionary> termList, List<DocumentQP> relevantDocs, int k) throws IOException {
+        OutputResultsReader.saveTotalNumberDocs();
         if (Flags.isIsDAAT_flag()) return DAAT(termList, relevantDocs, k);
         else return maxScore(termList, relevantDocs, k);
     }
 
-    private List<DocumentQP> DAAT(List<TermDictionary> termList, List<DocumentQP> relevantDocs, int k){
+    private List<DocumentQP> DAAT(List<TermDictionary> termList, List<DocumentQP> relevantDocs, int k) throws IOException {
 
         List<DocumentQP> topResults = new ArrayList<>();
 
@@ -45,19 +49,19 @@ public class ScoringStrategy {
         // TODO: make the termList reset everytime a new query is entered
     }
 
-    private List<DocumentQP> maxScore(List<TermDictionary> termList, List<DocumentQP> relevantDocs, int k){
+    private List<DocumentQP> maxScore(List<TermDictionary> termList, List<DocumentQP> relevantDocs, int k) throws IOException {
         List<DocumentQP> topResults = new ArrayList<>();
         Ranking ranking = new Ranking();
         DocumentQP currentDoc;
         int i = 0;
         double score;
         double maxScoreNonEssential = 0;
-        double threshold = 5;
+        double threshold = 4;
 
         // order termList by termUpperBound
         termList.sort(Comparator.comparingDouble(TermDictionary::getTermUpperBound));
         Collections.reverse(termList);
-        for (TermDictionary term : termList) System.out.println("Term " + term.getTerm() + " with UpperBound " + term.getTermUpperBound());
+        //for (TermDictionary term : termList) System.out.println("Term " + term.getTerm() + " with UpperBound " + term.getTermUpperBound());
 
         // separate terms in essential and nonEssential
         List<TermDictionary> essentialTerms = new ArrayList<>();
@@ -89,6 +93,8 @@ public class ScoringStrategy {
 
             // save score
             currentDoc.setScore(score);
+            // update top k
+            if (topResults.size() < k) saveTopKDocuments(relevantDocs, k, topResults, currentDoc);
 
             // check if we should score the rest of the terms
             if (score + maxScoreNonEssential < threshold) {

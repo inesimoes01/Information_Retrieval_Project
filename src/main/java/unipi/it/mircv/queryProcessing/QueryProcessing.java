@@ -2,26 +2,40 @@ package unipi.it.mircv.queryProcessing;
 
 import unipi.it.mircv.common.*;
 
+import unipi.it.mircv.evalution.Evaluation;
+import unipi.it.mircv.evalution.QueryStructure;
 import unipi.it.mircv.preprocessing.Preprocessing;
+import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
+import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
 
+import java.io.IOException;
 import java.util.*;
 
 public class QueryProcessing {
+    private static long timeForQueryProcessing;
 
-    public void mainQueryProcessing(){
-        Scanner input = new Scanner(System.in);
+
+    public static void mainQueryProcessing() throws IOException {
+        TerminalDemo terminal = new TerminalDemo();
+        Evaluation evaluation = new Evaluation();
+
+        if (!Flags.isIsEvaluation()){
+            //TODO ask as many queries as the user wants, only end when user quits
+            processing(terminal.runTerminal(), null);
+        }else {
+            System.out.println("Processing for DAAT and TFIDF: ");
+            Flags.setIsDAAT_flag(true);
+            Flags.setIsTFIDF_flag(true);
+            Flags.setNumberOfDocuments(20);
+            evaluation.mainEvaluation("data/evaluation/output/msmarco-test2019-queries.tsv.gz");
+        }
+
+    }
+
+    public static void processing(String query, QueryStructure struct) throws IOException {
         Preprocessing preprocessing = new Preprocessing();
         ScoringStrategy strategy = new ScoringStrategy();
         List<TermDictionary> termList = new ArrayList<>();
-
-        System.out.println("Insert query: ");
-        String query = input.nextLine();
-        System.out.println("DAAT (d) or MaxScore (m) processing? ");
-        Flags.setIsDAAT_flag(input.nextLine().equals("d"));
-        System.out.println("TFIDF (t) or BM25 (b) processing? ");
-        Flags.setIsTFIDF_flag(input.nextLine().equals("t"));
-        System.out.println("How many documents?");
-        Flags.setNumberOfDocuments(Integer.parseInt(input.nextLine()));
         long start_time = System.currentTimeMillis();
 
         // clean text by prepocessing
@@ -33,24 +47,23 @@ public class QueryProcessing {
         List<String> termsToRemove = new ArrayList<>();
         relevantDocs = ScoringStrategy.disjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
 
-        // TODO remove later, only temporary
-        calculateTermUpperBounds(termList, relevantDocs);
 
         if (!relevantDocs.isEmpty()){
-            // remove terms that do not exist in the collection from query
-//            String[] queryPartsFiltered = removeTerms(queryPartsOriginal, termsToRemove);
-//            System.out.println("Final Query " + Arrays.toString(queryPartsFiltered));
-
             // scoring results using DAAT or MaxScore and TFDIF or BM25
             List<DocumentQP> scoredResults = strategy.scoringStrategy(termList, relevantDocs, Flags.getNumberOfDocuments());
 
-            // print results
-            for (DocumentQP doc : scoredResults) System.out.println(doc.getDocId() + " " + doc.getScore());
+
+            if(Flags.isIsEvaluation()) for (DocumentQP doc : scoredResults) struct.setDocumentEval(doc.getDocId(), doc.getScore());
+                //System.out.println(doc.getDocId() + " " + doc.getScore());
         }
 
         long end_time = System.currentTimeMillis();
-        long processingTime = end_time - start_time;
-        System.out.println("Query Processing took " + (double) processingTime/1000 + " seconds.");
+        timeForQueryProcessing = end_time - start_time;
+        System.out.println("Query Processing took " + (double) timeForQueryProcessing/1000 + " seconds.");
+    }
+
+    public static long getTimeForQueryProcessing() {
+        return timeForQueryProcessing;
     }
 
 
@@ -69,28 +82,28 @@ public class QueryProcessing {
 //        return filteredList.toArray(new String[0]);
 //    }
 
-    private void calculateTermUpperBounds(List<TermDictionary> termList, List<DocumentQP> docList){
-        Ranking ranking = new Ranking();
-        double scoreValue;
-        boolean first;
+//    private void calculateTermUpperBounds(List<TermDictionary> termList, List<DocumentQP> docList){
+//        Ranking ranking = new Ranking();
+//        double scoreValue;
+//        boolean first;
+//
+//        for (TermDictionary term : termList){
+//            for (TermDictionary.Posting doc : term.getPostingList()){
+//                first = true;
+//                for (DocumentQP doc2 : docList){
+//                    if (doc2.getDocId().equals(doc.getDocId())){
+//                        scoreValue = ranking.computeTermUpperBound(term, doc2);
+//                        if (first) {
+//                            term.setTermUpperBound(scoreValue);
+//                            first = false;
+//                        }
+//                        if (scoreValue > term.getTermUpperBound()) term.setTermUpperBound(scoreValue);
+//                    }
+//                }
+//            }
+//        }
 
-        for (TermDictionary term : termList){
-            for (TermDictionary.Posting doc : term.getPostingList()){
-                first = true;
-                for (DocumentQP doc2 : docList){
-                    if (doc2.getDocId().equals(doc.getDocId())){
-                        scoreValue = ranking.computeTermUpperBound(term, doc2);
-                        if (first) {
-                            term.setTermUpperBound(scoreValue);
-                            first = false;
-                        }
-                        if (scoreValue > term.getTermUpperBound()) term.setTermUpperBound(scoreValue);
-                    }
-                }
-            }
-        }
-
-    }
+    //}
 
 }
 

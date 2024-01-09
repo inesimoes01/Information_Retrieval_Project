@@ -1,5 +1,6 @@
 package unipi.it.mircv.queryProcessing.dataStructures;
 
+import org.apache.lucene.index.Term;
 import unipi.it.mircv.common.Flags;
 import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
 
@@ -7,7 +8,14 @@ import java.util.*;
 
 public class TermDictionary {
     private String term;
-    private List<Posting> posting = new ArrayList<>();
+
+    public PostingList getPostingByDocId(List<PostingList> postingList, Integer docId){
+        for (PostingList post : postingList){
+            if (post.getDocId().equals(docId)) return post;
+        }
+        return null;
+    }
+    private List<PostingList> posting = new ArrayList<>();
     // DocId Freq
     // public Iterator<Posting> iterator = posting.iterator();
     // iterator to help transverse the postingList
@@ -19,29 +27,7 @@ public class TermDictionary {
     private Double termUpperBoundTFIDF;
     private Double termUpperBoundBM25;
     private int offset;
-    public static class Posting {
-        private Integer docId;
-        private Integer freq;
-        public Integer getDocId() {
-            return docId;
-        }
-        public void setDocId(Integer docId) {
-            this.docId = docId;
-        }
-        public Integer getFreq() {
-            return freq;
-        }
-        public void setFreq(Integer freq) {
-            this.freq = freq;
-        }
-    }
 
-    public Posting getPostingByDocId(List<Posting> postingList, Integer docId){
-        for (Posting post : postingList){
-            if (post.docId.equals(docId)) return post;
-        }
-        return null;
-    }
 
     private List<DocumentQP> documentsWithTerm = new ArrayList<>();
 
@@ -53,7 +39,7 @@ public class TermDictionary {
         this.offset = offset;
     }
 
-    public List<Posting> getPostingList() {
+    public List<PostingList> getPostingList() {
         return posting;
     }
 

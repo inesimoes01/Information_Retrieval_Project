@@ -2,6 +2,7 @@ package unipi.it.mircv.queryProcessing;
 
 import unipi.it.mircv.common.Flags;
 import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
+import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
 import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
 
 import java.io.IOException;
@@ -31,16 +32,17 @@ public class ScoringStrategy {
             currentDoc = relevantDocs.get(i);
 
             for (TermDictionary dictionaryTerm : termList) {
-                for (TermDictionary.Posting pL : dictionaryTerm.getPostingList()){
+                for (PostingList pL : dictionaryTerm.getPostingList()){
                     if (currentDoc.getDocId().equals(pL.getDocId())){
                         documentUpperBound += ranking.computeRanking_QP(dictionaryTerm, relevantDocs.get(i));
+
                     }
                 }
             }
             currentDoc.setScore(documentUpperBound);
 
             saveTopKDocuments(relevantDocs, k, topResults, currentDoc);
-
+            //System.out.println("Saved files");
             if (i < relevantDocs.size()-1) i++;
             else break;
         }
@@ -84,7 +86,7 @@ public class ScoringStrategy {
 
             // ESSENTIAL POSTING LIST
             for (TermDictionary dictionaryTerm : essentialTerms) {
-                for (TermDictionary.Posting pL : dictionaryTerm.getPostingList()){
+                for (PostingList pL : dictionaryTerm.getPostingList()){
                     if (currentDoc.getDocId().equals(pL.getDocId())){
                         score += ranking.computeRanking_QP(dictionaryTerm, currentDoc);
                     }
@@ -106,7 +108,7 @@ public class ScoringStrategy {
 
             // NON ESSENTIAL POSTING LIST
             for (TermDictionary dictionaryTerm : nonEssentialTerms) {
-                for (TermDictionary.Posting pL : dictionaryTerm.getPostingList()){
+                for (PostingList pL : dictionaryTerm.getPostingList()){
                     if (currentDoc.getDocId().equals(pL.getDocId())){
                         score += ranking.computeRanking_QP(dictionaryTerm, currentDoc);
                     }
@@ -184,7 +186,7 @@ public class ScoringStrategy {
         for (String term : query) {
             // fills the term list
             TermDictionary termInstance = OutputResultsReader.fillTermDictionary(termList, term);
-
+            //System.out.println("Term \"" + term + "\"");
             // if query term does not exist in the collection, return null
             if (termInstance == null){
                 System.out.println("Term \"" + term + "\" not found");

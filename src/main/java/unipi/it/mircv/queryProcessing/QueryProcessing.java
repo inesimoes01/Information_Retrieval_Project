@@ -27,7 +27,7 @@ public class QueryProcessing {
             Flags.setIsDAAT_flag(true);
             Flags.setIsTFIDF_flag(true);
             Flags.setNumberOfDocuments(20);
-            evaluation.mainEvaluation("data/evaluation/output/msmarco-test2019-queries.tsv.gz");
+            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
         }
 
     }
@@ -52,9 +52,17 @@ public class QueryProcessing {
             // scoring results using DAAT or MaxScore and TFDIF or BM25
             List<DocumentQP> scoredResults = strategy.scoringStrategy(termList, relevantDocs, Flags.getNumberOfDocuments());
 
+            if(Flags.isIsEvaluation()) {
+                for (DocumentQP doc : scoredResults) {
+                    struct.setDocumentEval(doc.getDocId(), doc.getScore());
+                    //System.out.println(doc.getDocId() + " " + doc.getScore());
+                }
+            }else {
+                for (DocumentQP doc : scoredResults) {
+                    System.out.println(doc.getDocId() + " " + doc.getScore());
+                }
+            }
 
-            if(Flags.isIsEvaluation()) for (DocumentQP doc : scoredResults) struct.setDocumentEval(doc.getDocId(), doc.getScore());
-                //System.out.println(doc.getDocId() + " " + doc.getScore());
         }
 
         long end_time = System.currentTimeMillis();

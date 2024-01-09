@@ -2,6 +2,7 @@ package unipi.it.mircv.queryProcessing;
 
 
 import unipi.it.mircv.common.Flags;
+import unipi.it.mircv.common.Paths;
 import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
 import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
 
@@ -9,12 +10,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 
 public class Ranking {
-    private static final Path PATH_AVGDOCLEN = Paths.get("data/output/avgDocLen.txt");
 
     // tunable contants
     private final double K1 = 1.5;
@@ -90,7 +89,7 @@ public class Ranking {
         Integer nTotalDocsWithTerm = term.getDocumentFrequency();
         Integer nTermInDocument = term.getPostingByDocId(term.getPostingList(), doc.getDocId()).getFreq();
         Integer lengthDocument = doc.getLength();
-        List<String> lines = Files.readAllLines(PATH_AVGDOCLEN, StandardCharsets.UTF_8);
+        List<String> lines = Files.readAllLines(Paths.PATH_AVGDOCLEN, StandardCharsets.UTF_8);
         double avgDocLenCollection = Double.parseDouble(lines.get(0));
         //System.out.println("BM25 " + computeIDF(nTotalDocs, nTotalDocsWithTerm) + " * " + computeTF(nTermInDocument) + " / " + computeTF(nTermInDocument) + " + " + K1 + " * (1 - " + B + " + " + B + " * (" + lengthDocument + " / " + avgDocLenCollection);
         return computeIDF(nTotalDocs, nTotalDocsWithTerm) * computeTF(nTermInDocument) / computeTF(nTermInDocument) + K1 * (1 - B + B * ((double) lengthDocument / avgDocLenCollection));

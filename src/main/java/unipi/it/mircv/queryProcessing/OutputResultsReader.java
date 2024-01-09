@@ -1,6 +1,8 @@
 package unipi.it.mircv.queryProcessing;
 
+import unipi.it.mircv.common.Paths;
 import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
+import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
 import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
 
 import java.io.IOException;
@@ -8,7 +10,6 @@ import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class OutputResultsReader {
@@ -18,10 +19,6 @@ public class OutputResultsReader {
     public static int getnTotalDocuments() {
         return nTotalDocuments;
     }
-
-    private static final Path PATH_LEXICON = Paths.get("data/output/LexiconMerged.txt");
-    private static final Path PATH_INVERTED_INDEX = Paths.get("data/output/InvertedIndexMerged.txt");
-    private static final Path PATH_DOCUMENT_INDEX = Paths.get("data/output/DocumentIndexMerged.txt");
 
     public static TermDictionary fillTermDictionary(List<TermDictionary> listToFill, String queryTerm){
         TermDictionary term = new TermDictionary();
@@ -34,7 +31,7 @@ public class OutputResultsReader {
         if (!searchTermInInvertedIndex(term)) return null;
 
         // para cada docid, criar um DocumentQP
-        for (TermDictionary.Posting posting : term.getPostingList()) {
+        for (PostingList posting : term.getPostingList()) {
             DocumentQP doc = new DocumentQP();
             doc.setDocId(posting.getDocId());
             searchDocIdInDocumentIndex(doc);
@@ -49,17 +46,17 @@ public class OutputResultsReader {
     // saves Collection Frequency and Document Frequency
     private static boolean searchTermInLexicon(TermDictionary term, String queryTerm){
         try {
-            List<String> lines = Files.readAllLines(PATH_LEXICON, StandardCharsets.UTF_8);
+            List<String> lines = Files.readAllLines(Paths.PATH_LEXICON, StandardCharsets.UTF_8);
             for (String line : lines) {
                 String[] parts = line.split(" ");
                 if (parts.length >= 2 && parts[0].equalsIgnoreCase(queryTerm)) {
                     //boolean termExistsInCollection = true;
+
                     term.setTerm(queryTerm);
                     term.setCollectionFrequency(Integer.parseInt(parts[1].trim()));
                     term.setDocumentFrequency(Integer.parseInt(parts[2].trim()));
                     term.setOffset(Integer.parseInt(parts[3].trim()));
                     term.setTermUpperBound(Double.parseDouble(parts[4]));
-                    //System.out.println("Found term in Lexicon" + term.getTermUpperBound());
                     return true;
                 }
             }
@@ -72,7 +69,7 @@ public class OutputResultsReader {
     // saves Document Length
     private static void searchDocIdInDocumentIndex(DocumentQP doc){
         try {
-            List<String> lines = Files.readAllLines(PATH_DOCUMENT_INDEX, StandardCharsets.UTF_8);
+            List<String> lines = Files.readAllLines(Paths.PATH_DOCUMENT_INDEX, StandardCharsets.UTF_8);
             for (String line : lines) {
                 String[] parts = line.split(" ");
                 if (parts.length >= 2 && parts[0].equalsIgnoreCase(String.valueOf(doc.getDocId()))) {
@@ -88,22 +85,21 @@ public class OutputResultsReader {
 
     private static boolean searchTermInInvertedIndex(TermDictionary term){
         try {
-            RandomAccessFile invertedIndexFile = new RandomAccessFile(String.valueOf(PATH_INVERTED_INDEX), "r");
+            RandomAccessFile invertedIndexFile = new RandomAccessFile(String.valueOf(Paths.PATH_INVERTED_INDEX), "r");
             invertedIndexFile.seek(term.getOffset());
             String line = invertedIndexFile.readLine();
             String[] checkTerm = line.split(" ");
             if (checkTerm[0].equalsIgnoreCase(term.getTerm())){
                 for (int j = 1; j < (checkTerm.length)/2; j++) {
                     //System.out.println("Values " + checkTerm[j] + " "+ checkTerm[j+(checkTerm.length-1)/2]);
-                    TermDictionary.Posting pL = new TermDictionary.Posting();
-                    pL.setDocId(Integer.valueOf(checkTerm[j]));
-                    pL.setFreq(Integer.valueOf(checkTerm[j+(checkTerm.length-1)/2]));
+                    PostingList pL = new PostingList(Integer.valueOf(checkTerm[j]), Integer.valueOf(checkTerm[j+(checkTerm.length-1)/2]));
                     term.getPostingList().add(pL);
                 }
                 return true;
             }
 
             invertedIndexFile.close();
+            //System.out.println("Term");
             // term not found in collection
             return false;
         } catch (IOException e) {
@@ -158,7 +154,7 @@ public class OutputResultsReader {
 //    }
 
     public static void saveTotalNumberDocs() throws IOException {
-        List<String> allLines = Files.readAllLines(PATH_DOCUMENT_INDEX, StandardCharsets.UTF_8);
+        List<String> allLines = Files.readAllLines(Paths.PATH_DOCUMENT_INDEX, StandardCharsets.UTF_8);
 
         // get last line from file
         if (!allLines.isEmpty()) {

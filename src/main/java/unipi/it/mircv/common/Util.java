@@ -96,7 +96,7 @@ import java.util.*;
                 String count = "";
                 ArrayList<String> docidslen = new ArrayList<>(Arrays.asList(docids));
                 try {
-                    bufferedReader = new BufferedReader(new FileReader("data/output/DocumentIndexMerged.txt"));
+                    bufferedReader = new BufferedReader(new FileReader(Paths.PATH_DOCUMENT_INDEX_MERGED));
                     docidslen = new ArrayList<>(searchValuesDocumentIndex(bufferedReader, docidslen));
                     // ... altre operazioni ...
 
@@ -147,6 +147,7 @@ import java.util.*;
          */
         public static long findOffset(RandomAccessFile randomAccessFile, String searchTerm, long startOffset) throws IOException {
             long currentOffset = startOffset;
+
             // Move to the specified start offset
             randomAccessFile.seek(startOffset);
 
@@ -237,7 +238,7 @@ import java.util.*;
             TermStats termStats = new TermStats();
             String abc= "ciaooo 20 1 ";
 
-            try (BufferedReader bufferedReader = new BufferedReader(new FileReader("data/output/DocumentIndexMerged.txt"))) {
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(Paths.PATH_DOCUMENT_INDEX_MERGED))) {
             }catch (IOException e) {
                 e.printStackTrace();
             }

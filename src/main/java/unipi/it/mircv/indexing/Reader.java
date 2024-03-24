@@ -13,10 +13,7 @@ import unipi.it.mircv.indexing.dataStructures.Lexicon;
 import unipi.it.mircv.preprocessing.Preprocessing;
 import unipi.it.mircv.preprocessing.Tokenization;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -24,6 +21,7 @@ import java.util.regex.Pattern;
 
 
 public class Reader {
+    private static final int N_DOCS = 5000;
     private static final int BUFFER_SIZE = 4096;
 
     public static List<Doc> processCollection(String file) {
@@ -33,6 +31,8 @@ public class Reader {
         Preprocessing preprocessing = new Preprocessing();
         List<Doc> docList = new ArrayList<>();
         Tokenization tokenization = new Tokenization();
+
+        deleteFilesInFolder("data/output");
 
         // Use a regular expression to match the document ID in the entry name
         Pattern pattern = Pattern.compile("^(\\d+)\\s+(.*)$");
@@ -65,16 +65,18 @@ public class Reader {
 
                             if (matcher.find()) {
 
-                                int id;
+                                int id = 0;
                                 try {
                                     id = Integer.parseInt(matcher.group(1));
                                 } catch (NumberFormatException e) {
+                                    System.out.println(id);
                                     // If the parsing fails (e.g., the string is not a valid integer), continue to the next iteration.
                                     continue;
                                 }
 
                                 // If the second column in the 'columns' array is an empty string, continue to the next iteration.
                                 if (matcher.group(2).length() == 0) {
+                                    System.out.println("failed here " + line);
                                     continue;
                                 }
 
@@ -94,27 +96,30 @@ public class Reader {
                                 documentCount++;
 
                                 // Break out of the loop if the 4th document is processed
-                                if (documentCount >= 5000) {
+                                if (documentCount >= N_DOCS) {
                                     break;
                                 }
                             }
 
                         }
 
-
-
                         // Reset the ByteArrayOutputStream after processing the chunk
                         byteArrayOutputStream.reset();
 
                         // Break out of the loop if the 4th document is processed
-                        if (documentCount >= 5000) {
+                        if (documentCount >= N_DOCS) {
                             break;
                         }
                     }
 
+
+
                     //Generate the last Block
+                    System.out.println("Getting document index...");
                     indexUtil.writeBlockToDisk(index.getBlockNumber(),index.getDocumentIndex());
+                    System.out.println("Getting lexicon...");
                     indexUtil.writeBlockToDisk(index.getBlockNumber(),index.getLexicon());
+                    System.out.println("Getting inverted index...");
                     indexUtil.writeBlockToDisk(index.getBlockNumber(),index.getInvertedIndex());
 
 
@@ -129,15 +134,18 @@ public class Reader {
 
 
                     indexUtil.readBlockFromDisk(index.getBlockNumber());
+                    System.out.println("Merging document index...");
                     indexUtil.mergeDocumentIndex(index.getBlockNumber());
                     //util.invertedIndexMerge(index.getBlockNumber());
+                    System.out.println("Merging inverted index...");
                     indexUtil.mergeInvertedIndex(index.getBlockNumber());
+                    System.out.println("Merging lexicon...");
                     indexUtil.lexiconMerge(index.getBlockNumber());
 
                 }
 
                 // Break out of the loop if the 4th document is processed
-                if (documentCount >= 5000) {
+                if (documentCount >= N_DOCS) {
                     break;
                 }
             }
@@ -147,4 +155,25 @@ public class Reader {
 
         return docList;
     }
+
+    public static void deleteFilesInFolder(String folderPath) {
+        File folder = new File(folderPath);
+
+        if (folder.exists() && folder.isDirectory()) {
+            File[] files = folder.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile()) {
+                        file.delete();
+                        //System.out.println("Deleted file: " + file.getAbsolutePath());
+                    }
+                }
+            } else {
+                System.out.println("Folder is empty or cannot be read.");
+            }
+        } else {
+            System.out.println("Folder does not exist or is not a directory.");
+        }
+    }
+
 }

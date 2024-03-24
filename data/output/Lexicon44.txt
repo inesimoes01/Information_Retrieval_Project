@@ -1,7 +1,0 @@
-english/1 1/3562 1 
-homonym/2 1/3562 2 
-languag/1 1/3562 1 
-mean/4 1/3562 4 
-multipl/1 1/3562 1 
-puzzl/1 1/3562 1 
-strang/1 1/3562 1 

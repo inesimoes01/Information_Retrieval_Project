@@ -97,7 +97,9 @@ public class ScoringStrategy {
             // save score
             currentDoc.setScore(score);
             // update top k
-            if (topResults.size() < k) saveTopKDocuments(relevantDocs, k, topResults, currentDoc);
+            if (topResults.size() < k) {
+                saveTopKDocuments(relevantDocs, k, topResults, currentDoc);
+            }
 
             // check if we should score the rest of the terms
             if (score + maxScoreNonEssential < threshold) {
@@ -137,14 +139,22 @@ public class ScoringStrategy {
     }
 
     private void saveTopKDocuments(List<DocumentQP> relevantDocs, int k, List<DocumentQP> topResults, DocumentQP currentDoc) {
-        if (topResults.size() < k && topResults.size() < relevantDocs.size()) {
-            topResults.add(currentDoc);
-            topResults.sort(Collections.reverseOrder());
-        } else {
-            if (currentDoc.getScore() > topResults.get(0).getScore()) {
-                topResults.remove(0);
+        List<Integer> docIdsFinal = new ArrayList<>();
+        for (DocumentQP doc : topResults){
+            docIdsFinal.add(doc.getDocId());
+        }
+
+        if(!docIdsFinal.contains(currentDoc.getDocId())) {
+
+            if (topResults.size() < k && topResults.size() < relevantDocs.size()) {
                 topResults.add(currentDoc);
                 topResults.sort(Collections.reverseOrder());
+            } else {
+                if (currentDoc.getScore() > topResults.get(0).getScore() && !topResults.contains(currentDoc)) {
+                    topResults.remove(0);
+                    topResults.add(currentDoc);
+                    topResults.sort(Collections.reverseOrder());
+                }
             }
         }
     }
@@ -185,7 +195,7 @@ public class ScoringStrategy {
             }
         }
 
-        System.out.println(docsIDSWithTerms);
+
 
             List<DocumentQP> finalList = new ArrayList<>();
 

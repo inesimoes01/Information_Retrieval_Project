@@ -55,7 +55,8 @@ public class QueryProcessing {
         List<String> termsToRemove = new ArrayList<>();
         if (Flags.isIsConjunctive_flag())relevantDocs = ScoringStrategy.conjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
         else relevantDocs = ScoringStrategy.disjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
-
+        assert relevantDocs != null;
+        for (DocumentQP doc : relevantDocs) System.out.println(doc.getDocId());
 
 
         if (!relevantDocs.isEmpty()){

@@ -1,6 +1,7 @@
 package unipi.it.mircv.queryProcessing;
 
 import unipi.it.mircv.common.Flags;
+import unipi.it.mircv.indexing.dataStructures.Doc;
 import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
 import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
 import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
@@ -150,34 +151,78 @@ public class ScoringStrategy {
 
 
     // save only the documents that match all the query terms
-//    public static List<DocumentQP> conjunctiveProcessing(List<TermDictionary> termList, String[] query, List<String> termNonExistent){
-//        List<DocumentQP> docsWithTerms = new ArrayList<>();
-//
-//        for (String term : query) {
-//            // fills the term list
-//            TermDictionary termInstance = OutputResultsReader.fillTermDictionary(termList, term);
-//
-//            // if query term does not exist in the collection, return null
-//            if (termInstance == null){
-//                System.out.println("Term \"" + term + "\" not found");
-//                termNonExistent.add(term);
-//                docsWithTerms.clear();
-//                return null;
-//            } else {
-//                // keeps only documents with all query terms
-//                if (docsWithTerms.isEmpty()) {
-//                    docsWithTerms.addAll(termInstance.getDocumentsWithTerm());
+    public static List<DocumentQP> conjunctiveProcessing(List<TermDictionary> termList, String[] query, List<String> termNonExistent) {
+        ArrayList<DocumentQP> docsWithTerms = new ArrayList<>();
+        ArrayList<Integer> docsIDSWithTerms = new ArrayList<>();
+
+        for (String term : query) {
+            // fills the term list
+            TermDictionary termInstance = OutputResultsReader.fillTermDictionary(termList, term);
+
+            // if query term does not exist in the collection, return null
+            if (termInstance == null) {
+                System.out.println("Term \"" + term + "\" not found");
+                termNonExistent.add(term);
+                //docsWithTerms.clear();
+                return null;
+            } else {
+                // save all the IDs from the first term
+                if (docsIDSWithTerms.isEmpty()) {
+                    List<DocumentQP> docs = termInstance.getDocumentsWithTerm();
+                    ArrayList<Integer> aux = new ArrayList<>();
+                    for (DocumentQP doc : docs) {
+                        aux.add(doc.getDocId());
+                    }
+                    docsIDSWithTerms.addAll(aux);
+                } else {
+                    List<DocumentQP> docs = termInstance.getDocumentsWithTerm();
+                    ArrayList<Integer> aux = new ArrayList<>();
+                    for (DocumentQP doc : docs) {
+                        aux.add(doc.getDocId());
+                    }
+                    docsIDSWithTerms.retainAll(aux);
+                }
+            }
+        }
+
+        System.out.println(docsIDSWithTerms);
+
+            List<DocumentQP> finalList = new ArrayList<>();
+
+            //
+            for (TermDictionary term_aux : termList){
+                List<DocumentQP> doc_aux = term_aux.getDocumentsWithTerm();
+                for (DocumentQP doc : doc_aux){
+                    if (docsIDSWithTerms.contains(doc.getDocId())){
+                        finalList.add(doc);
+                    }
+                }
+            }
+            System.out.println(finalList);
+
+
 //                } else {
+//                    List<DocumentQP> docss = termInstance.getDocumentsWithTerm();
+//                    for (DocumentQP doc: docss){
+//                        System.out.print(doc + " ");
+//                    }
+//                    System.out.println();
+//                    List<DocumentQP> compareTerms = termInstance.getDocumentsWithTerm();
+//                    for (DocumentQP doc: compareTerms){
+//                        if
+//                    }
 //                    docsWithTerms.retainAll(termInstance.getDocumentsWithTerm());
 //                }
-//            }
-//        }
+
+
 //
+//        System.out.println(docsWithTerms);
 //        Set<DocumentQP> docsWithTermsSet = new HashSet<>(docsWithTerms);
 //        docsWithTerms = new ArrayList<>(docsWithTermsSet); // Convert Set back to List
-//
-//        return removeDuplicates(docsWithTerms);
-//    }
+
+        return removeDuplicates(finalList);
+    }
+
 
 
     public static List<DocumentQP> disjunctiveProcessing(List<TermDictionary> termList, String[] query, List<String> termNonExistent){
@@ -256,7 +301,7 @@ public class ScoringStrategy {
 //        return null;
 //    }
 
-    //private static LinkedHashMap<Integer, Double> getScoredDocsSorted(HashMap<Integer, Double> scoredDocs) {
+//private static LinkedHashMap<Integer, Double> getScoredDocsSorted(HashMap<Integer, Double> scoredDocs) {
 //        List<Map.Entry<Integer, Double>> scoredDocsSortedList = new ArrayList<>(scoredDocs.entrySet());
 //        scoredDocsSortedList.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
 //
@@ -278,7 +323,7 @@ public class ScoringStrategy {
 
 
 
-    //DAAT
+//DAAT
 //        try {
 //            Scoring scoring = new Scoring();
 //            double scores;
@@ -298,4 +343,3 @@ public class ScoringStrategy {
 //        }catch (NullPointerException e) {
 //            throw new IllegalArgumentException();
 //        }
-

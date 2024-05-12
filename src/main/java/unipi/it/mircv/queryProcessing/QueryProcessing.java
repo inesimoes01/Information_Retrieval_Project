@@ -40,7 +40,6 @@ public class QueryProcessing {
         }
 
     }
-
     public static void processing(String query, QueryStructure struct) throws IOException {
         Preprocessing preprocessing = new Preprocessing();
         ScoringStrategy strategy = new ScoringStrategy();
@@ -52,21 +51,21 @@ public class QueryProcessing {
         String[] queryPartsOriginal = query.split(" ");
 
         // save relevant docs
-        List<PostingList> pl = null;
+        List<DocumentQP> relevantDocs;
         List<String> termsToRemove = new ArrayList<>();
-        System.out.println(Flags.isIsConjunctive_flag());
-        if (Flags.isIsConjunctive_flag()){
-            pl = ScoringStrategy.conjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
-        } else pl = ScoringStrategy.disjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
+        if (Flags.isIsConjunctive_flag())relevantDocs = ScoringStrategy.conjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
+        else relevantDocs = ScoringStrategy.disjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
 
 
-        if (!pl.isEmpty()){
+
+        if (!relevantDocs.isEmpty()){
             // scoring results using DAAT or MaxScore and TFDIF or BM25
-            List<DocumentQP> scoredResults = strategy.scoringStrategy(termList, pl, Flags.getNumberOfDocuments());
+            List<DocumentQP> scoredResults = strategy.scoringStrategy(termList, relevantDocs, Flags.getNumberOfDocuments());
 
             if(Flags.isIsEvaluation()) {
                 for (DocumentQP doc : scoredResults) {
                     struct.setDocumentEval(doc.getDocId(), doc.getScore());
+                    //System.out.println(doc.getDocId() + " " + doc.getScore());
                 }
             }else {
                 for (DocumentQP doc : scoredResults) {
@@ -80,6 +79,8 @@ public class QueryProcessing {
         timeForQueryProcessing = end_time - start_time;
         System.out.println("Query Processing took " + (double) timeForQueryProcessing/1000 + " seconds.");
     }
+
+
 
     public static long getTimeForQueryProcessing() {
         return timeForQueryProcessing;

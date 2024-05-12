@@ -2,6 +2,7 @@ package unipi.it.mircv.queryProcessing;
 
 import unipi.it.mircv.common.Paths;
 import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
+import unipi.it.mircv.queryProcessing.dataStructures.Posting;
 import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
 import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
 
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 public class OutputResultsReader {
@@ -31,7 +31,7 @@ public class OutputResultsReader {
         if (!searchTermInInvertedIndex(term)) return null;
 
         // para cada docid, criar um DocumentQP
-        for (PostingList posting : term.getPostingList()) {
+        for (Posting posting : term.getPostingList().getPl()) {
             DocumentQP doc = new DocumentQP();
             doc.setDocId(posting.getDocId());
             searchDocIdInDocumentIndex(doc);
@@ -42,6 +42,7 @@ public class OutputResultsReader {
         listToFill.add(term);
         return term;
     }
+
 
     // saves Collection Frequency and Document Frequency
     private static boolean searchTermInLexicon(TermDictionary term, String queryTerm){
@@ -68,6 +69,19 @@ public class OutputResultsReader {
 
     // saves Document Length
     private static void searchDocIdInDocumentIndex(DocumentQP doc){
+/*        try {
+            List<String> lines = Files.readAllLines(Paths.PATH_DOCUMENT_INDEX, StandardCharsets.UTF_8);
+            for (String line : lines) {
+                String[] parts = line.split(" ");
+                if (parts.length >= 2 && parts[0].equalsIgnoreCase(String.valueOf(docid))) {
+                    return Integer.parseInt(parts[1]);
+
+                }
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }*/
         try {
             List<String> lines = Files.readAllLines(Paths.PATH_DOCUMENT_INDEX, StandardCharsets.UTF_8);
             for (String line : lines) {
@@ -92,8 +106,8 @@ public class OutputResultsReader {
             if (checkTerm[0].equalsIgnoreCase(term.getTerm())){
                 for (int j = 1; j < (checkTerm.length)/2; j++) {
                     //System.out.println("Values " + checkTerm[j] + " "+ checkTerm[j+(checkTerm.length-1)/2]);
-                    PostingList pL = new PostingList(Integer.valueOf(checkTerm[j]), Integer.valueOf(checkTerm[j+(checkTerm.length-1)/2]));
-                    term.getPostingList().add(pL);
+                    Posting pL = new Posting(Integer.valueOf(checkTerm[j]), Integer.valueOf(checkTerm[j+(checkTerm.length-1)/2]));
+                    term.addPostingToPostingList(pL);
                 }
                 return true;
             }
@@ -106,6 +120,7 @@ public class OutputResultsReader {
             throw new RuntimeException(e);
         }
     }
+
     // saves DocId and Freq
 //    private static boolean searchTermInInvertedIndex(TermDictionary term){
 //        try {

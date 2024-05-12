@@ -4,6 +4,7 @@ package unipi.it.mircv.queryProcessing;
 import unipi.it.mircv.common.Flags;
 import unipi.it.mircv.common.Paths;
 import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
+import unipi.it.mircv.queryProcessing.dataStructures.Posting;
 import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
 
 import java.io.IOException;
@@ -67,15 +68,14 @@ public class Ranking {
 
 
 
-
-    public double computeRanking_QP(TermDictionary term, DocumentQP docId) throws IOException {
-        if (Flags.isIsTFIDF_flag()) return computeTFIDF_QP(term, docId);
-        else return computeBM25_QP(term, docId);
+    public double computeRanking_QP(TermDictionary term, Integer docid, Integer length) throws IOException {
+        if (Flags.isIsTFIDF_flag()) return computeTFIDF_QP(term, docid);
+        else return computeBM25_QP(term, docid, length);
     }
 
-    private double computeTFIDF_QP(TermDictionary term, DocumentQP doc) {
+    private double computeTFIDF_QP(TermDictionary term, Integer docid) {
         //OutputResultsReader.saveTotalNumberDocs();
-        double TF = computeTF(term.getPostingByDocId(term.getPostingList(), doc.getDocId()).getFreq());
+        double TF = computeTF(term.getPostingByDocId(term.getPostingList(), docid).getFreq());
         double IDF = computeIDF(OutputResultsReader.getnTotalDocuments(), term.getDocumentFrequency());
 //            System.out.println("TF " + term.getPostingByDocId(term.getPostingList(), doc.getDocId()).getFreq() + " / " + doc.getLength());
 //            System.out.println("IDF " + OutputResultsReader.getnTotalDocuments() + " / " + term.getDocumentFrequency());
@@ -83,12 +83,12 @@ public class Ranking {
 
     }
 
-    private double computeBM25_QP(TermDictionary term, DocumentQP doc) throws IOException {
+    private double computeBM25_QP(TermDictionary term, Integer docid, Integer length) throws IOException {
         //OutputResultsReader.saveTotalNumberDocs();
         int nTotalDocs = OutputResultsReader.getnTotalDocuments();
         Integer nTotalDocsWithTerm = term.getDocumentFrequency();
-        Integer nTermInDocument = term.getPostingByDocId(term.getPostingList(), doc.getDocId()).getFreq();
-        Integer lengthDocument = doc.getLength();
+        Integer nTermInDocument = term.getPostingByDocId(term.getPostingList(), docid).getFreq();
+        Integer lengthDocument = length;
         List<String> lines = Files.readAllLines(Paths.PATH_AVGDOCLEN, StandardCharsets.UTF_8);
         double avgDocLenCollection = Double.parseDouble(lines.get(0));
         //System.out.println("BM25 " + computeIDF(nTotalDocs, nTotalDocsWithTerm) + " * " + computeTF(nTermInDocument) + " / " + computeTF(nTermInDocument) + " + " + K1 + " * (1 - " + B + " + " + B + " * (" + lengthDocument + " / " + avgDocLenCollection);

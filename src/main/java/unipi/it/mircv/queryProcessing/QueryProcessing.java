@@ -4,8 +4,11 @@ import unipi.it.mircv.common.*;
 
 import unipi.it.mircv.evalution.Evaluation;
 import unipi.it.mircv.evalution.QueryStructure;
+import unipi.it.mircv.indexing.dataStructures.Doc;
+import unipi.it.mircv.indexing.dataStructures.Posting;
 import unipi.it.mircv.preprocessing.Preprocessing;
 import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
+import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
 import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
 
 import java.io.IOException;
@@ -14,14 +17,19 @@ import java.util.*;
 public class QueryProcessing {
     private static long timeForQueryProcessing;
 
-
     public static void mainQueryProcessing() throws IOException {
         TerminalDemo terminal = new TerminalDemo();
         Evaluation evaluation = new Evaluation();
 
+        Scanner scanner = new Scanner(System.in);
+        String userInput;
+
         if (!Flags.isIsEvaluation()){
-            //TODO ask as many queries as the user wants, only end when user quits
-            processing(terminal.runTerminal(), null);
+            do {
+                processing(terminal.runTerminal(), null);
+                System.out.print("Do you want to another query? (y/n): ");
+                userInput = scanner.nextLine();
+            } while (userInput.equalsIgnoreCase("y"));
         }else {
             System.out.println("Processing for DAAT and TFIDF: ");
             Flags.setIsDAAT_flag(true);
@@ -43,19 +51,21 @@ public class QueryProcessing {
         String[] queryPartsOriginal = query.split(" ");
 
         // save relevant docs
-        List<DocumentQP> relevantDocs;
+        List<PostingList> pl = null;
         List<String> termsToRemove = new ArrayList<>();
-        relevantDocs = ScoringStrategy.disjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
+        System.out.println(Flags.isIsConjunctive_flag());
+        if (Flags.isIsConjunctive_flag()){
+            pl = ScoringStrategy.conjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
+        } else pl = ScoringStrategy.disjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
 
 
-        if (!relevantDocs.isEmpty()){
+        if (!pl.isEmpty()){
             // scoring results using DAAT or MaxScore and TFDIF or BM25
-            List<DocumentQP> scoredResults = strategy.scoringStrategy(termList, relevantDocs, Flags.getNumberOfDocuments());
+            List<DocumentQP> scoredResults = strategy.scoringStrategy(termList, pl, Flags.getNumberOfDocuments());
 
             if(Flags.isIsEvaluation()) {
                 for (DocumentQP doc : scoredResults) {
                     struct.setDocumentEval(doc.getDocId(), doc.getScore());
-                    //System.out.println(doc.getDocId() + " " + doc.getScore());
                 }
             }else {
                 for (DocumentQP doc : scoredResults) {

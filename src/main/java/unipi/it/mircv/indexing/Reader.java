@@ -69,14 +69,12 @@ public class Reader {
                                 try {
                                     id = Integer.parseInt(matcher.group(1));
                                 } catch (NumberFormatException e) {
-                                    System.out.println(id);
                                     // If the parsing fails (e.g., the string is not a valid integer), continue to the next iteration.
                                     continue;
                                 }
 
                                 // If the second column in the 'columns' array is an empty string, continue to the next iteration.
                                 if (matcher.group(2).length() == 0) {
-                                    System.out.println("failed here " + line);
                                     continue;
                                 }
 

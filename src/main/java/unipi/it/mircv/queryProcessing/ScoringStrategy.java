@@ -1,7 +1,10 @@
 package unipi.it.mircv.queryProcessing;
 
+import org.apache.lucene.index.Term;
 import unipi.it.mircv.common.Flags;
+import unipi.it.mircv.indexing.dataStructures.Doc;
 import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
+import unipi.it.mircv.queryProcessing.dataStructures.Posting;
 import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
 import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
 
@@ -10,38 +13,56 @@ import java.util.*;
 
 public class ScoringStrategy {
 
-    public List<DocumentQP> scoringStrategy(List<TermDictionary> termList, List<DocumentQP> relevantDocs, int k) throws IOException {
+    public HashMap<Integer, Double> scoringStrategy(List<TermDictionary> termList, List<PostingList> relevantPL, int k) throws IOException {
         OutputResultsReader.saveTotalNumberDocs();
-        if (Flags.isIsDAAT_flag()) return DAAT(termList, relevantDocs, k);
-        else return maxScore(termList, relevantDocs, k);
+        if (Flags.isIsDAAT_flag()) return DAAT(termList, relevantPL, k);
+        else return maxScore(termList, relevantPL, k);
     }
 
-    private List<DocumentQP> DAAT(List<TermDictionary> termList, List<DocumentQP> relevantDocs, int k) throws IOException {
+    private HashMap<Integer, Double> DAAT(List<TermDictionary> termList, List<PostingList> relevantPL, int k) throws IOException {
 
-        List<DocumentQP> topResults = new ArrayList<>();
+        HashMap<Integer, Double> topResults = new HashMap<>();
 
         // transverse the list of documents in the Posting List by smallest docId
         double documentUpperBound;
         Ranking ranking = new Ranking();
 
-        DocumentQP currentDoc;
+        List<DocumentQP> docsWithTerm;
+
+
+
+        int currentDocId;
         int i = 0;
 
         while (true){
             documentUpperBound = 0;
-            currentDoc = relevantDocs.get(i);
+            DocumentQP currentDoc;
+            TermDictionary currentTerm;
 
-            for (TermDictionary dictionaryTerm : termList) {
-                for (PostingList pL : dictionaryTerm.getPostingList()){
-                    if (currentDoc.getDocId().equals(pL.getDocId())){
-                        documentUpperBound += ranking.computeRanking_QP(dictionaryTerm, relevantDocs.get(i));
+            for (PostingList pl : relevantPL){
+                for (Posting p : pl.getPl()){
 
+                    for (TermDictionary term: termList){
+                        if (term.getTerm().equals(pl.getTerm())){
+                            currentTerm = term;
+                            docsWithTerm = currentTerm.getDocumentsWithTerm();
+                            for (DocumentQP doc: docsWithTerm){
+                                if (doc.getDocId().equals(p.getDocId())){
+                                    currentDoc = doc;
+                                }
+                            }
+                            documentUpperBound += ranking.computeRanking_QP(term, currentDoc.getDocId(), currentDoc.getLength());
+                            break;
+                        }
                     }
+
+                    OutputResultsReader.
+
+
                 }
             }
-            currentDoc.setScore(documentUpperBound);
 
-            saveTopKDocuments(relevantDocs, k, topResults, currentDoc);
+            saveTopKDocuments(relevantPL.size(), k, topResults, currentDocId, documentUpperBound);
             //System.out.println("Saved files");
             if (i < relevantDocs.size()-1) i++;
             else break;
@@ -51,14 +72,14 @@ public class ScoringStrategy {
         // TODO: make the termList reset everytime a new query is entered
     }
 
-    private List<DocumentQP> maxScore(List<TermDictionary> termList, List<DocumentQP> relevantDocs, int k) throws IOException {
+    private HashMap<Integer, Double> maxScore(List<TermDictionary> termList, List<PostingList> relevantPL, int k) throws IOException {
         List<DocumentQP> topResults = new ArrayList<>();
         Ranking ranking = new Ranking();
         DocumentQP currentDoc;
         int i = 0;
         double score;
         double maxScoreNonEssential = 0;
-        double threshold = 4;
+        double threshold = 0;
 
         // order termList by termUpperBound
         termList.sort(Comparator.comparingDouble(TermDictionary::getTermUpperBound));
@@ -70,134 +91,166 @@ public class ScoringStrategy {
         List<TermDictionary> nonEssentialTerms = new ArrayList<>();
         separateNonEssentialPostingList(termList, essentialTerms, nonEssentialTerms, threshold);
 
-        // if threshold is too high, adjust to the highest of the Term Upper Bounds
-        if (essentialTerms.isEmpty()) {
-            threshold = nonEssentialTerms.get(0).getTermUpperBound();
-            separateNonEssentialPostingList(termList, essentialTerms,nonEssentialTerms,threshold);
-        }
-
         // get the sum of all TermUpperBounds of nonEssentialTerms
-        for (TermDictionary term : nonEssentialTerms) maxScoreNonEssential += term.getTermUpperBound();
-
-
-        while (true){
-            score = 0;
-            currentDoc = relevantDocs.get(i);
-
-            // ESSENTIAL POSTING LIST
-            for (TermDictionary dictionaryTerm : essentialTerms) {
-                for (PostingList pL : dictionaryTerm.getPostingList()){
-                    if (currentDoc.getDocId().equals(pL.getDocId())){
-                        score += ranking.computeRanking_QP(dictionaryTerm, currentDoc);
-                    }
-                }
-            }
-
-            // save score
-            currentDoc.setScore(score);
-            // update top k
-            if (topResults.size() < k) saveTopKDocuments(relevantDocs, k, topResults, currentDoc);
-
-            // check if we should score the rest of the terms
-            if (score + maxScoreNonEssential < threshold) {
-                if (i < relevantDocs.size()-1) i++;
-                else break;
-                continue;
-            }
-
-
-            // NON ESSENTIAL POSTING LIST
-            for (TermDictionary dictionaryTerm : nonEssentialTerms) {
-                for (PostingList pL : dictionaryTerm.getPostingList()){
-                    if (currentDoc.getDocId().equals(pL.getDocId())){
-                        score += ranking.computeRanking_QP(dictionaryTerm, currentDoc);
-                    }
-                }
-            }
-
-            // rewrite score
-            currentDoc.setScore(score);
-
-            // update top k
-            saveTopKDocuments(relevantDocs, k, topResults, currentDoc);
-
-            // update threshold
-            // TODO check if right
-            threshold = topResults.get(topResults.size()-1).getScore();
-
-            // update nonEssentialPostingList
-            separateNonEssentialPostingList(termList, essentialTerms, nonEssentialTerms, threshold);
-            for (TermDictionary term : nonEssentialTerms) maxScoreNonEssential += term.getTermUpperBound();
-
-            if (i < relevantDocs.size()-1) i++;
-            else break;
+        for (TermDictionary term : nonEssentialTerms) {
+            System.out.println(term.getTerm());
+            maxScoreNonEssential += term.getTermUpperBound();
         }
+
+//        while (true){
+//            score = 0;
+//            currentDoc = getMinDocId(essentialTerms);
+
+//            // ESSENTIAL POSTING LIST
+//            // find all the terms that appear in the query and in the document and add the ranking
+//            for (TermDictionary dictionaryTerm : essentialTerms) {
+//                for (Posting pL : dictionaryTerm.getPostingList()){
+//                    if (currentDoc.getDocId().equals(pL.getDocId())){
+//                        score += ranking.computeRanking_QP(dictionaryTerm, currentDoc);
+//                    }
+//                }
+//            }
+//
+//            // save score and update top k documents
+//            // if there is already k documents, update threshold to the minimum score
+//            // and update the essential posting list
+//            currentDoc.setScore(score);
+//            if (topResults.size() < k) {
+//                saveTopKDocuments(relevantDocs, k, topResults, currentDoc);
+//            }
+//
+//            // check if we should score the rest of the terms
+//            if (score + maxScoreNonEssential < threshold) {
+//                if (i < relevantDocs.size()-1) i++;
+//                else break;
+//                continue;
+//            }
+//
+//            // NON ESSENTIAL POSTING LIST
+//            for (TermDictionary dictionaryTerm : nonEssentialTerms) {
+//                for (Posting pL : dictionaryTerm.getPostingList()){
+//                    if (currentDoc.getDocId().equals(pL.getDocId())){
+//                        score += ranking.computeRanking_QP(dictionaryTerm, currentDoc);
+//                    }
+//                }
+//            }
+//
+//            // rewrite score and update top k
+//            currentDoc.setScore(score);
+//            saveTopKDocuments(relevantDocs, k, topResults, currentDoc);
+//
+//            // update threshold and update nonEssentialPostingList
+                //TODO only update threshold if the top k is already full
+//            threshold = topResults.get(topResults.size()-1).getScore();
+//            separateNonEssentialPostingList(termList, essentialTerms, nonEssentialTerms, threshold);
+//            for (TermDictionary term : nonEssentialTerms) maxScoreNonEssential += term.getTermUpperBound();
+//
+//            if (i < relevantDocs.size()-1) i++;
+//            else break;
+//        }
         return topResults;
     }
 
-    private void saveTopKDocuments(List<DocumentQP> relevantDocs, int k, List<DocumentQP> topResults, DocumentQP currentDoc) {
-        if (topResults.size() < k && topResults.size() < relevantDocs.size()) {
-            topResults.add(currentDoc);
-            topResults.sort(Collections.reverseOrder());
-        } else {
-            if (currentDoc.getScore() > topResults.get(0).getScore()) {
-                topResults.remove(0);
+//    private static ArrayList<Map.Entry<PostingList, Double>> sortPostingListsByTermUpperBound(List<DocumentQP> queryPostings, List<TermDictionary> termList){
+//        PriorityQueue<Map.Entry<PostingList, Double>> sortedPostingLists = new PriorityQueue<>(queryPostings.size(), Map.Entry.comparingByValue());
+//
+//        for (PostingList postingList : queryPostings) {
+//            // retrieve document upper bound
+//            termUpperBound = termList.
+//
+//            sortedPostingLists.add(new AbstractMap.SimpleEntry<>(postingList, termUpperBound));
+//        }
+//
+//        return new ArrayList<>(sortedPostingLists.stream().toList());
+//    }
+
+    private void saveTopKDocuments(Integer totalDocs, int k, List<DocumentQP> topResults, DocumentQP currentDoc) {
+        //if (!topResults.contains(currentDoc)){
+            if (topResults.size() < k && topResults.size() < totalDocs) {
                 topResults.add(currentDoc);
                 topResults.sort(Collections.reverseOrder());
+            } else {
+                if (currentDoc.getScore() > topResults.get(0).getScore()) {
+                    topResults.remove(0);
+                    topResults.add(currentDoc);
+                    topResults.sort(Collections.reverseOrder());
+                }
+            }
+        //}
+
+    }
+
+    private DocumentQP getMinDocId(List<DocumentQP> docs){
+        DocumentQP minDoc = docs.get(0);
+        for (DocumentQP doc : docs){
+            if (doc.getDocId() < minDoc.getDocId()){
+                minDoc = doc;
             }
         }
+        return minDoc;
     }
 
 
     // save only the documents that match all the query terms
-//    public static List<DocumentQP> conjunctiveProcessing(List<TermDictionary> termList, String[] query, List<String> termNonExistent){
-//        List<DocumentQP> docsWithTerms = new ArrayList<>();
-//
-//        for (String term : query) {
-//            // fills the term list
-//            TermDictionary termInstance = OutputResultsReader.fillTermDictionary(termList, term);
-//
-//            // if query term does not exist in the collection, return null
-//            if (termInstance == null){
-//                System.out.println("Term \"" + term + "\" not found");
-//                termNonExistent.add(term);
-//                docsWithTerms.clear();
-//                return null;
-//            } else {
-//                // keeps only documents with all query terms
-//                if (docsWithTerms.isEmpty()) {
-//                    docsWithTerms.addAll(termInstance.getDocumentsWithTerm());
-//                } else {
-//                    docsWithTerms.retainAll(termInstance.getDocumentsWithTerm());
-//                }
-//            }
-//        }
-//
-//        Set<DocumentQP> docsWithTermsSet = new HashSet<>(docsWithTerms);
-//        docsWithTerms = new ArrayList<>(docsWithTermsSet); // Convert Set back to List
-//
-//        return removeDuplicates(docsWithTerms);
-//    }
-
-
-    public static List<DocumentQP> disjunctiveProcessing(List<TermDictionary> termList, String[] query, List<String> termNonExistent){
+    public static List<PostingList> conjunctiveProcessing(List<TermDictionary> termList, String[] query, List<String> termNonExistent){
         List<DocumentQP> docsWithTerms = new ArrayList<>();
 
         for (String term : query) {
             // fills the term list
             TermDictionary termInstance = OutputResultsReader.fillTermDictionary(termList, term);
-            //System.out.println("Term \"" + term + "\"");
+
+            // if query term does not exist in the collection, return null
+            if (termInstance == null){
+                System.out.println("Term \"" + term + "\" not found");
+                termNonExistent.add(term);
+                docsWithTerms.clear();
+                return null;
+            } else {
+                docsWithTerms.addAll(termInstance.getDocumentsWithTerm());
+            }
+        }
+
+        List<Integer> docIds = keepDuplicates(docsWithTerms);
+
+        List<PostingList> plList = new ArrayList<>();
+        List<Posting> pl = new ArrayList<>();
+
+        for (TermDictionary t : termList) {
+            pl.clear();
+            for (Integer id : docIds) {
+                System.out.println("this is the docid with term " + id + " " + t.getTerm());
+                for (Posting p : t.getPostingList()) {
+                    if (id.equals(p.getDocId())) {
+                        pl.add(p);
+                    }
+                }
+            }
+            plList.add(new PostingList(t.getTerm(), pl, t.getTermUpperBound()));
+        }
+
+        return plList;
+    }
+
+
+    public static List<PostingList> disjunctiveProcessing(List<TermDictionary> termList, String[] query, List<String> termNonExistent){
+        List<PostingList> pl = new ArrayList<>();
+
+        for (String term : query) {
+            // fills the term list
+            TermDictionary termInstance = OutputResultsReader.fillTermDictionary(termList, term);
+
             // if query term does not exist in the collection, return null
             if (termInstance == null){
                 System.out.println("Term \"" + term + "\" not found");
                 termNonExistent.add(term);
             } else {
                 // keeps all documents
-                docsWithTerms.addAll(termInstance.getDocumentsWithTerm());
+                pl.add(new PostingList(termInstance.getTerm(), termInstance.getPostingList(), termInstance.getTermUpperBound()));
             }
         }
 
-        return removeDuplicates(docsWithTerms);
+
+        return pl;
     }
 
     private static List<DocumentQP> removeDuplicates(List<DocumentQP> list) {
@@ -228,6 +281,27 @@ public class ScoringStrategy {
 //        return min;
 //    }
 
+    private static List<Integer> keepDuplicates(List<DocumentQP> docsWithTerms){
+        List<Integer> docId = new ArrayList<>();
+        for (DocumentQP doc : docsWithTerms) {
+            docId.add(doc.getDocId());
+        }
+        Map<Integer, Integer> countMap = new HashMap<>();
+        for (int num : docId) {
+            countMap.put(num, countMap.getOrDefault(num, 0) + 1);
+        }
+
+        // Create a new list to store the duplicated values
+        List<Integer> duplicates = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : countMap.entrySet()) {
+            if (entry.getValue() > 1) { // If the count is greater than 1, it's a duplicate
+                duplicates.add(entry.getKey());
+            }
+        }
+        System.out.println("Duplicated values: " + duplicates);
+        return duplicates;
+    }
+
     private static void separateNonEssentialPostingList(List<TermDictionary> allTerms, List<TermDictionary> essentialTerms, List<TermDictionary> nonEssentialTerms, Double threshold){
         essentialTerms.clear();
         nonEssentialTerms.clear();
@@ -235,7 +309,6 @@ public class ScoringStrategy {
             if (term.getTermUpperBound() < threshold){
                 nonEssentialTerms.add(term);
             } else {
-                //System.out.println("This is a essential term " + term.getTerm());
                 essentialTerms.add(term);
             }
         }

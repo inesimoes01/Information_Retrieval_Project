@@ -6,7 +6,8 @@ public class Flags {
         Flags.isEvaluation = isEvaluation;
     }
 
-    //private static boolean isConjunctive_flag;
+
+    private static boolean isConjunctive_flag;
     private static boolean isEvaluation = true;
     private static boolean isTFIDF_flag;
     private static boolean isDAAT_flag;
@@ -39,6 +40,15 @@ public class Flags {
     public static boolean isIsEvaluation() {
         return isEvaluation;
     }
+
+    public static boolean isIsConjunctive_flag() {
+        return isConjunctive_flag;
+    }
+
+    public static void setIsConjunctive_flag(boolean isConjunctive_flag) {
+        Flags.isConjunctive_flag = isConjunctive_flag;
+    }
+
 
 
 }

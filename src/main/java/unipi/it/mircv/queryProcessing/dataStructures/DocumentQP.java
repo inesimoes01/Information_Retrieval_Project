@@ -33,7 +33,6 @@ public class DocumentQP implements Comparable<DocumentQP>{
         this.upperBoundCase = upperBoundCase;
     }
 
-
     public double getScore() {
         return score;
     }

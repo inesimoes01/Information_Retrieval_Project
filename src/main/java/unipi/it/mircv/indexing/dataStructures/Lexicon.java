@@ -6,16 +6,12 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class Lexicon {
-
-
-
-    public HashMap<String, TermStats> getLexicon(){ return lexicon; }
-
     private static HashMap<String, TermStats> lexicon = new HashMap<>();
     public Lexicon(){
-        this.lexicon= new HashMap<>();
+        lexicon = new HashMap<>();
     }
-    public static void updateLexicon(String term, int freq){
+
+    public void updateLexicon(String term, int freq){
 
         if(!lexicon.containsKey(term)){
             //Create a new "record" with cf=freq and df=1
@@ -31,10 +27,7 @@ public class Lexicon {
             termStats.setDocumentFrequency(termStats.getDocumentFrequency()+1);
         }
 
-
-
     }
-
 
 
     public static ArrayList<String> sortLexicon(){
@@ -42,8 +35,6 @@ public class Lexicon {
         Collections.sort(sortedTerms);
         return sortedTerms;
     }
-
-
 
 
     @Override
@@ -61,7 +52,7 @@ public class Lexicon {
         return sb.toString();
     }
 
-
+    public HashMap<String, TermStats> getLexicon(){ return lexicon; }
 
 
 }

@@ -305,10 +305,7 @@ public class IndexUtilTry2 {
                 next = priorityQueue.peek();
 
 
-
-
                 if (lexiconScanners[Integer.parseInt(current[4])].hasNext() && invertedIndexScanners[Integer.parseInt(current[4])].hasNext()) {
-
                     line = lexiconScanners[Integer.parseInt(current[4])].nextLine() + " x x";
                     line2 = invertedIndexScanners[Integer.parseInt(current[4])].nextLine();
                     terms[Integer.parseInt(current[4])] = line.split(" ");
@@ -316,12 +313,10 @@ public class IndexUtilTry2 {
                     terms[Integer.parseInt(current[4])][4] = current[4];
 
                     pushTermPriorityQueue(terms, line, line2, Integer.parseInt(current[4]), priorityQueue);
-
                 }
 
 
                 if (next != null && current[0].equals(next[0])) {
-
 
                     if (!toWrite[2].equals("")){
                         toWrite[1] = String.valueOf(Integer.parseInt(toWrite[1].trim()) + Integer.parseInt(next[1].trim()));

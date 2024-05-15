@@ -1,29 +1,27 @@
 package unipi.it.mircv.indexing.dataStructures;
 
 public class TermStats {
-        private int collectionFrequency;//how many times term appearn is collection
-        private int documentFrequency;//in how many documents the term appears
-        private long invertedIndexOffset;
+    private String term;
+    //how many times term appears in the collection
+    private int collectionFrequency;
+    //number of documents the term appears in
+    private int documentFrequency;
+    private long invertedIndexOffset;
 
-    public void setCollectionFrequency(int collectionFrequency) {
-        this.collectionFrequency = collectionFrequency;
+    private int lastDocIdInserted;
+
+
+
+    public void updateCollectionFrequency(int freq){
+        this.collectionFrequency += freq;
+    }
+    public void updateDocumentFrequency(){
+        this.documentFrequency++;
+    }
+    public void updateLastDocIdInserted(int docId){
+        this.lastDocIdInserted = docId;
     }
 
-    public int getCollectionFrequency() {
-        return collectionFrequency;
-    }
-
-    public void setDocumentFrequency(int documentFrequency) {
-        this.documentFrequency = documentFrequency;
-    }
-
-    public int getDocumentFrequency() {
-        return documentFrequency;
-    }
-
-    public void setInvertedIndexOffset(long invertedIndexOffset) {this.invertedIndexOffset = invertedIndexOffset;}
-
-    public long getInvertedIndexOffset() {return invertedIndexOffset;}
 
     public void addToCollectionFrequency(int value) {
         this.collectionFrequency += value;
@@ -46,7 +44,32 @@ public class TermStats {
     @Override
     public String toString() {
         return collectionFrequency +
-                " " + documentFrequency;
+                " " + documentFrequency + " " + invertedIndexOffset;
     }
+
+    public void setCollectionFrequency(int collectionFrequency) {
+        this.collectionFrequency = collectionFrequency;
+    }
+
+    public int getCollectionFrequency() {
+        return collectionFrequency;
+    }
+
+    public void setDocumentFrequency(int documentFrequency) {
+        this.documentFrequency = documentFrequency;
+    }
+
+    public int getDocumentFrequency() {
+        return documentFrequency;
+    }
+
+    public void setInvertedIndexOffset(long invertedIndexOffset) {this.invertedIndexOffset = invertedIndexOffset;}
+
+    public long getInvertedIndexOffset() {return invertedIndexOffset;}
+
+    public int getLastDocIdInserted() {
+        return lastDocIdInserted;
+    }
+
 }
 

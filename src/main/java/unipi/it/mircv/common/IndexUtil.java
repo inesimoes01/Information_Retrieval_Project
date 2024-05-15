@@ -11,8 +11,8 @@ public class IndexUtil {
 
     private static BufferedReader[] lexiconScanners;
     private static BufferedReader[] documentIndexReaders;
-    private BufferedWriter myWriterDocumentIndex;
-    private ArrayList<String> documentIndexEntries;
+    private static BufferedWriter myWriterDocumentIndex;
+    private static ArrayList<String> documentIndexEntries;
 
     /**
      * Writes a block of DocumentIndex to disk.
@@ -20,9 +20,10 @@ public class IndexUtil {
      * @param blockCounter   The block number.
      * @param documentIndex  The DocumentIndex to be written.
      */
-    public void writeBlockToDisk(int blockCounter, DocumentIndex documentIndex) {
+    public static void writeBlockToDisk(int blockCounter, DocumentIndex documentIndex, int lastDocId) {
         String directoryPath = "data/output/";
         String filePath = directoryPath + "DocumentIndex" + blockCounter + ".txt";
+        int index = 0;
 
         // Create the directories if they don't exist
         File directory = new File(directoryPath);
@@ -39,8 +40,10 @@ public class IndexUtil {
             // Writing to the file
             ArrayList<Integer> docIndexKey = documentIndex.sortDocumentIndex();
             for (Integer i : docIndexKey) {
+
+                index = i + lastDocId + 1;
                 // Write information to the bufferedWriter
-                bufferedWriter.write(i + " " + documentIndex.getDocumentIndex().get(i));
+                bufferedWriter.write(index + " " + documentIndex.getDocumentIndex().get(i));
                 bufferedWriter.newLine();  // Move to the next line
             }
 
@@ -58,7 +61,7 @@ public class IndexUtil {
      * @param blockCounter The block number.
      * @param lexicon      The Lexicon to be written.
      */
-    public void writeBlockToDisk(int blockCounter, Lexicon lexicon) {
+    public static void writeBlockToDisk(int blockCounter, Lexicon lexicon, int lastDocId) {
         String directoryPath = "data/output/";
         String filePath = directoryPath + "Lexicon" + blockCounter + ".txt";
 
@@ -77,8 +80,8 @@ public class IndexUtil {
             // Writing to the file
             ArrayList<String> docLexiconKey = lexicon.sortLexicon();
             for (String i : docLexiconKey) {
+
                 // Write information to the bufferedWriter
-                //System.out.println(i + " " + lexicon.getLexicon().get(i));
                 bufferedWriter.write(i + " " + lexicon.getLexicon().get(i));
                 bufferedWriter.newLine();  // Move to the next line
             }
@@ -97,7 +100,7 @@ public class IndexUtil {
      * @param blockCounter   The block number.
      * @param invertedIndex  The InvertedIndex to be written.
      */
-    public void writeBlockToDisk(int blockCounter, InvertedIndex invertedIndex) {
+    public static void writeBlockToDisk(int blockCounter, InvertedIndex invertedIndex, int lastDocId) {
         String directoryPath = "data/output/";
         String filePath = directoryPath + "InvertedIndex" + blockCounter + ".txt";
 
@@ -118,6 +121,8 @@ public class IndexUtil {
             ArrayList<String> docLexiconKey = invertedIndex.sortInvertedIndexByTerm();
             for (String i : docLexiconKey) {
                 // Write information to the bufferedWriter
+
+
                 bufferedWriter.write(i + " " + invertedIndex.getInvertedIndex().get(i).toString().replaceAll("[^a-zA-Z0-9\\s]", ""));
                 bufferedWriter.newLine();  // Move to the next line
             }
@@ -149,7 +154,7 @@ public class IndexUtil {
         // Open document index scanners
         for (int i = 1; i < blockCounter; i++) {
             try {
-                documentIndexReaders[i] = new BufferedReader(new FileReader("data/output/documentIndex" + i + ".txt"));
+                documentIndexReaders[i] = new BufferedReader(new FileReader("data/output/DocumentIndex" + i + ".txt"));
             } catch (IOException e) {
                 e.printStackTrace(); // Handle the exception appropriately
             }
@@ -161,7 +166,7 @@ public class IndexUtil {
      *
      * @param blockCounter The total number of blocks.
      */
-    public void mergeDocumentIndex(int blockCounter) {
+    public static void mergeDocumentIndex(int blockCounter) {
         myWriterDocumentIndex = null;
         documentIndexEntries = new ArrayList<>();
         double avgLen = 0.00;
@@ -216,7 +221,7 @@ public class IndexUtil {
      *
      * @param blockCounter The total number of blocks.
      */
-    public void lexiconMerge(int blockCounter) {
+    public static void lexiconMerge(int blockCounter) {
         String outputPath = Paths.PATH_LEXICON_MERGED;
         String invertedIndexPath = Paths.PATH_INVERTED_INDEX_MERGED;
 
@@ -320,7 +325,7 @@ public class IndexUtil {
      * @param blockCounter The total number of blocks.
      */
 
-    public void mergeInvertedIndex(int blockCounter) {
+    public static void mergeInvertedIndex(int blockCounter) {
         String outputPath = Paths.PATH_INVERTED_INDEX_MERGED; // Output file path for merged lexicon
 
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath))) {
@@ -433,153 +438,9 @@ public class IndexUtil {
         }
     }
 
-//    static class Posting {
-//        private int docId;
-//        private int freq;
-//
-//        public Posting(int docId, int freq) {
-//            this.docId = docId;
-//            this.freq = freq;
-//        }
-//
-//        public int getDocId() {
-//            return docId;
-//        }
-//
-//        public int getFreq() {
-//            return freq;
-//        }
-//    }
-//
-    class PostingEntry {
-        private String term;
-        private int blockIndex;
 
-        public PostingEntry(String term, int blockIndex) {
-            this.term = term;
-            this.blockIndex = blockIndex;
-        }
 
-        public String getTerm() {
-            return term;
-        }
 
-        public int getBlockIndex() {
-            return blockIndex;
-        }
-    }
-
-//    public static void mergeInvertedIndex(int blockCounter) {
-//        // Output file path for merged lexicon
-//        String outputPath = Paths.PATH_INVERTED_INDEX_MERGED;
-//
-//        // Create the directories if they don't exist
-//        File directory = new File("data/output/");
-//        if (!directory.exists()) {
-//            directory.mkdirs();
-//        }
-//
-//        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath))) {
-//            // TreeMap to store the accumulated statistics for each term (sorted by term)
-//            TreeMap<String, ArrayList<Posting>> postingListMap = new TreeMap<>();
-//
-//            // Priority queue to efficiently merge and sort entries
-//            PriorityQueue<String> priorityQueue = new PriorityQueue<>(Comparator.naturalOrder());
-//
-//            // Initialize lexicon readers and iterators
-//            BufferedReader[] lexiconReaders = new BufferedReader[blockCounter];
-//            Iterator<String>[] iterators = new Iterator[blockCounter];
-//
-//            // Open lexicon readers and create iterators
-//            for (int i = 1; i < blockCounter; i++) {
-//                lexiconReaders[i] = new BufferedReader(new FileReader("data/output/InvertedIndex" + i + ".txt"));
-//                iterators[i] = lexiconReaders[i].lines().iterator();
-//            }
-//
-//            // Inside the loop where you initialize lexicon entries from the first entry of each block
-//
-//            // Initialize lexicon entries from the first entry of each block
-//            for (int i = 1; i < blockCounter; i++) {
-//                if (iterators[i].hasNext()) {
-//                    priorityQueue.add(iterators[i].next());
-//                }
-//            }
-//
-//            // Continue merging and sorting until the PriorityQueue is empty
-//            while (!priorityQueue.isEmpty()) {
-//
-//                String currentEntry = priorityQueue.poll();
-//                String[] parts = currentEntry.split(" "); //reading line
-//                int size = parts.length;
-//                String term = parts[0];
-//                ArrayList<Posting> postingList = new ArrayList<>();
-//
-//                postingList = postingListMap.getOrDefault(term, postingList); //get the value otherwise it returns an empty postingList
-//
-//                for (int i = 1; i < size; i += 2) {
-//                    Posting tempPosting = new Posting();
-//                    tempPosting.setDocId(Integer.parseInt(parts[i]));
-//                    tempPosting.setFreq(Integer.parseInt(parts[i + 1]));
-//                    postingList.add(tempPosting);
-//
-//                }
-//
-//                Collections.sort(postingList, new Comparator<Posting>() {
-//                    @Override
-//                    public int compare(Posting p1, Posting p2) {
-//                        return Integer.compare(p1.getDocId(), p2.getDocId()); // Ordine crescente
-//                    }
-//                });
-//
-//                postingListMap.put(term, postingList);
-//
-//                // Determine the block index for the next entry
-//                int blockIndex = (priorityQueue.size() % (blockCounter - 1)) + 1;
-//                // if(term.equals("1")) System.out.println(blockIndex + " = " + priorityQueue.size() + " % " + blockCounter + " -1 ) + 1");
-//                //System.out.println(blockIndex);
-//                // Add the next entry from the corresponding block to the PriorityQueue
-//                if (iterators[blockIndex].hasNext()) {
-//                    priorityQueue.add(iterators[blockIndex].next());
-//                }
-//
-//            }
-//
-//            // Write the merged and sorted entries to the output file
-//            for (Map.Entry<String, ArrayList<Posting>> entry : postingListMap.entrySet()) {
-//                String term = entry.getKey();
-//                ArrayList<Posting> postingList2 = entry.getValue();
-//
-//                // Creare liste separate per docId e freq
-//                ArrayList<Integer> docIds = new ArrayList<>();
-//                ArrayList<Integer> freqs = new ArrayList<>();
-//
-//                // Popolare le liste con i valori corrispondenti
-//                for (Posting p : postingList2) {
-//                    docIds.add(p.getDocId());
-//                    freqs.add(p.getFreq());
-//                }
-//
-//                // Scrivere prima tutti i docId, poi tutte le freq
-//                bufferedWriter.write(term + " ");
-//                for (int docId : docIds) {
-//                    bufferedWriter.write(docId + " ");
-//                }
-//
-//
-//                for (int freq : freqs) {
-//                    bufferedWriter.write(freq + " ");
-//                }
-//                bufferedWriter.newLine();
-//            }
-//
-//            // Close readers
-//            for (int i = 1; i < blockCounter; i++) {
-//                lexiconReaders[i].close();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public static void main(String[] args) throws IOException{
         //lexiconMerge(5002);

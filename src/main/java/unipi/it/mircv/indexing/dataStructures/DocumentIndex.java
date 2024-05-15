@@ -8,14 +8,6 @@ public class DocumentIndex {
 
     private HashMap<Integer, DocumentStats> documentIndex = new HashMap<>();
 
-    public HashMap<Integer, DocumentStats> getDocumentIndex() {
-        return documentIndex;
-    }
-
-    public void setDocumentIndex(HashMap<Integer, DocumentStats> documentIndex) {
-        this.documentIndex = documentIndex;
-    }
-
     public DocumentIndex() {
         // No need to initialize documentIndex here
     }
@@ -33,7 +25,7 @@ public class DocumentIndex {
 
         @Override
         public String toString() {
-            return ""+len+"";
+            return "" + len + "";
         }
     }
 
@@ -66,6 +58,15 @@ public class DocumentIndex {
         }
 
         return sb.toString();
+    }
+
+    public HashMap<Integer, DocumentStats> getDocumentIndex() {
+        return documentIndex;
+    }
+
+
+    public void setDocumentIndex(HashMap<Integer, DocumentStats> documentIndex) {
+        this.documentIndex = documentIndex;
     }
 
 

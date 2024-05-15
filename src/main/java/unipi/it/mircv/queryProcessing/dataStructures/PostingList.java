@@ -1,6 +1,7 @@
 package unipi.it.mircv.queryProcessing.dataStructures;
 
 public class PostingList {
+
     Integer docId;
 
     Integer freq;

@@ -48,47 +48,39 @@ public class Index {
         return blockNumber;
     }
 
-    public int createIndex(Doc doc) {
+    public void createIndex(Doc doc) {
         MemoryUtil memoryUtil = new MemoryUtil();
         IndexUtil indexUtil = new IndexUtil();
-        Util util = new Util();
-        //util.printUsage();
-        HashMap<String, Integer> termcounter = new HashMap<>();
+
+        HashMap<String, Integer> termCounter = new HashMap<>();
 
         for (String term : doc.getText()){
-            termcounter.put(term, termcounter.containsKey(term) ? termcounter.get(term) + 1 : 1);
+            termCounter.put(term, termCounter.containsKey(term) ? termCounter.get(term) + 1 : 1);
         }
 
+        // check if the memory is over a certain threshold to write the structures to the disk
         if (memoryUtil.isMemoryFull(20)){
-            //writeBlock(lexicon, lexicon.sortLexicon(), documentIndex.sortDocumentIndex()); //writes the current block to disk
-
-            indexUtil.writeBlockToDisk(getBlockNumber(),documentIndex);
-            indexUtil.writeBlockToDisk(getBlockNumber(),lexicon);
-            indexUtil.writeBlockToDisk(getBlockNumber(),invertedIndex);
-            //util.writeBlockToDisk(getBlockNumber(),lexicon,invertedIndex);
-
+            indexUtil.writeBlockToDisk(getBlockNumber(), documentIndex, 0);
+            indexUtil.writeBlockToDisk(getBlockNumber(), lexicon, 0);
+            indexUtil.writeBlockToDisk(getBlockNumber(), invertedIndex, 0);
 
             lexicon = new Lexicon();
             invertedIndex = new InvertedIndex();
             documentIndex = new DocumentIndex();
 
             setBlockNumber(getBlockNumber() + 1);
-            System.gc(); //calls the garbage collector to force to free memory.
-            //Write to the disk
-            //Increment blockNumber
+            System.gc();
+        }
 
+        // update structures as usual
+        documentIndex.updateDocumentIndex(doc.getId(), doc.getText().length);
+
+        for (String term : termCounter.keySet()) {
+            lexicon.updateLexicon(term, termCounter.get(term));
+            invertedIndex.addPosting(term, doc.getId(),termCounter.get(term) );
         }
-        documentIndex.updateDocumentIndex(doc.getId(),doc.getText().length);
-        //read doc and do indexing
-        for (String term : termcounter.keySet()) {
-            lexicon.updateLexicon(term,termcounter.get(term));
-            invertedIndex.addPosting(term, doc.getId(),termcounter.get(term) );
-        }
-        //System.out.println("This is the Document  "+ doc.getId() );
-        //System.out.println(invertedIndex);
-        //System.out.println(lexicon);
-        return getBlockNumber();
-    }
 
     }
+
+}
 

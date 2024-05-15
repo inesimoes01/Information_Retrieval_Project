@@ -13,23 +13,23 @@ public class MemoryUtil {
      * @return True if memory usage exceeds the threshold, false otherwise.
      */
     public static boolean isMemoryFull(double threshold) {
-
-        // Ottieni le informazioni sulla memoria
-        for (MemoryPoolMXBean pool : ManagementFactory.getMemoryPoolMXBeans()) {
-            MemoryUsage usage = pool.getUsage();
-            long usedMemory = usage.getUsed();
-            long maxMemory = usage.getMax();
-
-            // Calcola la percentuale di memoria utilizzata
-            double percentageUsed = (double) usedMemory / maxMemory * 100;
-
-            // Controlla se la percentuale supera il 75%
-            if (percentageUsed >= threshold) {
-                return true;
-            }
-
-        }
-        return false;
+        return Runtime.getRuntime().freeMemory() < threshold;
+//        // Ottieni le informazioni sulla  memoria
+//        for (MemoryPoolMXBean pool : ManagementFactory.getMemoryPoolMXBeans()) {
+//            MemoryUsage usage = pool.getUsage();
+//            long usedMemory = usage.getUsed();
+//            long maxMemory = usage.getMax();
+//
+//            // Calcola la percentuale di memoria utilizzata
+//            double percentageUsed = (double) usedMemory / maxMemory * 100;
+//
+//            // Controlla se la percentuale supera il 75%
+//            if (percentageUsed >= threshold) {
+//                return true;
+//            }
+//
+//        }
+    
     }
 
     /**

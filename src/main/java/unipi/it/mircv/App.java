@@ -4,7 +4,8 @@ package unipi.it.mircv;
 import unipi.it.mircv.common.Flags;
 import unipi.it.mircv.common.Paths;
 import unipi.it.mircv.evalution.Evaluation;
-import unipi.it.mircv.indexing.Reader;
+import unipi.it.mircv.indexing.NewIndex;
+
 import unipi.it.mircv.queryProcessing.QueryProcessing;
 
 import java.io.IOException;
@@ -12,7 +13,9 @@ import java.util.Scanner;
 
 public class App
 {
+    private static long timeForIndexing;
     public static void main(String[] args) throws IOException {
+
         boolean isValid = false;
         Scanner input = new Scanner(System.in);
         String message;
@@ -24,7 +27,16 @@ public class App
             switch (message) {
                 case "i":
                     isValid = true;
-                    Reader.processCollection(Paths.PATH_COLLECTION);
+
+                    long start_time = System.currentTimeMillis();
+                    NewIndex.run(Paths.PATH_COLLECTION);
+                    //Reader.processCollection(Paths.PATH_COLLECTION);
+
+                    long end_time = System.currentTimeMillis();
+                    timeForIndexing = end_time - start_time;
+                    System.out.println("Indexing took " + (double) timeForIndexing/1000 + " seconds.");
+
+
                     break label;
                 case "q":
                     isValid = true;

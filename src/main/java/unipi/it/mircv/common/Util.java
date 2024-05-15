@@ -120,8 +120,8 @@ import java.util.*;
                 Ranking ranking = new Ranking();
 
 
-                for (int i = 0; i < docids.length; i++) {
-                    //int num = Integer.parseInt(numStr);
+                for (int i = 0; i <docidslen.size(); i++) {
+
                     double result = ranking.computeRanking(Integer.parseInt(freqs[i]), Integer.parseInt(count), termStats.getDocumentFrequency(), Integer.parseInt(docidslen.get(i)), Double.parseDouble(avgDocLen));
                     if (result > maxResult) {
                         maxResult = result;

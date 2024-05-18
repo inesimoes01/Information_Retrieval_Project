@@ -27,7 +27,33 @@ public class TermDictionary {
     private Double termUpperBoundTFIDF;
     private Double termUpperBoundBM25;
     private int offset;
+    private int offsetDocId;
+    private int offsetFreq;
+    private int endOffset;
 
+    public int getEndOffset() {
+        return endOffset;
+    }
+
+    public void setEndOffset(int endOffset) {
+        this.endOffset = endOffset;
+    }
+
+    public int getOffsetDocId() {
+        return offsetDocId;
+    }
+
+    public void setOffsetDocId(int offsetDocId) {
+        this.offsetDocId = offsetDocId;
+    }
+
+    public int getOffsetFreq() {
+        return offsetFreq;
+    }
+
+    public void setOffsetFreq(int offsetFreq) {
+        this.offsetFreq = offsetFreq;
+    }
 
     private List<DocumentQP> documentsWithTerm = new ArrayList<>();
 

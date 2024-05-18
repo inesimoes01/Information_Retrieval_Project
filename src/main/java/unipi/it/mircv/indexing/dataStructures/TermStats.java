@@ -1,6 +1,14 @@
 package unipi.it.mircv.indexing.dataStructures;
 
 public class TermStats {
+    public String getTerm() {
+        return term;
+    }
+
+    public void setTerm(String term) {
+        this.term = term;
+    }
+
     private String term;
     //how many times term appears in the collection
     private int collectionFrequency;

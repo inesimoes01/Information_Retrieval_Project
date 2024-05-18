@@ -6,38 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-class ToReturn {
-    private ArrayList<String> highBits;
-    private ArrayList<String> lowerBits;
-    private int l;
-    private int h;
-
-    public ToReturn() {
-    }
-    public ToReturn(int h, int l) {
-        this.l=l;
-        this.h=l;
-    }
-
-
-
-    public void setHighBits(ArrayList<String> highBits) {
-        this.highBits = highBits;
-    }
-
-    public void setLowerBits(ArrayList<String> lowerBits) {
-        this.lowerBits = lowerBits;
-    }
-
-    public ArrayList<String> getHighBits() {
-        return highBits;
-    }
-
-    public ArrayList<String> getLowerBits() {
-        return lowerBits;
-    }
-}
-
 
 public class EliasFano {
     private static Util util= new Util();
@@ -121,9 +89,9 @@ public class EliasFano {
         int l= lowBits.get(0).length() ;
         int lastIndex = highBits.size() - 1;
 
-// Converti l'indice in una stringa binaria
+        // Converti l'indice in una stringa binaria
         String binaryString = Integer.toBinaryString(lastIndex);
-// Calcola la lunghezza della stringa binaria
+        // Calcola la lunghezza della stringa binaria
         int h = binaryString.length();
 
         int decodedNumber;
@@ -176,7 +144,7 @@ public class EliasFano {
 
 
 
-        System.out.println("Encoded High Bits: " + result.getLowerBits());
+        System.out.println("Encoded Lower Bits: " + result.getLowerBits());
         System.out.println("Encoded Lower Bits: " + Arrays.toString(y));
         System.out.println("Decoded High Bits: " + encoding.splitLowerBytes(encoding.lowerBinaryStringsToBytes(result.getLowerBits()) , encoding.countOnes(result.getHighBits())));
 //DONE THE OUTPUT IS AN ARRAY OF STRING.

@@ -1,10 +1,13 @@
 package unipi.it.mircv.queryProcessing;
 
 import unipi.it.mircv.common.Paths;
+import unipi.it.mircv.compression.UnaryInteger;
+import unipi.it.mircv.compression.VariableByte;
 import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
 import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
 import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
 
+import javax.sound.midi.SysexMessage;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
@@ -88,6 +91,16 @@ public class OutputResultsReader {
             RandomAccessFile invertedIndexFile = new RandomAccessFile(String.valueOf(Paths.PATH_INVERTED_INDEX), "r");
             invertedIndexFile.seek(term.getOffset());
             String line = invertedIndexFile.readLine();
+            byte[] lineBytes  = line.getBytes();
+
+            String termFile = line.substring(0, term.getOffsetDocId()).trim();
+            byte[] docIdBytes = line.substring(term.getOffsetDocId(), term.getOffsetFreq()).getBytes();
+            byte[] freqString = line.substring(term.getOffsetFreq(), term.getEndOffset()).getBytes();
+
+            List<Integer> docIdLine = VariableByte.decode(docIdBytes);
+            List<Integer> frequencyLine = UnaryInteger.decodeFromUnary(freqString);
+
+
             String[] checkTerm = line.split(" ");
             if (checkTerm[0].equalsIgnoreCase(term.getTerm())){
                 for (int j = 1; j < (checkTerm.length)/2; j++) {
@@ -163,6 +176,12 @@ public class OutputResultsReader {
         } else {
             System.out.println("The file is empty.");
         }
+    }
+
+    public static void main(String[] args){
+        List<TermDictionary> listToFill = new ArrayList<>();
+        fillTermDictionary(listToFill, "0");
+        System.out.println("AHH");
     }
 
 //    public Map<String, List<Integer>> getTermDocidFreq() {

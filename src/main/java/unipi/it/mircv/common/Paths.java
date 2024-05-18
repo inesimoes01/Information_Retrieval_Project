@@ -13,4 +13,5 @@ public class Paths {
     public static final String PATH_INVERTED_INDEX_MERGED = "data/output/merged/InvertedIndexMerged.txt";
     public static final String PATH_LEXICON_MERGED = "data/output/merged/LexiconMerged.txt";
     public static final String PATH_DOCUMENT_INDEX_MERGED = "data/output/merged/DocumentIndexMerged.txt";
+    public static final String PATH_OFFSETS = "data/output/aux_folder/offsets.txt";
 }

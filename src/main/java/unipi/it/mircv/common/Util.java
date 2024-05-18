@@ -1,5 +1,8 @@
 package unipi.it.mircv.common;
 
+import org.apache.commons.io.FileUtils;
+import unipi.it.mircv.compression.UnaryInteger;
+import unipi.it.mircv.compression.VariableByte;
 import unipi.it.mircv.indexing.dataStructures.*;
 import unipi.it.mircv.queryProcessing.Ranking;
 
@@ -7,6 +10,9 @@ import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
     /**
@@ -14,17 +20,6 @@ import java.util.*;
      */
     public class Util {
 
-
-
-        //myWriterDocIds = new TextWriter("Data/Output/DocIds/docIds" + blockCounter + ".txt");
-        //myWriterFreq = new TextWriter("Data/Output/Frequencies/freq" + blockCounter + ".txt");
-        //myWriterDocumentIndex = new TextWriter("Data/Output/DocumentIndex/documentIndex" + blockCounter + ".txt");
-        /**
-         * Merges two ArrayLists element-wise.
-         * @param list1 The first ArrayList.
-         * @param list2 The second ArrayList.
-         * @return The merged ArrayList.
-         */
         public static ArrayList<String> mergeArrayLists(ArrayList<String> list1, ArrayList<String> list2) {
             if (list1 == null || list2 == null) {
                 throw new IllegalArgumentException("Le liste non possono essere nulli");
@@ -40,12 +35,7 @@ import java.util.*;
             }
             return mergedList;
         }
-        /**
-         * Splits an InvertedIndex line into its components.
-         *
-         * @param line The InvertedIndex line to be split.
-         * @return An ArrayList containing the split components.
-         */
+
         static ArrayList<String> splitInvertedIndexLine(String line) {
             if (line!= null) {
                 String[] parts = line.split("\\s+", 3);
@@ -79,72 +69,77 @@ import java.util.*;
             return null;
         }
 
-        /**
-         * Computes the upper bound for a term based on ranking calculations.
-         *
-         * @param bufferedReader The BufferedReader for DocumentIndex.
-         * @param input           The ArrayList containing InvertedIndex components.
-         * @param termStats       The statistics for the term.
-         * @return The computed upper bound.
-         * @throws IOException If an I/O error occurs.
-         */
-        static double computeTermUpperBound(BufferedReader bufferedReader, ArrayList<String> input, TermStats termStats) throws IOException {
-            if (input != null) {
-                String[] docids = input.get(1).split("\\s+");
-                String[] freqs = input.get(2).split("\\s+");
-                String avgDocLen = "";
-                String count = "";
-                ArrayList<String> docidslen = new ArrayList<>(Arrays.asList(docids));
-                try {
-                    bufferedReader = new BufferedReader(new FileReader(Paths.PATH_DOCUMENT_INDEX_MERGED));
-                    docidslen = new ArrayList<>(searchValuesDocumentIndex(bufferedReader, docidslen));
-                    // ... altre operazioni ...
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    bufferedReader.close();
-                }
+        static double computeTermUpperBound(BufferedReader bufferedReader, TermStats termStats, Integer[] offsets, int currentOffset) throws IOException {
+            String term = termStats.getTerm();
+
+            int len1 = offsets[1] - offsets[0];
+            int len2 = offsets[2] - offsets[1];
+            byte[] docIdBytes = new byte[len1];
+            byte[] freqString = new byte[len2];
+            byte[] file = FileUtils.readFileToByteArray(new File(Paths.PATH_INVERTED_INDEX_MERGED));
 
 
-                try (BufferedReader br = new BufferedReader(new FileReader("data/output/avgDocLen.txt"))) {
-                    avgDocLen = br.readLine();
-                    count = br.readLine();
+            System.arraycopy(file, currentOffset + term.getBytes().length, docIdBytes, 0, len1);
+            System.arraycopy(file, currentOffset + offsets[1], freqString, 0, len2);
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            List<Integer> docIdLine = VariableByte.decode(docIdBytes);
+            List<Integer> frequencyLine = UnaryInteger.decodeFromUnary(freqString);
 
+            String avgDocLen = "";
+            String count = "";
+            HashMap<Integer, Integer> docIdsLen = new HashMap<>();
+            try {
+                bufferedReader = new BufferedReader(new FileReader(Paths.PATH_DOCUMENT_INDEX_MERGED));
+                docIdsLen = searchValuesDocumentIndex(bufferedReader, docIdLine);
 
-                double maxResult = Integer.MIN_VALUE;
-                Ranking ranking = new Ranking();
-
-
-                for (int i = 0; i <docidslen.size(); i++) {
-
-                    double result = ranking.computeRanking(Integer.parseInt(freqs[i]), Integer.parseInt(count), termStats.getDocumentFrequency(), Integer.parseInt(docidslen.get(i)), Double.parseDouble(avgDocLen));
-                    if (result > maxResult) {
-                        maxResult = result;
-                    }
-
-
-                    //maxResult = Math.max(maxResult, result);
-                }
-
-                return maxResult;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                bufferedReader.close();
             }
-            return 0;
+
+            try (BufferedReader br = new BufferedReader(new FileReader("data/output/avgDocLen.txt"))) {
+                avgDocLen = br.readLine();
+                count = br.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            double maxResult = Integer.MIN_VALUE;
+            Ranking ranking = new Ranking();
+
+            for (int i = 0; i < docIdsLen.size(); i++) {
+                double result = ranking.computeRanking(frequencyLine.get(i), Integer.parseInt(count), termStats.getDocumentFrequency(), docIdsLen.get(i), Double.parseDouble(avgDocLen));
+                if (result > maxResult) {
+                    maxResult = result;
+                }
+            }
+
+            return maxResult;
         }
 
-        /**
-         * Finds the offset of a term in a RandomAccessFile.
-         *
-         * @param randomAccessFile The RandomAccessFile to search.
-         * @param searchTerm       The term to search for.
-         * @param startOffset      The starting offset for the search.
-         * @return The offset of the term or -1 if not found.
-         * @throws IOException If an I/O error occurs.
-         */
+
+        public static Integer[] findInvertedIndexOffset(String term) throws IOException {
+            Integer[] offsets = new Integer[3];
+
+            try {
+                List<String> lines = Files.readAllLines(Path.of(Paths.PATH_OFFSETS), StandardCharsets.UTF_8);
+                for (String line : lines) {
+                    String[] parts = line.split(" ");
+                    if (parts[0].equals(term)) {
+                        offsets[0] = Integer.valueOf(parts[1]);
+                        offsets[1] = Integer.valueOf(parts[2]);
+                        offsets[2] = Integer.valueOf(parts[3]);
+                        return offsets;
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }
+
         public static long findOffset(RandomAccessFile randomAccessFile, String searchTerm, long startOffset) throws IOException {
             long currentOffset = startOffset;
 
@@ -167,23 +162,17 @@ import java.util.*;
             // If the search term is not found, return -1
             return -1;
         }
-        /**
-         * Searches for values in DocumentIndex based on a list of terms.
-         *
-         * @param bufferedReader The BufferedReader for DocumentIndex.
-         * @param inputList      The list of terms to search for.
-         * @return The list of corresponding values from DocumentIndex.
-         * @throws IOException If an I/O error occurs.
-         */
-        static ArrayList<String> searchValuesDocumentIndex(BufferedReader bufferedReader, ArrayList<String> inputList) throws IOException {
-            ArrayList<String> outputList = new ArrayList<>();
-            HashMap<String, String> map = new HashMap<>();
+
+        static HashMap<Integer, Integer> searchValuesDocumentIndex(BufferedReader bufferedReader, List<Integer> inputList) throws IOException {
+            HashMap<Integer, Integer> outputList = new HashMap<>();
 
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                String[] parts = line.split("\\s+");
-                if (inputList.contains(parts[0])){
-                    outputList.add(parts[1]);
+                String[] parts = line.split(" ");
+
+
+                if (inputList.contains(Integer.valueOf(parts[0]))){
+                    outputList.put(Integer.valueOf(parts[0]), Integer.valueOf(parts[1]));
                 }
             }
             bufferedReader.mark(0);
@@ -192,16 +181,6 @@ import java.util.*;
             return outputList;
         }
 
-
-
-        /**
-         * Searches for values in Lexicon based on a term.
-         *
-         * @param bufferedReader The BufferedReader for Lexicon.
-         * @param term            The term to search for.
-         * @return The list of corresponding values from Lexicon.
-         * @throws IOException If an I/O error occurs.
-         */
         static ArrayList<String> searchValuesLexicon (BufferedReader bufferedReader, String term) throws IOException {
             ArrayList<String> toReturn = new ArrayList<>();
             String line;

@@ -32,11 +32,54 @@ public class QueryProcessing {
                 userInput = scanner.nextLine();
             } while (userInput.equalsIgnoreCase("y"));
         }else {
-            System.out.println("Processing for DAAT and TFIDF: ");
             Flags.setIsDAAT_flag(true);
             Flags.setIsTFIDF_flag(true);
-            Flags.setNumberOfDocuments(20);
+            Flags.setIsConjunctive_flag(true);
+            Flags.setNumberOfDocuments(500);
             evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+
+            Flags.setIsDAAT_flag(true);
+            Flags.setIsTFIDF_flag(false);
+            Flags.setIsConjunctive_flag(true);
+            Flags.setNumberOfDocuments(500);
+            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+
+            Flags.setIsDAAT_flag(false);
+            Flags.setIsTFIDF_flag(true);
+            Flags.setIsConjunctive_flag(true);
+            Flags.setNumberOfDocuments(500);
+            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+
+            Flags.setIsDAAT_flag(false);
+            Flags.setIsTFIDF_flag(false);
+            Flags.setIsConjunctive_flag(true);
+            Flags.setNumberOfDocuments(500);
+            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+
+            Flags.setIsDAAT_flag(false);
+            Flags.setIsTFIDF_flag(true);
+            Flags.setIsConjunctive_flag(false);
+            Flags.setNumberOfDocuments(500);
+            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+
+            Flags.setIsDAAT_flag(false);
+            Flags.setIsTFIDF_flag(false);
+            Flags.setIsConjunctive_flag(false);
+            Flags.setNumberOfDocuments(500);
+            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+
+            Flags.setIsDAAT_flag(true);
+            Flags.setIsTFIDF_flag(true);
+            Flags.setIsConjunctive_flag(false);
+            Flags.setNumberOfDocuments(500);
+            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+
+            Flags.setIsDAAT_flag(true);
+            Flags.setIsTFIDF_flag(true);
+            Flags.setIsConjunctive_flag(false);
+            Flags.setNumberOfDocuments(500);
+            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+
         }
 
     }

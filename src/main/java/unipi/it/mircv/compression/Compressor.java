@@ -8,8 +8,6 @@ import java.util.ArrayList;
 
 public class Compressor {
 
-
-
         //function that takes an int and return an encoded integer in the form of a list of integers
         public ArrayList<Integer> encode(int number){
             ArrayList<Integer> numbers = new ArrayList<>();

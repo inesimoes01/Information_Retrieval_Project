@@ -70,7 +70,7 @@ import java.util.*;
         }
 
 
-        static double computeTermUpperBound(BufferedReader bufferedReader, TermStats termStats, Integer[] offsets, int currentOffset) throws IOException {
+        public static double computeTermUpperBound(BufferedReader bufferedReader, TermStats termStats, Integer[] offsets, int currentOffset) throws IOException {
             String term = termStats.getTerm();
 
             int len1 = offsets[1] - offsets[0];

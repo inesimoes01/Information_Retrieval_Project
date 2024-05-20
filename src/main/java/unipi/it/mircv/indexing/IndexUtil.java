@@ -1,16 +1,9 @@
-package unipi.it.mircv.common;
+package unipi.it.mircv.indexing;
 
-import org.apache.lucene.util.ArrayUtil;
-import unipi.it.mircv.compression.EliasFano;
-import unipi.it.mircv.compression.ToReturn;
-import unipi.it.mircv.compression.UnaryInteger;
-import unipi.it.mircv.compression.VariableByte;
+import unipi.it.mircv.common.Paths;
 import unipi.it.mircv.indexing.dataStructures.*;
-import java.nio.channels.FileChannel;
 
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static unipi.it.mircv.common.Util.*;
@@ -26,7 +19,7 @@ public class IndexUtil {
         String directoryPath = "data/output/";
         String filePath = directoryPath + "DocumentIndex" + blockCounter + ".txt";
 
-        System.out.println("this is the block counter bad "+ blockCounter);
+        //System.out.println("this is the block counter bad "+ blockCounter);
         int index = 0;
 
         // Create the directories if they don't exist
@@ -44,10 +37,9 @@ public class IndexUtil {
             // Writing to the file
             ArrayList<Integer> docIndexKey = documentIndex.sortDocumentIndex();
             for (Integer i : docIndexKey) {
-
-                index = i + lastDocId + 1;
+                //index = i + lastDocId + 1;
                 // Write information to the bufferedWriter
-                bufferedWriter.write(index + " " + documentIndex.getDocumentIndex().get(i));
+                bufferedWriter.write(i + " " + documentIndex.getDocumentIndex().get(i));
                 bufferedWriter.newLine();  // Move to the next line
             }
 
@@ -309,126 +301,126 @@ public class IndexUtil {
         }
     }
 
-    public static void mergeInvertedIndex(int blockCounter) {
-        String outputPath = Paths.PATH_INVERTED_INDEX_MERGED; // Output file path for merged lexicon
-        blockCounter++;
-        try (FileOutputStream fos = new FileOutputStream(outputPath)) {
-            try (BufferedWriter auxFile = new BufferedWriter(new FileWriter(Paths.PATH_OFFSETS))) {
-                int offsetDocID = 0;
-                int offsetFreq = 0;
-                int endLineOffset = 0;
-                int offsetInvertedIndex = 0;
-                //try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath))) {
-                // TreeMap to store the accumulated statistics for each term (sorted by term)
-                TreeMap<String, ArrayList<Posting>> postingListMap = new TreeMap<>();
-
-                // PriorityQueue to efficiently merge and sort entries
-                PriorityQueue<PostingEntry> priorityQueue = new PriorityQueue<>(Comparator.comparing(PostingEntry::getTerm));
-
-                // Initialize lexicon readers and iterators
-                BufferedReader[] lexiconReaders = new BufferedReader[blockCounter];
-                Iterator<String>[] iterators = new Iterator[blockCounter];
-
-                // Open lexicon readers and create iterators
-                for (int i = 0; i < blockCounter; i++) {
-                    lexiconReaders[i] = new BufferedReader(new FileReader("data/output/InvertedIndex" + i + ".txt"));
-                    iterators[i] = lexiconReaders[i].lines().iterator();
-
-                    if (iterators[i].hasNext()) {
-                        String line = iterators[i].next();
-                        String[] parts = line.split(" ");
-                        String term = parts[0];
-                        ArrayList<Posting> postings = new ArrayList<>();
-
-                        for (int j = 1; j < parts.length; j += 2) {
-                            int docId = Integer.parseInt(parts[j]);
-                            int freq = Integer.parseInt(parts[j + 1]);
-                            postings.add(new Posting(docId, freq));
-                        }
-                        if (postingListMap.containsKey(term)) {
-                            // join all postings
-                            ArrayList<Posting> temp = postingListMap.get(term);
-                            temp.addAll(postings);
-                            postingListMap.put(term, temp);
-                        } else postingListMap.put(term, postings);
-
-                        priorityQueue.add(new PostingEntry(term, i));
-                    }
-                }
-
-                // Continue merging and sorting until the PriorityQueue is empty
-                while (!priorityQueue.isEmpty()) {
-                    PostingEntry entry = priorityQueue.poll();
-                    String term = entry.getTerm();
-                    int blockIndex = entry.getBlockIndex();
-
-                    ArrayList<Posting> postingList = postingListMap.get(term);
-
-                    // Move to the next entry from the same block or fetch new entry from another block
-                    if (iterators[blockIndex].hasNext()) {
-                        String line = iterators[blockIndex].next();
-                        String[] parts = line.split(" ");
-                        String nextTerm = parts[0];
-                        ArrayList<Posting> nextPostings = postingListMap.getOrDefault(nextTerm, new ArrayList<>());
-
-                        for (int j = 1; j < parts.length; j += 2) {
-                            int docId = Integer.parseInt(parts[j]);
-                            int freq = Integer.parseInt(parts[j + 1]);
-                            nextPostings.add(new Posting(docId, freq));
-                        }
-                        Collections.sort(postingList, new Comparator<Posting>() {
-                            @Override
-                            public int compare(Posting p1, Posting p2) {
-                                return Integer.compare(p1.getDocId(), p2.getDocId()); // Ordine crescente
-                            }
-                        });
-
-                        postingListMap.put(nextTerm, nextPostings);
-                        priorityQueue.add(new PostingEntry(nextTerm, blockIndex));
-                    }
-                }
-
-                // Write the merged and sorted entries to the output file
-                for (Map.Entry<String, ArrayList<Posting>> entry : postingListMap.entrySet()) {
-                    String term = entry.getKey();
-                    ArrayList<Posting> postingList2 = entry.getValue();
-
-                    // Creare liste separate per docId e freq
-                    ArrayList<Integer> docIds = new ArrayList<>();
-                    ArrayList<Integer> freqs = new ArrayList<>();
-
-                    // Popolare le liste con i valori corrispondenti
-                    for (Posting p : postingList2) {
-                        docIds.add(p.getDocId());
-                        freqs.add(p.getFreq());
-                    }
-
-                    byte[] compressedDocIds = VariableByte.encode(docIds);
-                    offsetDocID = term.getBytes().length;
-                    byte[] compressedFreq = UnaryInteger.encodeToUnary(freqs);
-                    offsetFreq = offsetDocID + compressedDocIds.length;
-                    endLineOffset = offsetFreq + compressedFreq.length;
-
-                    // write offsets
-                    auxFile.write(term + " " + offsetDocID + " " + offsetFreq + " " + endLineOffset);
-                    auxFile.newLine();
-
-                    // write merged file
-                    fos.write(term.getBytes());
-                    fos.write(compressedDocIds);
-                    fos.write(compressedFreq);
-                    fos.write("\n".getBytes());
-
-                }
-                for (int i = 1; i < blockCounter; i++) {
-                    lexiconReaders[i - 1].close();
-                }
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void mergeInvertedIndex(int blockCounter) {
+//        String outputPath = Paths.PATH_INVERTED_INDEX_MERGED; // Output file path for merged lexicon
+//        blockCounter++;
+//        try (FileOutputStream fos = new FileOutputStream(outputPath)) {
+//            try (BufferedWriter auxFile = new BufferedWriter(new FileWriter(Paths.PATH_OFFSETS))) {
+//                int offsetDocID = 0;
+//                int offsetFreq = 0;
+//                int endLineOffset = 0;
+//                int offsetInvertedIndex = 0;
+//                //try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath))) {
+//                // TreeMap to store the accumulated statistics for each term (sorted by term)
+//                TreeMap<String, ArrayList<Posting>> postingListMap = new TreeMap<>();
+//
+//                // PriorityQueue to efficiently merge and sort entries
+//                PriorityQueue<PostingEntry> priorityQueue = new PriorityQueue<>(Comparator.comparing(PostingEntry::getTerm));
+//
+//                // Initialize lexicon readers and iterators
+//                BufferedReader[] lexiconReaders = new BufferedReader[blockCounter];
+//                Iterator<String>[] iterators = new Iterator[blockCounter];
+//
+//                // Open lexicon readers and create iterators
+//                for (int i = 0; i < blockCounter; i++) {
+//                    lexiconReaders[i] = new BufferedReader(new FileReader("data/output/InvertedIndex" + i + ".txt"));
+//                    iterators[i] = lexiconReaders[i].lines().iterator();
+//
+//                    if (iterators[i].hasNext()) {
+//                        String line = iterators[i].next();
+//                        String[] parts = line.split(" ");
+//                        String term = parts[0];
+//                        ArrayList<Posting> postings = new ArrayList<>();
+//
+//                        for (int j = 1; j < parts.length; j += 2) {
+//                            int docId = Integer.parseInt(parts[j]);
+//                            int freq = Integer.parseInt(parts[j + 1]);
+//                            postings.add(new Posting(docId, freq));
+//                        }
+//                        if (postingListMap.containsKey(term)) {
+//                            // join all postings
+//                            ArrayList<Posting> temp = postingListMap.get(term);
+//                            temp.addAll(postings);
+//                            postingListMap.put(term, temp);
+//                        } else postingListMap.put(term, postings);
+//
+//                        priorityQueue.add(new PostingEntry(term, i));
+//                    }
+//                }
+//
+//                // Continue merging and sorting until the PriorityQueue is empty
+//                while (!priorityQueue.isEmpty()) {
+//                    PostingEntry entry = priorityQueue.poll();
+//                    String term = entry.getTerm();
+//                    int blockIndex = entry.getBlockIndex();
+//
+//                    ArrayList<Posting> postingList = postingListMap.get(term);
+//
+//                    // Move to the next entry from the same block or fetch new entry from another block
+//                    if (iterators[blockIndex].hasNext()) {
+//                        String line = iterators[blockIndex].next();
+//                        String[] parts = line.split(" ");
+//                        String nextTerm = parts[0];
+//                        ArrayList<Posting> nextPostings = postingListMap.getOrDefault(nextTerm, new ArrayList<>());
+//
+//                        for (int j = 1; j < parts.length; j += 2) {
+//                            int docId = Integer.parseInt(parts[j]);
+//                            int freq = Integer.parseInt(parts[j + 1]);
+//                            nextPostings.add(new Posting(docId, freq));
+//                        }
+//                        Collections.sort(postingList, new Comparator<Posting>() {
+//                            @Override
+//                            public int compare(Posting p1, Posting p2) {
+//                                return Integer.compare(p1.getDocId(), p2.getDocId()); // Ordine crescente
+//                            }
+//                        });
+//
+//                        postingListMap.put(nextTerm, nextPostings);
+//                        priorityQueue.add(new PostingEntry(nextTerm, blockIndex));
+//                    }
+//                }
+//
+//                // Write the merged and sorted entries to the output file
+//                for (Map.Entry<String, ArrayList<Posting>> entry : postingListMap.entrySet()) {
+//                    String term = entry.getKey();
+//                    ArrayList<Posting> postingList2 = entry.getValue();
+//
+//                    // Creare liste separate per docId e freq
+//                    ArrayList<Integer> docIds = new ArrayList<>();
+//                    ArrayList<Integer> freqs = new ArrayList<>();
+//
+//                    // Popolare le liste con i valori corrispondenti
+//                    for (Posting p : postingList2) {
+//                        docIds.add(p.getDocId());
+//                        freqs.add(p.getFreq());
+//                    }
+//
+//                    byte[] compressedDocIds = VariableByte.encode(docIds);
+//                    offsetDocID = term.getBytes().length;
+//                    byte[] compressedFreq = UnaryInteger.encodeToUnary(freqs);
+//                    offsetFreq = offsetDocID + compressedDocIds.length;
+//                    endLineOffset = offsetFreq + compressedFreq.length;
+//
+//                    // write offsets
+//                    auxFile.write(term + " " + offsetDocID + " " + offsetFreq + " " + endLineOffset);
+//                    auxFile.newLine();
+//
+//                    // write merged file
+//                    fos.write(term.getBytes());
+//                    fos.write(compressedDocIds);
+//                    fos.write(compressedFreq);
+//                    fos.write("\n".getBytes());
+//
+//                }
+//                for (int i = 1; i < blockCounter; i++) {
+//                    lexiconReaders[i - 1].close();
+//                }
+//
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public static byte[] readFromFile(String fileName) throws IOException {
         try (FileInputStream fis = new FileInputStream(fileName)) {
@@ -440,9 +432,14 @@ public class IndexUtil {
 
 
     public static void main(String[] args){
-        mergeDocumentIndex(2);
-        mergeInvertedIndex(2);
-        lexiconMerge(2);
+        NewIndex.deleteFilesInFolder("data/output/merged");
+        long start = System.currentTimeMillis();
+        mergeDocumentIndex(92);
+        System.gc();
+        Merging.mergeInvertedIndex(93);
+        System.gc();
+        lexiconMerge(92);
+        System.out.println("Merging took " + (System.currentTimeMillis() - start)/1000 + "s");
 
         int offsetDoc = 0;
         int offsetFreq = 0;

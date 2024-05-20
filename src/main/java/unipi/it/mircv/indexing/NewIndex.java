@@ -4,12 +4,9 @@ package unipi.it.mircv.indexing;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import unipi.it.mircv.common.IndexUtil;
-import unipi.it.mircv.common.MemoryUtil;
 import unipi.it.mircv.indexing.dataStructures.*;
 import unipi.it.mircv.preprocessing.Preprocessing;
 import unipi.it.mircv.preprocessing.Tokenization;
-import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -159,9 +156,9 @@ public class NewIndex {
     }
 
     private static void mergeAllStructures(){
-        IndexUtil.mergeDocumentIndex(blockNumber);
-        IndexUtil.mergeInvertedIndex(blockNumber);
-        IndexUtil.lexiconMerge(blockNumber);
+        IndexUtil.mergeDocumentIndex(blockNumber-1);
+        Merging.mergeInvertedIndex(blockNumber);
+        IndexUtil.lexiconMerge(blockNumber-1);
     }
 
     private static void handleMemory(int currentDocId){
@@ -170,11 +167,8 @@ public class NewIndex {
             System.out.println("Memory Full. Writing block number " + blockNumber);
             saveBlockInformation();
             lastDocId = currentDocId;
+            System.gc();
 
-            while (Runtime.getRuntime().freeMemory() < threshold * 2) {
-                // wait for free memory
-                System.gc();
-            }
 
         }
     }

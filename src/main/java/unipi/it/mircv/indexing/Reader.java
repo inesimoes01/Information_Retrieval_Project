@@ -3,7 +3,7 @@
 //import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 //import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 //import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-//import unipi.it.mircv.common.IndexUtil;
+//import unipi.it.mircv.indexing.IndexUtil;
 //import unipi.it.mircv.common.Util;
 //import unipi.it.mircv.indexing.Index;
 //import unipi.it.mircv.indexing.dataStructures.Doc;

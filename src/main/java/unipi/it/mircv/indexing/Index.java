@@ -1,5 +1,4 @@
 package unipi.it.mircv.indexing;
-import unipi.it.mircv.common.*;
 import unipi.it.mircv.indexing.dataStructures.Doc;
 import unipi.it.mircv.indexing.dataStructures.DocumentIndex;
 import unipi.it.mircv.indexing.dataStructures.InvertedIndex;

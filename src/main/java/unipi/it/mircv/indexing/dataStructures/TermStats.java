@@ -36,8 +36,9 @@ public class TermStats {
     }
 
     public TermStats(){}
-    public TermStats(int collectionFrequency, int documentFrequency,long invertedIndexOffset){
 
+    public TermStats(String term, int collectionFrequency, int documentFrequency,long invertedIndexOffset){
+        this.term = term;
         this.collectionFrequency = collectionFrequency;
         this.documentFrequency = documentFrequency;
         this.invertedIndexOffset = invertedIndexOffset;

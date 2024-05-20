@@ -244,7 +244,7 @@ public class IndexUtil {
                         int cf = Integer.parseInt(parts[1]);
                         int df = Integer.parseInt(parts[2]);
 
-                        TermStats termStats = termStatsMap.getOrDefault(term, new TermStats(0, 0, 0));
+                        TermStats termStats = termStatsMap.getOrDefault(term, new TermStats(term, 0, 0, 0));
                         termStats.addToCollectionFrequency(cf);
                         termStats.addToDocumentFrequency(df);
                         termStatsMap.put(term, termStats);
@@ -432,13 +432,13 @@ public class IndexUtil {
 
 
     public static void main(String[] args){
-        NewIndex.deleteFilesInFolder("data/output/merged");
+        //NewIndex.deleteFilesInFolder("data/output/merged");
         long start = System.currentTimeMillis();
-        mergeDocumentIndex(92);
-        System.gc();
-        Merging.mergeInvertedIndex(93);
-        System.gc();
-        lexiconMerge(92);
+//        mergeDocumentIndex(92);
+//        System.gc();
+//        Merging.mergeInvertedIndex(93);
+//        System.gc();
+        Merging.mergeLexicon(93);
         System.out.println("Merging took " + (System.currentTimeMillis() - start)/1000 + "s");
 
         int offsetDoc = 0;

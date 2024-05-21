@@ -29,15 +29,13 @@ public class TermStats {
     public void updateLastDocIdInserted(int docId){
         this.lastDocIdInserted = docId;
     }
-
-
     public void addToCollectionFrequency(int value) {
         this.collectionFrequency += value;
     }
 
     public TermStats(){}
 
-    public TermStats(String term, int collectionFrequency, int documentFrequency,long invertedIndexOffset){
+    public TermStats(String term, int collectionFrequency, int documentFrequency, long invertedIndexOffset){
         this.term = term;
         this.collectionFrequency = collectionFrequency;
         this.documentFrequency = documentFrequency;

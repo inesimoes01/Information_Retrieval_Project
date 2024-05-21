@@ -19,10 +19,6 @@ public class IndexUtil {
         String directoryPath = "data/output/";
         String filePath = directoryPath + "DocumentIndex" + blockCounter + ".txt";
 
-        //System.out.println("this is the block counter bad "+ blockCounter);
-        int index = 0;
-
-        // Create the directories if they don't exist
         File directory = new File(directoryPath);
         if (!directory.exists()) {
             if (directory.mkdirs()) {
@@ -34,16 +30,10 @@ public class IndexUtil {
         }
 
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
-            // Writing to the file
-            ArrayList<Integer> docIndexKey = documentIndex.sortDocumentIndex();
-            for (Integer i : docIndexKey) {
-                //index = i + lastDocId + 1;
-                // Write information to the bufferedWriter
+            for (Integer i : documentIndex.getDocumentIndex().keySet()){
                 bufferedWriter.write(i + " " + documentIndex.getDocumentIndex().get(i));
-                bufferedWriter.newLine();  // Move to the next line
+                bufferedWriter.newLine();
             }
-
-
         } catch (IOException e) {
             System.err.println("Error writing to the file:");
             e.printStackTrace();
@@ -62,18 +52,15 @@ public class IndexUtil {
                 System.out.println("Directories created successfully.");
             } else {
                 System.err.println("Failed to create directories.");
-                return;  // Exit the method if directories cannot be created
+                return;
             }
         }
 
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath))) {
-            // Writing to the file
             ArrayList<String> docLexiconKey = lexicon.sortLexicon();
             for (String i : docLexiconKey) {
-
-                // Write information to the bufferedWriter
-                bufferedWriter.write(i + " " + lexicon.getLexicon().get(i));
-                bufferedWriter.newLine();  // Move to the next line
+                bufferedWriter.write(i + " " + lexicon.getLexicon().get(i).getCollectionFrequency() + " " + lexicon.getLexicon().get(i).getDocumentFrequency());
+                bufferedWriter.newLine();
             }
 
         } catch (IOException e) {
@@ -436,9 +423,9 @@ public class IndexUtil {
         long start = System.currentTimeMillis();
 //        mergeDocumentIndex(92);
 //        System.gc();
-//        Merging.mergeInvertedIndex(93);
+        //Merging.mergeInvertedIndex(95);
 //        System.gc();
-        Merging.mergeLexicon(93);
+        Merging.mergeLexicon(95);
         System.out.println("Merging took " + (System.currentTimeMillis() - start)/1000 + "s");
 
         int offsetDoc = 0;

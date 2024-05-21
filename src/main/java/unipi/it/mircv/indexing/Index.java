@@ -59,8 +59,8 @@ public class Index {
 
         // check if the memory is over a certain threshold to write the structures to the disk
         if (memoryUtil.isMemoryFull(20)){
-            indexUtil.writeBlockToDisk(getBlockNumber(), documentIndex, 0);
-            indexUtil.writeBlockToDisk(getBlockNumber(), lexicon, 0);
+            IndexUtil.writeBlockToDisk(getBlockNumber(), documentIndex, 0);
+            IndexUtil.writeBlockToDisk(getBlockNumber(), lexicon, 0);
             indexUtil.writeBlockToDisk(getBlockNumber(), invertedIndex, 0);
 
             lexicon = new Lexicon();
@@ -72,7 +72,7 @@ public class Index {
         }
 
         // update structures as usual
-        documentIndex.updateDocumentIndex(doc.getId(), doc.getText().length);
+        //documentIndex.updateDocumentIndex(doc.getId(), doc.getText().length);
 
         for (String term : termCounter.keySet()) {
             lexicon.updateLexicon(term, termCounter.get(term));

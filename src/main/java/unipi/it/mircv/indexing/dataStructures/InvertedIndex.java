@@ -6,6 +6,7 @@ public class InvertedIndex {
     private HashMap<String, ArrayList<Posting>> invertedIndex;
 
     public HashMap<String, ArrayList<Posting>> getInvertedIndex(){ return invertedIndex; }
+
     public InvertedIndex() {
         this.invertedIndex = new HashMap<>();
     }
@@ -17,6 +18,7 @@ public class InvertedIndex {
         }
         invertedIndex.get(term).add(new Posting(docId, freq));
     }
+
     public void sortPostingList() {
         // Iterate through each term in the inverted index
         for (String term : invertedIndex.keySet()) {

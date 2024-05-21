@@ -20,16 +20,11 @@ import java.io.*;
 
 public class Merging {
     public static void mergeLexicon(int blockCounter){
-        int currentOffset = 0;
-
         File directory = new File("data/output/");
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
+        if (!directory.exists()) { directory.mkdirs(); }
 
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(Paths.PATH_LEXICON_MERGED));
-             RandomAccessFile randomAccessFile = new RandomAccessFile(Paths.PATH_INVERTED_INDEX_MERGED, "r");
-             RandomAccessFile rafDocumentIndex = new RandomAccessFile(Paths.PATH_DOCUMENT_INDEX_MERGED, "r")) {
+            RandomAccessFile rafInvertedIndex = new RandomAccessFile(new File(Paths.PATH_INVERTED_INDEX_MERGED), "rw")){
 
             TreeMap<String, TermStats> termStatsMap = new TreeMap<>();
             BufferedReader[] lexiconReaders = new BufferedReader[blockCounter];
@@ -38,6 +33,7 @@ public class Merging {
             PriorityQueue<LexiconEntry> priorityQueue = new PriorityQueue<>(Comparator.comparing(LexiconEntry::getTerm));
 
             TreeMap<Integer, Integer> documentIndexTree = readDocumentIndex();
+            TreeMap<String, long[]> offSetTree = readOffsetFile();
 
             // open lexicon readers and create iterators
             for (int i = 0; i < blockCounter; i++) {
@@ -73,21 +69,19 @@ public class Merging {
             for (Map.Entry<String, TermStats> entry : termStatsMap.entrySet()) {
                 String term_aux = entry.getKey();
                 TermStats termStats_aux = entry.getValue();
-                termStats_aux.setInvertedIndexOffset(currentOffset);
 
                 // calculate offset values and update term upper bound
-                Integer[] offsetsII = findInvertedIndexOffset(term_aux);
+                //long[] offsetsII = findInvertedIndexOffset(term_aux);
+                long[] offsetsII = offSetTree.get(term_aux);
                 assert offsetsII != null;
-                double termUpperBound = computeTermUpperBound(rafDocumentIndex, termStats_aux, offsetsII, currentOffset, documentIndexTree);
+                double termUpperBound = computeTermUpperBound(rafInvertedIndex, termStats_aux, offsetsII, documentIndexTree);
 
-                bufferedWriter.write(String.format("%s %d %d %d %.2f %d %d %d %d",
+                bufferedWriter.write(String.format("%s %d %d %d %.2f %d %d %d",
                         term_aux, termStats_aux.getCollectionFrequency(), termStats_aux.getDocumentFrequency(),
-                        termStats_aux.getInvertedIndexOffset(), termUpperBound, currentOffset,
+                        termStats_aux.getInvertedIndexOffset(), termUpperBound,
                         offsetsII[0], offsetsII[1], offsetsII[2]));
                 bufferedWriter.newLine();
 
-                // update currentOffset
-                currentOffset += offsetsII[2] + "\n".getBytes().length;
             }
 
             // close lexicon readers
@@ -98,7 +92,6 @@ public class Merging {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public static void mergeInvertedIndex(int blockCounter) {
@@ -113,7 +106,7 @@ public class Merging {
             BufferedReader[] lexiconReaders = new BufferedReader[blockCounter];
             Iterator<String>[] iterators = new Iterator[blockCounter];
 
-            HashMap<String, int[]> offsetsHelper = new HashMap<>();
+            HashMap<String, long[]> offsetsHelper = new HashMap<>();
 
             // initialize the iterators with the first line of each block
             for (int i = 0; i < blockCounter; i++) {
@@ -167,22 +160,23 @@ public class Merging {
         }
     }
 
-    private static void writeOffsets(HashMap<String, int[]> offsetsHelper, BufferedWriter auxFile) throws IOException {
-        TreeMap<String, int[]> sortedMap = new TreeMap<>(offsetsHelper);
+    private static void writeOffsets(HashMap<String, long[]> offsetsHelper, BufferedWriter auxFile) throws IOException {
+        TreeMap<String, long[]> sortedMap = new TreeMap<>(offsetsHelper);
 
         // Display the sorted map
-        for (Map.Entry<String, int[]> entry : sortedMap.entrySet()) {
+        for (Map.Entry<String, long[]> entry : sortedMap.entrySet()) {
             String term = entry.getKey();
-            int[] offsets = entry.getValue();
+            long[] offsets = entry.getValue();
 
-            auxFile.write(term + " " + offsets[0] + " " + offsets[1] + " " + offsets[2]);
+            auxFile.write(term + " " + offsets[0] + " " + offsets[1] + " " + offsets[2] + " " + offsets[3]);
             auxFile.newLine();
         }
 
     }
 
 
-    private static void writeMergedPostings(String term, ArrayList<Posting> postingList, RandomAccessFile raf, BufferedWriter auxFile, HashMap<String, int[]> offsetsHelper) throws IOException {
+    private static void writeMergedPostings(String term, ArrayList<Posting> postingList, RandomAccessFile raf, BufferedWriter auxFile, HashMap<String, long[]> offsetsHelper) throws IOException {
+        raf.seek(0);
         ArrayList<Integer> docIds = new ArrayList<>();
         ArrayList<Integer> freqs = new ArrayList<>();
 
@@ -194,9 +188,10 @@ public class Merging {
         byte[] compressedDocIds = VariableByte.encode(docIds);
         byte[] compressedFreq = UnaryInteger.encodeToUnary(freqs);
 
-        int offsetDocID;
-        int freqOffset;
-        int endOffset;
+        long offsetDocID;
+        long freqOffset;
+        long endOffset;
+
 
         if (offsetsHelper.containsKey(term)){
             // get old offsets
@@ -205,7 +200,7 @@ public class Merging {
             endOffset = offsetsHelper.get(term)[2];
 
             // update offsets
-            int[] off = new int[3];
+            long[] off = new long[3];
             off[0] = offsetDocID;
             off[1] = freqOffset + compressedDocIds.length;
             off[2] = endOffset + compressedDocIds.length + compressedFreq.length;
@@ -213,7 +208,6 @@ public class Merging {
             offsetsHelper.put(term, off);
 
             // write new postings to the file
-            // find previous offset
             String line;
             long position = 0;
             while ((line = raf.readLine()) != null) {
@@ -225,16 +219,19 @@ public class Merging {
             raf.write(compressedDocIds);
             raf.seek(position + endOffset);
             raf.write(compressedFreq);
+
         } else {
             offsetDocID = term.getBytes().length;
             freqOffset = offsetDocID + compressedDocIds.length;
             endOffset = freqOffset + compressedFreq.length;
 
-            int[] off = new int[3];
+            long[] off = new long[4];
             off[0] = offsetDocID;
             off[1] = freqOffset;
             off[2] = endOffset;
+            off[3] = raf.length();
             offsetsHelper.put(term, off);
+
 
             // write new term at the end of the file
             long endOfFile = raf.length();
@@ -243,7 +240,15 @@ public class Merging {
             raf.write(compressedDocIds);
             raf.write(compressedFreq);
             raf.write("\n".getBytes());
+
+
+            if(term.equals("001015") || term.equals("001013")) {
+                System.out.println("kill " + term);
+            }
         }
+
+
+
         // TODO check if it is better to save in a file as you go or only on the last step of the algorithm
 //        auxFile.write(term + " " + offsetDocID + " " + offsetFreq + " " + endLineOffset);
 //        auxFile.newLine();
@@ -284,23 +289,31 @@ public class Merging {
         priorityQueue.add(new LexiconEntry(term, cf, df, blockIndex));
     }
 
-    private static double computeTermUpperBound(RandomAccessFile rafDocumentIndex, TermStats termStats, Integer[] offsets, int currentOffset, TreeMap<Integer, Integer> documentIndexes) throws IOException {
-
+    private static double computeTermUpperBound(RandomAccessFile rafInvertedIndex, TermStats termStats, long[] offsets, TreeMap<Integer, Integer> documentIndexes) throws IOException {
+        rafInvertedIndex.seek(0);
         String term = termStats.getTerm();
 
-        int len1 = offsets[1] - offsets[0];
-        int len2 = offsets[2] - offsets[1];
-        byte[] docIdBytes = new byte[len1];
-        byte[] freqString = new byte[len2];
-        byte[] file = FileUtils.readFileToByteArray(new File(Paths.PATH_INVERTED_INDEX_MERGED));
+        long len1 = offsets[1] - offsets[0];
+        long len2 = offsets[2] - offsets[1];
+        long currentOffset = offsets[3];
 
+        termStats.setInvertedIndexOffset(currentOffset);
 
-        System.arraycopy(file, currentOffset + term.getBytes().length, docIdBytes, 0, len1);
-        System.arraycopy(file, currentOffset + offsets[1], freqString, 0, len2);
+        byte[] docIdBytes = new byte[(int) len1];
+        byte[] freqBytes = new byte[(int) len2];
+
+        rafInvertedIndex.seek(currentOffset + term.getBytes().length);
+        rafInvertedIndex.readFully(docIdBytes);
+
+        rafInvertedIndex.seek(0);
+
+        rafInvertedIndex.seek(currentOffset + offsets[1]);
+        rafInvertedIndex.readFully(freqBytes);
+        rafInvertedIndex.seek(0);
 
         List<Integer> docIdDecoded = VariableByte.decode(docIdBytes);
-        List<Integer> frequencyDecoded = UnaryInteger.decodeFromUnary(freqString);
-        HashMap<Integer, Integer> docIdsLengths = new HashMap<>();
+        List<Integer> frequencyDecoded = UnaryInteger.decodeFromUnary(freqBytes);
+        TreeMap<Integer, Integer> docIdsLengths = new TreeMap<>();
 
         String avgDocLen = "";
         int totalNumberOfDocs = 0;
@@ -325,11 +338,11 @@ public class Merging {
         Ranking ranking = new Ranking();
 
         for (int i = 0; i < docIdsLengths.size(); i++) {
+
             double result = ranking.computeRanking(frequencyDecoded.get(i), totalNumberOfDocs, termStats.getDocumentFrequency(), docIdsLengths.get(i), Double.parseDouble(avgDocLen));
             if (result > maxResult) {
                 maxResult = result;
             }
-
         }
 
         return maxResult;
@@ -391,7 +404,6 @@ public class Merging {
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(Paths.PATH_DOCUMENT_INDEX_MERGED));
-
             String line;
 
             while ((line = br.readLine()) != null) {
@@ -409,23 +421,30 @@ public class Merging {
 
 
 
-    private static Integer[] findInvertedIndexOffset(String term) throws IOException {
-        Integer[] offsets = new Integer[3];
+    private static TreeMap<String, long[]> readOffsetFile() throws IOException {
+        TreeMap<String, long[]> offsetTree = new TreeMap<>();
 
         try {
-            List<String> lines = Files.readAllLines(Path.of(Paths.PATH_OFFSETS), StandardCharsets.UTF_8);
-            for (String line : lines) {
+            BufferedReader br = new BufferedReader(new FileReader(Paths.PATH_OFFSETS));
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                long[] offsets = new long[4];
                 String[] parts = line.split(" ");
-                if (parts[0].equals(term)) {
-                    offsets[0] = Integer.valueOf(parts[1]);
-                    offsets[1] = Integer.valueOf(parts[2]);
-                    offsets[2] = Integer.valueOf(parts[3]);
-                    return offsets;
-                }
+
+                offsets[0] = Integer.parseInt(parts[1]);
+                offsets[1] = Integer.parseInt(parts[2]);
+                offsets[2] = Integer.parseInt(parts[3]);
+                offsets[3] = Integer.parseInt(parts[4]);
+
+                offsetTree.put(parts[0], offsets);
             }
+            br.close();
+
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-        return null;
+        return offsetTree;
+
     }
 }

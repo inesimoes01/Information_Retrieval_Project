@@ -29,7 +29,7 @@ public class App
                     isValid = true;
 
                     long start_time = System.currentTimeMillis();
-                    NewIndex.run(Paths.PATH_COLLECTION);
+                    NewIndex.run();
                     //Reader.processCollection(Paths.PATH_COLLECTION);
 
                     long end_time = System.currentTimeMillis();

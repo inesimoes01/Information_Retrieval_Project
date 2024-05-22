@@ -39,9 +39,9 @@ public class NewIndex {
         long start_time = 0;
         long end_time = 0;
 
-        deleteFilesInFolder("data/output");
-        deleteFilesInFolder("data/output/merged");
-        deleteFilesInFolder("data/output/aux_folder");
+//        deleteFilesInFolder("data/output");
+//        deleteFilesInFolder("data/output/merged");
+//        deleteFilesInFolder("data/output/aux_folder");
         System.out.println("Finished deleting");
 
         Pattern pattern = Pattern.compile("^(\\d+)\\s+(.*)$");

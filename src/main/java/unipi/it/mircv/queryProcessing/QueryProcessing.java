@@ -1,5 +1,6 @@
 package unipi.it.mircv.queryProcessing;
 
+import com.sun.source.tree.Tree;
 import unipi.it.mircv.common.*;
 
 import unipi.it.mircv.evalution.Evaluation;
@@ -11,12 +12,20 @@ import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
 import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
 import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
 
+import javax.swing.plaf.basic.BasicScrollPaneUI;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
 public class QueryProcessing {
     private static long timeForQueryProcessing;
+    private static TreeMap<String, TermDictionary> lexicon = new TreeMap<>();
+    private static TreeMap<Integer, Integer> documentIndex = new TreeMap<>();
 
+
+
+    private static List<Integer> queriesIds = new ArrayList<>();
 
     public static void mainQueryProcessing() throws IOException {
         TerminalDemo terminal = new TerminalDemo();
@@ -25,30 +34,40 @@ public class QueryProcessing {
         Scanner scanner = new Scanner(System.in);
         String userInput;
 
+        // load document index and lexicon into memory
+        loadLexicon();
+        loadDocumentIndex();
+        OutputResultsReader.saveTotalNumberDocs();
+
         if (!Flags.isIsEvaluation()){
             do {
                 processing(terminal.runTerminal(), null);
                 System.out.print("Do you want to another query? (y/n): ");
                 userInput = scanner.nextLine();
             } while (userInput.equalsIgnoreCase("y"));
-        }else {
-            Flags.setIsDAAT_flag(true);
-            Flags.setIsTFIDF_flag(true);
-            Flags.setIsConjunctive_flag(true);
-            Flags.setNumberOfDocuments(500);
-            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
 
-            Flags.setIsDAAT_flag(true);
-            Flags.setIsTFIDF_flag(false);
-            Flags.setIsConjunctive_flag(true);
-            Flags.setNumberOfDocuments(500);
-            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
 
-            Flags.setIsDAAT_flag(false);
-            Flags.setIsTFIDF_flag(true);
-            Flags.setIsConjunctive_flag(true);
-            Flags.setNumberOfDocuments(500);
-            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+        } else {
+
+            queriesIds = saveQueriesToCompare();
+
+//            Flags.setIsDAAT_flag(true);
+//            Flags.setIsTFIDF_flag(true);
+//            Flags.setIsConjunctive_flag(true);
+//            Flags.setNumberOfDocuments(500);
+//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+//
+//            Flags.setIsDAAT_flag(true);
+//            Flags.setIsTFIDF_flag(false);
+//            Flags.setIsConjunctive_flag(true);
+//            Flags.setNumberOfDocuments(500);
+//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+
+//            Flags.setIsDAAT_flag(false);
+//            Flags.setIsTFIDF_flag(true);
+//            Flags.setIsConjunctive_flag(true);
+//            Flags.setNumberOfDocuments(500);
+//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
 
             Flags.setIsDAAT_flag(false);
             Flags.setIsTFIDF_flag(false);
@@ -85,7 +104,6 @@ public class QueryProcessing {
     }
     public static void processing(String query, QueryStructure struct) throws IOException {
         Preprocessing preprocessing = new Preprocessing();
-        ScoringStrategy strategy = new ScoringStrategy();
         List<TermDictionary> termList = new ArrayList<>();
         long start_time = System.currentTimeMillis();
 
@@ -93,41 +111,99 @@ public class QueryProcessing {
         query = preprocessing.clean(query);
         String[] queryPartsOriginal = query.split(" ");
 
-        // save relevant docs
-        List<DocumentQP> relevantDocs;
+        // save relevant docs with disjunctive or conjunctive querying
+        List<Integer> relevantDocs;
         List<String> termsToRemove = new ArrayList<>();
-        if (Flags.isIsConjunctive_flag())relevantDocs = ScoringStrategy.conjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
-        else relevantDocs = ScoringStrategy.disjunctiveProcessing(termList, queryPartsOriginal, termsToRemove);
+        relevantDocs = Processing.processingStrategy(termList, queryPartsOriginal, termsToRemove);
         assert relevantDocs != null;
-        for (DocumentQP doc : relevantDocs) System.out.println(doc.getDocId());
 
 
-        if (!relevantDocs.isEmpty()){
-            // scoring results using DAAT or MaxScore and TFDIF or BM25
-            List<DocumentQP> scoredResults = strategy.scoringStrategy(termList, relevantDocs, Flags.getNumberOfDocuments());
+        // scoring results using DAAT or MaxScore and TFDIF or BM25
+        if (relevantDocs != null) {
+            if (!relevantDocs.isEmpty()) {
+                Map<Integer, Double> scoredResults = ScoringStrategy.scoringStrategy(termList, relevantDocs, Flags.getNumberOfDocuments());
 
-            if(Flags.isIsEvaluation()) {
-                for (DocumentQP doc : scoredResults) {
-                    struct.setDocumentEval(doc.getDocId(), doc.getScore());
-                    //System.out.println(doc.getDocId() + " " + doc.getScore());
-                }
-            }else {
-                for (DocumentQP doc : scoredResults) {
-                    System.out.println(doc.getDocId() + " " + doc.getScore());
+                if (Flags.isIsEvaluation()) {
+                    struct.setDocumentEval(scoredResults);
+
+                } else {
+                    for (Map.Entry<Integer, Double> doc : scoredResults.entrySet()) {
+                        System.out.println(doc.getKey() + " " + doc.getValue());
+                    }
                 }
             }
-
         }
 
         long end_time = System.currentTimeMillis();
         timeForQueryProcessing = end_time - start_time;
-        System.out.println("Query Processing took " + (double) timeForQueryProcessing/1000 + " seconds.");
+        if(!Flags.isIsEvaluation()){
+            System.out.println("Query Processing took " + (double) timeForQueryProcessing/1000 + " seconds.");
+        }
+
     }
 
 
 
     public static long getTimeForQueryProcessing() {
         return timeForQueryProcessing;
+    }
+
+    private static void loadLexicon(){
+        try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(Paths.PATH_LEXICON_MERGED)))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(" ");
+                TermDictionary currentTerm = new TermDictionary(parts[0],
+                        Integer.parseInt(parts[1].trim()), Integer.parseInt(parts[2].trim()),
+                        Integer.parseInt(parts[5].trim()), Integer.parseInt(parts[6].trim()),
+                        Integer.parseInt(parts[3].trim()), Integer.parseInt(parts[7].trim()),
+                        Double.parseDouble(parts[4].replace(',', '.')));
+
+                lexicon.put(parts[0], currentTerm);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void loadDocumentIndex(){
+        try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(Paths.PATH_DOCUMENT_INDEX_MERGED)))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(" ");
+
+                documentIndex.put(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static List<Integer> saveQueriesToCompare(){
+        List<Integer> list = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(Paths.PATH_EVALUATION_GT)))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(" ");
+                if (!list.contains(Integer.parseInt(parts[0]))){
+                    list.add(Integer.parseInt(parts[0]));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public static TreeMap<String, TermDictionary> getLexicon() {
+        return lexicon;
+    }
+
+    public static TreeMap<Integer, Integer> getDocumentIndex() {
+        return documentIndex;
+    }
+    public static List<Integer> getQueriesIds() {
+        return queriesIds;
     }
 
 

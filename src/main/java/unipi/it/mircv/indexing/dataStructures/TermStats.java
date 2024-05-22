@@ -15,10 +15,7 @@ public class TermStats {
     //number of documents the term appears in
     private int documentFrequency;
     private long invertedIndexOffset;
-
     private int lastDocIdInserted;
-
-
 
     public void updateCollectionFrequency(int freq){
         this.collectionFrequency += freq;

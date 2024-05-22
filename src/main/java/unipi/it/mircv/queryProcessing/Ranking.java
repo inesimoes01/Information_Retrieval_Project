@@ -67,15 +67,13 @@ public class Ranking {
 
 
 
-
-    public double computeRanking_QP(TermDictionary term, DocumentQP docId) throws IOException {
+    public double computeRanking_QP(TermDictionary term, Integer docId) throws IOException {
         if (Flags.isIsTFIDF_flag()) return computeTFIDF_QP(term, docId);
         else return computeBM25_QP(term, docId);
     }
 
-    private double computeTFIDF_QP(TermDictionary term, DocumentQP doc) {
-        //OutputResultsReader.saveTotalNumberDocs();
-        double TF = computeTF(term.getPostingByDocId(term.getPostingList(), doc.getDocId()).getFreq());
+    private double computeTFIDF_QP(TermDictionary term, Integer docId) {
+        double TF = computeTF(term.getPostingList().get(docId));
         double IDF = computeIDF(OutputResultsReader.getnTotalDocuments(), term.getDocumentFrequency());
 //            System.out.println("TF " + term.getPostingByDocId(term.getPostingList(), doc.getDocId()).getFreq() + " / " + doc.getLength());
 //            System.out.println("IDF " + OutputResultsReader.getnTotalDocuments() + " / " + term.getDocumentFrequency());
@@ -83,30 +81,17 @@ public class Ranking {
 
     }
 
-    private double computeBM25_QP(TermDictionary term, DocumentQP doc) throws IOException {
-        //OutputResultsReader.saveTotalNumberDocs();
+    private double computeBM25_QP(TermDictionary term, Integer doc) throws IOException {
         int nTotalDocs = OutputResultsReader.getnTotalDocuments();
         Integer nTotalDocsWithTerm = term.getDocumentFrequency();
-        Integer nTermInDocument = term.getPostingByDocId(term.getPostingList(), doc.getDocId()).getFreq();
-        Integer lengthDocument = doc.getLength();
+        Integer nTermInDocument = term.getPostingList().get(doc);
+        Integer lengthDocument = QueryProcessing.getDocumentIndex().get(doc);
         List<String> lines = Files.readAllLines(Paths.PATH_AVGDOCLEN, StandardCharsets.UTF_8);
         double avgDocLenCollection = Double.parseDouble(lines.get(0));
         //System.out.println("BM25 " + computeIDF(nTotalDocs, nTotalDocsWithTerm) + " * " + computeTF(nTermInDocument) + " / " + computeTF(nTermInDocument) + " + " + K1 + " * (1 - " + B + " + " + B + " * (" + lengthDocument + " / " + avgDocLenCollection);
         return computeIDF(nTotalDocs, nTotalDocsWithTerm) * computeTF(nTermInDocument) / computeTF(nTermInDocument) + K1 * (1 - B + B * ((double) lengthDocument / avgDocLenCollection));
 
     }
-
-    //            OutputResultsReader outputResultsReader = new OutputResultsReader();
-//            outputResultsReader.searchTermInInvertedIndex(term);
-//            outputResultsReader.saveTotalNumberDocs();
-//            outputResultsReader.searchDocIdInDocumentIndex(docId);
-
-
-//                //System.out.println("TF VALUES "+ outputResultsReader.getTermDocidFreq().get(term).indexOf(docId) + " " + outputResultsReader.getDocumentLens().get(docId));
-//            value = computeTF(outputResultsReader.getTermDocidFreq().get(term).get(1),
-//                    outputResultsReader.getDocumentLens().get(docId))*computeIDF(outputResultsReader.getNTotalDocuments(),
-//                    outputResultsReader.getDocumentFrequency().get(term));
-    //termList.
 
 
 }

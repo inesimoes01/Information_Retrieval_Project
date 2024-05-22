@@ -9,6 +9,7 @@ import unipi.it.mircv.queryProcessing.QueryProcessing;
 
 import java.awt.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -44,34 +45,31 @@ public class Evaluation {
         if (Flags.isIsConjunctive_flag()) query_type = "Conjunctive";
         else query_type = "Disjunctive";
 
-        File file = new File(Paths.PATH_EVALUATION_RESULTS + "EvaluationResults_" + scoringStrategy + "_" + ranking +".txt");
+        File file = new File(Paths.PATH_EVALUATION_RESULTS + "EvaluationResults_" + scoringStrategy + "_" + ranking + "_" + query_type + ".txt");
 
         int number_of_queries = 0;
 
-        try {
-            FileInputStream fin = new FileInputStream(filePath);
-            BufferedInputStream bis = new BufferedInputStream(fin);
-            GZIPInputStream gis = new GZIPInputStream(bis);
-            InputStreamReader isr = new InputStreamReader(gis);
-            BufferedReader br = new BufferedReader(isr);
+        try(FileInputStream inputStream = new FileInputStream(Paths.PATH_EVALUATION_INPUT);
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+            GzipCompressorInputStream gzipCompressorInputStream = new GzipCompressorInputStream(bufferedInputStream);
+            BufferedReader br = new BufferedReader(new InputStreamReader(gzipCompressorInputStream))) {
 
-            String line;
-            while ((line = br.readLine()) != null) {
-                //System.out.println(line);
-                String[] values = line.split("\t", 2);
-                //System.out.println("Values: " + Arrays.toString(values));
+            while (true) {
+                String line = br.readLine();
+                if (line == null) break;
+
+                String[] values = line.split("\t");
+
+                //if (!QueryProcessing.getQueriesIds().contains(Integer.parseInt(values[0]))) continue;
+
                 QueryStructure query = new QueryStructure(values[1], Integer.parseInt(values[0]));
-                //System.out.println("Query: " + query.getQuery());
 
                 QueryProcessing.processing(query.getQuery(), query);
                 totalTimeForQueryProcessing += QueryProcessing.getTimeForQueryProcessing();
-                number_of_queries ++;
+                number_of_queries++;
                 saveEvaluationResults(file, query);
 
             }
-
-            br.close();
-
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -79,18 +77,18 @@ public class Evaluation {
         double average_scoring_time = (double) totalTimeForQueryProcessing / 1000 / number_of_queries;
         System.out.println("Total query for " + scoringStrategy + " with " + ranking + " took " + totalTimeForQueryProcessing/1000 + " seconds");
         System.out.println("Average scoring time for " + scoringStrategy + " with " + ranking +  " and " + query_type + " is " + average_scoring_time);
-
+        System.gc();
     }
 
 
     private void saveEvaluationResults(File file, QueryStructure query) throws IOException {
-
         FileWriter myWriter = new FileWriter(file, true);
+
+        // for all the retrieved documents
         for (Integer i : query.getDocumentEval().keySet()) {
             String resultLine;
             int score = (int) Math.ceil(query.getDocumentEval().get(i));
             resultLine = query.getQueryID() + " Q0 " + i + " " + score + "\n";
-            //System.out.println("Results " + resultLine);
             myWriter.write(resultLine);
         }
         myWriter.close();

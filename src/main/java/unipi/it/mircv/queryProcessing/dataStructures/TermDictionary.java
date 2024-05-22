@@ -2,6 +2,7 @@ package unipi.it.mircv.queryProcessing.dataStructures;
 
 import org.apache.lucene.index.Term;
 import unipi.it.mircv.common.Flags;
+import unipi.it.mircv.indexing.dataStructures.Posting;
 import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
 
 import java.util.*;
@@ -9,27 +10,38 @@ import java.util.*;
 public class TermDictionary {
     private String term;
 
-    public PostingList getPostingByDocId(List<PostingList> postingList, Integer docId){
-        for (PostingList post : postingList){
-            if (post.getDocId().equals(docId)) return post;
-        }
-        return null;
-    }
-    private List<PostingList> posting = new ArrayList<>();
-    // DocId Freq
-    // public Iterator<Posting> iterator = posting.iterator();
-    // iterator to help transverse the postingList
-    private Integer collectionFrequency; // not being used
-    // how many times the term appear in the collection
-    private Integer documentFrequency;
+    //private ArrayList<Posting> postingList = new ArrayList<>();
+    private HashMap<Integer, Integer> postingList = new HashMap<>();
 
-    // how many documents the term appears in
+    private int collectionFrequency;
+    private int documentFrequency;
     private Double termUpperBoundTFIDF;
     private Double termUpperBoundBM25;
-    private int offset;
     private int offsetDocId;
     private int offsetFreq;
     private int endOffset;
+    private int startOffset;
+
+    public TermDictionary(String term, int collectionFrequency, int documentFrequency, int offsetDocId, int offsetFreq, int startOffset, int endOffset, Double termUpperBoundTFIDF) {
+        this.term = term;
+        this.collectionFrequency = collectionFrequency;
+        this.documentFrequency = documentFrequency;
+        this.offsetDocId = offsetDocId;
+        this.offsetFreq = offsetFreq;
+        this.startOffset = startOffset;
+        this.endOffset = endOffset;
+        this.termUpperBoundTFIDF = termUpperBoundTFIDF;
+    }
+
+    public TermDictionary(){}
+
+//    public PostingList getPostingByDocId(List<PostingList> postingList, Integer docId){
+//        for (PostingList post : postingList){
+//            if (post.getDocId().equals(docId)) return post;
+//        }
+//        return null;
+//    }
+
 
     public int getEndOffset() {
         return endOffset;
@@ -55,25 +67,10 @@ public class TermDictionary {
         this.offsetFreq = offsetFreq;
     }
 
-    private List<DocumentQP> documentsWithTerm = new ArrayList<>();
+    private ArrayList<Integer> documentsWithTerm = new ArrayList<>();
 
-    public int getOffset() {
-        return offset;
-    }
 
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
-
-    public List<PostingList> getPostingList() {
-        return posting;
-    }
-
-//    public void setPostingList(List<Posting> posting) {
-//        this.posting = posting;
-//    }
-
-    public List<DocumentQP> getDocumentsWithTerm() {
+    public ArrayList<Integer> getDocumentsWithTerm() {
         return documentsWithTerm;
     }
 
@@ -85,8 +82,8 @@ public class TermDictionary {
 //        return list;
 //    }
 
-    public void setDocumentsWithTerm(DocumentQP documentsWithTerm) {
-        this.documentsWithTerm.add(documentsWithTerm);
+    public void setDocumentsWithTerm(int docId) {
+        this.documentsWithTerm.add(docId);
     }
 
     public String getTerm() {
@@ -97,11 +94,6 @@ public class TermDictionary {
         this.term = term;
     }
 
-
-
-//    public Integer getCollectionFrequency() {
-//        return collectionFrequency;
-//    }
 
     public void setCollectionFrequency(Integer collectionFrequency) {
         this.collectionFrequency = collectionFrequency;
@@ -116,8 +108,8 @@ public class TermDictionary {
     }
 
     public Double getTermUpperBound() {
-        if (Flags.isIsTFIDF_flag()) return termUpperBoundTFIDF;
-        else return termUpperBoundBM25;
+        return termUpperBoundTFIDF;
+
     }
 
     public void setTermUpperBound(Double termUpperBound) {
@@ -125,16 +117,20 @@ public class TermDictionary {
         else this.termUpperBoundBM25 = termUpperBound;
     }
 
-//    @Override
-//    public double compareTo(TermDictionary other) {
-//        return Double.compare(this.termUpperBoundBM25, other.termUpperBoundBM25);
-//    }
+    public int getStartOffset() {
+        return startOffset;
+    }
 
-//    public Double getTermUpperBoundBM25() {
-//        return termUpperBoundBM25;
-//    }
+    public void setStartOffset(int startOffset) {
+        this.startOffset = startOffset;
+    }
 
-//    public void setTermUpperBoundBM25(Double termUpperBoundBM25) {
-//        this.termUpperBoundBM25 = termUpperBoundBM25;
-//    }
+    public HashMap<Integer, Integer>  getPostingList() {
+        return postingList;
+    }
+
+    public void setPostingList(HashMap<Integer, Integer>  postingList) {
+        this.postingList = postingList;
+    }
+
 }

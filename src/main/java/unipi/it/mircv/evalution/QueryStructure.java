@@ -1,6 +1,7 @@
 package unipi.it.mircv.evalution;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class QueryStructure {
 
@@ -10,8 +11,10 @@ public class QueryStructure {
     }
     private String query;
     private Integer queryID;
-    private HashMap<Integer, Double> documentEval = new HashMap<>();
+
     // documentID and Evalution
+    private Map<Integer, Double> documentEval = new HashMap<>();
+
 
 
     public String getQuery() {
@@ -30,13 +33,12 @@ public class QueryStructure {
         this.queryID = queryID;
     }
 
-    public HashMap<Integer, Double> getDocumentEval() {
+    public Map<Integer, Double> getDocumentEval() {
         return documentEval;
     }
 
-    public void setDocumentEval(Integer docID, double score) {
-
-        this.documentEval.put(docID, score);
+    public void setDocumentEval(Map<Integer, Double> topResults) {
+        this.documentEval = topResults;
     }
 
 

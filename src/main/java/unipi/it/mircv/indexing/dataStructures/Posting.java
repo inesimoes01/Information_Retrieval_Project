@@ -3,8 +3,10 @@ package unipi.it.mircv.indexing.dataStructures;
 public class Posting {
     private int freq;
     private int docId;
+
     public Posting() {
     }
+
     public Posting(int docId, int freq) {
         this.docId = docId;
         this.freq = freq;

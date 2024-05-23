@@ -31,9 +31,10 @@ public class Indexing {
         long start_time;
         long end_time;
 
-//        deleteFilesInFolder("data/output");
-//        deleteFilesInFolder("data/output/merged");
-//        deleteFilesInFolder("data/output/aux_folder");
+        deleteFilesInFolder("data/output");
+        deleteFilesInFolder("data/output/merged");
+        deleteFilesInFolder("data/output/aux_folder");
+        deleteFilesInFolder("data/output/blocks");
         System.out.println("Finished deleting");
 
 

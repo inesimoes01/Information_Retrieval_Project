@@ -29,18 +29,18 @@ public class Ranking {
      *
      */
 
-    public double computeRanking(Integer nTermInDocument, Integer nTotalDocs, Integer nTotalDocsWithTerm, Integer lengthDocument, double avgDocLenCollection) {
+    public static double computeRanking(Integer nTermInDocument, Integer nTotalDocs, Integer nTotalDocsWithTerm, Integer lengthDocument, double avgDocLenCollection) {
         if (Flags.isIsTFIDF_flag()) return computeTFIDF(nTermInDocument, nTotalDocs, nTotalDocsWithTerm);
         else return computeBM25(nTermInDocument, nTotalDocs, nTotalDocsWithTerm, lengthDocument, avgDocLenCollection);
     }
 
     // IDF(q) * TF(q, D)
-    private double computeTFIDF(Integer nTermInDocument, Integer nTotalDocs, Integer nTotalDocsWithTerm) {
+    private static double computeTFIDF(Integer nTermInDocument, Integer nTotalDocs, Integer nTotalDocsWithTerm) {
         return computeTF(nTermInDocument) * computeIDF(nTotalDocs, nTotalDocsWithTerm);
     }
 
     // IDF(q) * TF(q, D) / (TF(q, D) + k1 * (1 — b + b * (|D| / avgdl))
-    private double computeBM25(Integer nTermInDocument, Integer nTotalDocs, Integer nTotalDocsWithTerm, Integer lengthDocument, double avgDocLenCollection){
+    private static double computeBM25(Integer nTermInDocument, Integer nTotalDocs, Integer nTotalDocsWithTerm, Integer lengthDocument, double avgDocLenCollection){
         return computeIDF(nTotalDocs, nTotalDocsWithTerm) * computeTF(nTermInDocument) / computeTF(nTermInDocument) + K1 * (1 - B + B * ((double) lengthDocument / avgDocLenCollection));
     }
 

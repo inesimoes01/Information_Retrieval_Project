@@ -46,7 +46,7 @@ public class Evaluation {
         if (Flags.isIsConjunctive_flag()) query_type = "Conjunctive";
         else query_type = "Disjunctive";
 
-        File file = new File(Paths.PATH_EVALUATION_RESULTS + "EvaluationResults_" + scoringStrategy + "_" + ranking + "_TESTE" + query_type + ".txt");
+        File file = new File(Paths.PATH_EVALUATION_RESULTS + "EvaluationResults_" + scoringStrategy + "_" + ranking + "_" + query_type + ".txt");
 
         int number_of_queries = 0;
 
@@ -91,7 +91,8 @@ public class Evaluation {
             assert doc != null;
 
             String resultLine;
-            resultLine = query.getQueryID() + " Q0 " + doc.getDocId() + " " + doc.getScore() + " " + time + "\n";
+            resultLine = query.getQueryID() + "\t" + doc.getDocId() + "\t" + doc.getScore() + "\n";
+
             myWriter.write(resultLine);
         }
 

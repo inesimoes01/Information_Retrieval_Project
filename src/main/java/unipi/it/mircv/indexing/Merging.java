@@ -1,5 +1,6 @@
 package unipi.it.mircv.indexing;
 
+import unipi.it.mircv.common.Flags;
 import unipi.it.mircv.common.Paths;
 import unipi.it.mircv.compression.UnaryInteger;
 import unipi.it.mircv.compression.VariableByte;
@@ -34,7 +35,7 @@ public class Merging {
 
             // open lexicon readers and create iterators
             for (int i = 0; i < blockCounter; i++) {
-                lexiconReaders[i] = new BufferedReader(new FileReader("data/output/Lexicon" + i + ".txt"));
+                lexiconReaders[i] = new BufferedReader(new FileReader(Paths.PATH_LEXICON + i + ".txt"));
                 iterators[i] = lexiconReaders[i].lines().iterator();
 
                 if(iterators[i].hasNext()){
@@ -53,11 +54,6 @@ public class Merging {
                     addTermToQueueL(line, blockIndex_aux, termStatsMap, priorityQueue);
                 }
 
-//                // add the next entry from the same iterator to the priority queue
-//                if (iterators[currentEntry.getIteratorIndex()].hasNext()) {
-//                    String line = iterators[currentEntry.getIteratorIndex()].next();
-//                    priorityQueue.add(new LexiconEntry(line, currentEntry.getIteratorIndex()));
-//                }
             }
 
             for (Map.Entry<String, TermStats> entry : termStatsMap.entrySet()) {
@@ -68,11 +64,14 @@ public class Merging {
                 //long[] offsetsII = findInvertedIndexOffset(term_aux);
                 long[] offsetsII = offSetTree.get(term_aux);
                 assert offsetsII != null;
-                double termUpperBound = computeTermUpperBound(rafInvertedIndex, termStats_aux, offsetsII, documentIndexTree);
+                Flags.setIsTFIDF_flag(true);
+                double termUpperBound_TFIDF = computeTermUpperBound(rafInvertedIndex, termStats_aux, offsetsII, documentIndexTree);
+                Flags.setIsTFIDF_flag(false);
+                double termUpperBound_BM25 = computeTermUpperBound(rafInvertedIndex, termStats_aux, offsetsII, documentIndexTree);
 
-                bufferedWriter.write(String.format("%s %d %d %d %.2f %d %d %d",
+                bufferedWriter.write(String.format("%s %d %d %d %.2f %.2f %d %d %d",
                         term_aux, termStats_aux.getCollectionFrequency(), termStats_aux.getDocumentFrequency(),
-                        termStats_aux.getInvertedIndexOffset(), termUpperBound,
+                        termStats_aux.getInvertedIndexOffset(), termUpperBound_TFIDF, termUpperBound_BM25,
                         offsetsII[0], offsetsII[1], offsetsII[2]));
                 bufferedWriter.newLine();
 
@@ -104,7 +103,7 @@ public class Merging {
 
             // initialize the iterators with the first line of each block
             for (int i = 0; i < blockCounter; i++) {
-                lexiconReaders[i] = new BufferedReader(new FileReader("data/output/InvertedIndex" + i + ".txt"));
+                lexiconReaders[i] = new BufferedReader(new FileReader(Paths.PATH_INVERTED_INDEX + i + ".txt"));
                 iterators[i] = lexiconReaders[i].lines().iterator();
 
                 if (iterators[i].hasNext()) {
@@ -181,7 +180,7 @@ public class Merging {
         // initialize document index reader
         for (int i = 0; i < blockCounter; i++) {
             try {
-                documentIndexReaders[i] = new BufferedReader(new FileReader("data/output/DocumentIndex" + i + ".txt"));
+                documentIndexReaders[i] = new BufferedReader(new FileReader(Paths.PATH_DOCUMENT_INDEX + i + ".txt"));
             } catch (IOException e) {
                 e.printStackTrace(); // Handle the exception appropriately
             }
@@ -295,10 +294,6 @@ public class Merging {
             raf.write(compressedFreq);
             raf.write("\n".getBytes());
 
-
-            if(term.equals("001015") || term.equals("001013")) {
-                System.out.println("kill " + term);
-            }
         }
     }
 
@@ -361,33 +356,30 @@ public class Merging {
 
         List<Integer> docIdDecoded = VariableByte.decode(docIdBytes);
         List<Integer> frequencyDecoded = UnaryInteger.decodeFromUnary(freqBytes);
-        TreeMap<Integer, Integer> docIdsLengths = new TreeMap<>();
+        ArrayList<Integer> docIdsLengths = new ArrayList<>();
 
-        String avgDocLen = "";
+        double avgDocLen = 0.0;
         int totalNumberOfDocs = 0;
 
         // get statistics calculated before
         try (BufferedReader br = new BufferedReader(new FileReader(Paths.PATH_AVGDOCLEN))) {
-            avgDocLen = br.readLine();
+            avgDocLen = Double.valueOf(br.readLine());
             totalNumberOfDocs = Integer.parseInt(br.readLine());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
+        // save lengths of
         for (Integer docId : docIdDecoded){
             if (documentIndexes.containsKey(docId)){
-                docIdsLengths.put(docId, documentIndexes.get(docId));
+                docIdsLengths.add(documentIndexes.get(docId));
             }
         }
 
-
         double maxResult = Integer.MIN_VALUE;
-        Ranking ranking = new Ranking();
-
         for (int i = 0; i < docIdsLengths.size(); i++) {
 
-            double result = ranking.computeRanking(frequencyDecoded.get(i), totalNumberOfDocs, termStats.getDocumentFrequency(), docIdsLengths.get(i), Double.parseDouble(avgDocLen));
+            double result = Ranking.computeRanking(frequencyDecoded.get(i), totalNumberOfDocs, termStats.getDocumentFrequency(), docIdsLengths.get(i), avgDocLen);
             if (result > maxResult) {
                 maxResult = result;
             }

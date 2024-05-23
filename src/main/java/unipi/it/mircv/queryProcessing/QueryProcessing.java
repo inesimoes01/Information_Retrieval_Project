@@ -41,55 +41,40 @@ public class QueryProcessing {
 
         } else {
 
-            //queriesIds = saveQueriesToCompare();
+            Flags.setIsDAAT_flag(true);
+            Flags.setIsTFIDF_flag(true);
+            Flags.setIsConjunctive_flag(true);
+            Flags.setNumberOfDocuments(500);
+            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
 
-//            Flags.setIsDAAT_flag(true);
-//            Flags.setIsTFIDF_flag(true);
-//            Flags.setIsConjunctive_flag(true);
-//            Flags.setNumberOfDocuments(500);
-//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
-//
-//            Flags.setIsDAAT_flag(true);
-//            Flags.setIsTFIDF_flag(false);
-//            Flags.setIsConjunctive_flag(true);
-//            Flags.setNumberOfDocuments(500);
-//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+            Flags.setIsDAAT_flag(true);
+            Flags.setIsTFIDF_flag(false);
+            Flags.setIsConjunctive_flag(true);
+            Flags.setNumberOfDocuments(500);
+            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
 
-//            Flags.setIsDAAT_flag(false);
-//            Flags.setIsTFIDF_flag(true);
-//            Flags.setIsConjunctive_flag(true);
-//            Flags.setNumberOfDocuments(500);
-//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
-
-//            Flags.setIsDAAT_flag(false);
-//            Flags.setIsTFIDF_flag(false);
-//            Flags.setIsConjunctive_flag(true);
-//            Flags.setNumberOfDocuments(500);
-//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
-
-            Flags.setIsDAAT_flag(false);
+            Flags.setIsDAAT_flag(true);
             Flags.setIsTFIDF_flag(true);
             Flags.setIsConjunctive_flag(false);
             Flags.setNumberOfDocuments(500);
             evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
-//
-//            Flags.setIsDAAT_flag(false);
-//            Flags.setIsTFIDF_flag(false);
-//            Flags.setIsConjunctive_flag(false);
-//            Flags.setNumberOfDocuments(500);
-//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
-//
-//            Flags.setIsDAAT_flag(true);
-//            Flags.setIsTFIDF_flag(true);
-//            Flags.setIsConjunctive_flag(false);
-//            Flags.setNumberOfDocuments(500);
-//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
-//
-//            Flags.setIsDAAT_flag(true);
-//            Flags.setIsTFIDF_flag(true);
-//            Flags.setIsConjunctive_flag(false);
-//            Flags.setNumberOfDocuments(500);
-//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+
+            Flags.setIsDAAT_flag(true);
+            Flags.setIsTFIDF_flag(false);
+            Flags.setIsConjunctive_flag(false);
+            Flags.setNumberOfDocuments(500);
+            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+
+            Flags.setIsDAAT_flag(false);
+            Flags.setIsTFIDF_flag(true);
+            Flags.setNumberOfDocuments(500);
+            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+
+            Flags.setIsDAAT_flag(false);
+            Flags.setIsTFIDF_flag(false);
+            Flags.setNumberOfDocuments(500);
+            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+
 
         }
 
@@ -153,9 +138,10 @@ public class QueryProcessing {
                 String[] parts = line.split(" ");
                 TermDictionary currentTerm = new TermDictionary(parts[0],
                         Integer.parseInt(parts[1].trim()), Integer.parseInt(parts[2].trim()),
-                        Integer.parseInt(parts[5].trim()), Integer.parseInt(parts[6].trim()),
-                        Integer.parseInt(parts[3].trim()), Integer.parseInt(parts[7].trim()),
-                        Double.parseDouble(parts[4].replace(',', '.')));
+                        Integer.parseInt(parts[6].trim()), Integer.parseInt(parts[7].trim()),
+                        Integer.parseInt(parts[3].trim()), Integer.parseInt(parts[8].trim()),
+                        Double.parseDouble(parts[4].replace(',', '.')),
+                        Double.parseDouble(parts[5].replace(',', '.')));
 
                 lexicon.put(parts[0], currentTerm);
             }

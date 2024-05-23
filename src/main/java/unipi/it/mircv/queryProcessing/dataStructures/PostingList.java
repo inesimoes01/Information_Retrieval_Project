@@ -4,6 +4,7 @@ import unipi.it.mircv.common.dataStructures.Posting;
 import unipi.it.mircv.common.dataStructures.TermDictionary;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PostingList {
     private String term;

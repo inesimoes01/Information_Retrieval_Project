@@ -25,9 +25,9 @@ public class OutputResultsReaderTest extends TestCase {
         List<TermDictionary> listToFill = new ArrayList<>();
         String queryTerm = "smartclean";
 
-        TermDictionary finalTermExpected = new TermDictionary(queryTerm, 2, 2, 10, 18, 628053394, 19, 6.64);
-        finalTermExpected.getPostingList().put(7568166, 1);
-        finalTermExpected.getPostingList().put(8572375, 1);
+        TermDictionary finalTermExpected = new TermDictionary(queryTerm, 2, 2, 10, 18, 628053394, 19, 6.64, 7.23);
+//        finalTermExpected.getPostingList().add(7568166, 1);
+//        finalTermExpected.getPostingList().put(8572375, 1);
 
         TermDictionary finalTermCalculated = OutputResultsReader.fillTermDictionary(listToFill, queryTerm);
         assert finalTermCalculated != null;

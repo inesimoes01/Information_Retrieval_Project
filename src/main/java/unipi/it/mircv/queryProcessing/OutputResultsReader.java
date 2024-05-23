@@ -72,9 +72,10 @@ public class OutputResultsReader {
         List<Integer> docIdDecoded = VariableByte.decode(docIdBytes);
         List<Integer> frequencyDecoded = UnaryInteger.decodeFromUnary(freqBytes);
 
-        ArrayList<Posting> newPL = new ArrayList<>();
+
         pl.setTerm(term.getTerm());
         pl.setPl(new ArrayList<Posting>());
+
         for (int i = 0; i < docIdDecoded.size(); i++) {
             pl.getPl().add(new Posting(docIdDecoded.get(i), frequencyDecoded.get(i)));
         }

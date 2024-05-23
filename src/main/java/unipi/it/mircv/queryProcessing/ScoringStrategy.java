@@ -4,16 +4,15 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.DoubleValues;
 import unipi.it.mircv.common.Flags;
 import unipi.it.mircv.common.Paths;
-import unipi.it.mircv.common.dataStructures.Posting;
-import unipi.it.mircv.common.dataStructures.TermDictionary;
-import unipi.it.mircv.common.dataStructures.TopDocuments;
-import unipi.it.mircv.common.dataStructures.TopDocumentsComparator;
+import unipi.it.mircv.common.dataStructures.*;
 
 import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
 
+import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.sql.PseudoColumnUsage;
 import java.util.*;
 
 public class ScoringStrategy {
@@ -30,7 +29,7 @@ public class ScoringStrategy {
     private static PriorityQueue<TopDocuments> MaxScore(String[] query, int k) throws IOException {
         ArrayList<TermDictionary> termDictionaryList = new ArrayList<>();
         ArrayList<PostingList> postingLists = new ArrayList<>();
-        getAndSortPostingLists(query, termDictionaryList, postingLists);
+        getAndSortPostingListsByTUB(query, termDictionaryList, postingLists);
 
         PriorityQueue<TopDocuments> topKResults = new PriorityQueue<>(new TopDocumentsComparator());
 
@@ -110,7 +109,56 @@ public class ScoringStrategy {
     }
 
     private static PriorityQueue<TopDocuments> DAAT_Conjunctive(String[] query, int k) throws IOException {
-        return null;
+        ArrayList<TermDictionary> termDictionaryList = new ArrayList<>();
+        ArrayList<PostingList> postingLists = new ArrayList<>();
+        getAndSortPostingListsBySize(query, termDictionaryList, postingLists);
+        PriorityQueue<TopDocuments> topKResults = new PriorityQueue<>(new TopDocumentsComparator());
+
+        Posting currPost = postingLists.get(0).getCurrentPosting();
+
+        while(currPost != null){
+            double score = 0.0;
+            int currDocId = currPost.getDocId();
+
+            if (checkPL(postingLists, currDocId)){
+
+                int docLength = QueryProcessing.getDocumentIndex().get(currDocId);
+
+                for (int i = 0; i < postingLists.size(); i++) {
+                    PostingList pl = postingLists.get(i);
+                    Posting p = pl.getCurrentPosting();
+
+                    // find term in the term dictionary
+                    TermDictionary termDictionary = findTermInList(termDictionaryList, pl);
+
+                    if (p.getDocId() == currDocId) {
+                        score += Ranking.computeRanking_QP(termDictionary, p.getFreq(), docLength);
+
+                        // move to next posting in the list; if the posting list is exhausted, remove it from the list
+//                        if (pl.nextPosting() == null) {
+//                            postingLists.remove(i);
+//                            i--;
+//                        }
+                    }
+                }
+
+                // check if top k results are not full
+                if (topKResults.size() < k) {
+                    topKResults.add(new TopDocuments(currDocId, score));
+                }
+                // check if score is higher than the smallest score already in the top k
+                else if (score > topKResults.peek().getScore() && topKResults.size() == k) {
+                    topKResults.poll();
+                    topKResults.add(new TopDocuments(currDocId, score));
+                }
+
+            }
+
+            currPost = postingLists.get(0).nextPosting();
+        }
+
+        return topKResults;
+
     }
 
     private static PriorityQueue<TopDocuments> DAAT_Disjunctive(String[] query, int k) throws IOException {
@@ -123,8 +171,6 @@ public class ScoringStrategy {
 
         int minDocID;
         double lastScore = 0;
-        int lastDocId = 0;
-        int size = 0;
 
         while(!postingLists.isEmpty()){
             double score = 0.0;
@@ -162,10 +208,47 @@ public class ScoringStrategy {
 
             assert topKResults.peek() != null;
             lastScore = topKResults.peek().getScore();
-            size ++;
         }
 
         return topKResults;
+    }
+
+    public static boolean checkPL(ArrayList<PostingList> postingLists, int docId){
+        for (PostingList pl : postingLists){
+            int index = -1;
+            Posting key = new Posting(docId, 0);
+
+            index = Collections.binarySearch(pl.getPl(), key, new PostingComparator());
+            if (index <= 0) return false;
+        }
+        return true;
+    }
+
+
+    private static void getAndSortPostingListsBySize(String[] query, ArrayList<TermDictionary> termDictionaryList, ArrayList<PostingList> postingLists) throws FileNotFoundException {
+        try (RandomAccessFile invertedIndexFile = new RandomAccessFile(Paths.PATH_INVERTED_INDEX_MERGED, "r")) {
+            for (String term : query) {
+                TermDictionary currentTermDictionary = QueryProcessing.getLexicon().get(term);
+                if (currentTermDictionary == null) return;
+
+                termDictionaryList.add(currentTermDictionary);
+                PostingList pl = OutputResultsReader.searchTermInInvertedIndex(invertedIndexFile, currentTermDictionary);
+                Collections.sort(pl.getPl(), new PostingComparator());
+                postingLists.add(pl);
+            }
+
+            // sort term dictionary
+            Collections.sort(postingLists, new Comparator<PostingList>() {
+                @Override
+                public int compare(PostingList o1, PostingList o2) {
+                    return Double.compare(o1.getPl().size(), o2.getPl().size());
+                }
+            });
+
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static ArrayList<Double> computeTermUpperBounds(ArrayList<TermDictionary> termDictionaryList){
@@ -179,12 +262,6 @@ public class ScoringStrategy {
         return upperBoundsList;
     }
 
-    private static void updateThresholdAndPivot(double topKResultsScore, double threshold, int pivot, double upperBound, int postingListSize){
-        threshold = topKResultsScore;
-        while (pivot < postingListSize && upperBound <= threshold) {
-            pivot++;
-        }
-    }
     private static TermDictionary findTermInList(ArrayList<TermDictionary> termDictionaryArrayList, PostingList pl){
         TermDictionary termDictionary = new TermDictionary();
         for (TermDictionary dictionary : termDictionaryArrayList) {
@@ -194,7 +271,7 @@ public class ScoringStrategy {
         return termDictionary;
     }
 
-    private static void getAndSortPostingLists(String[] query, ArrayList<TermDictionary> termDictionaryList, ArrayList<PostingList> postingLists){
+    private static void getAndSortPostingListsByTUB(String[] query, ArrayList<TermDictionary> termDictionaryList, ArrayList<PostingList> postingLists){
         try (RandomAccessFile invertedIndexFile = new RandomAccessFile(Paths.PATH_INVERTED_INDEX_MERGED, "r")) {
             for (String term : query) {
                 TermDictionary currentTermDictionary = QueryProcessing.getLexicon().get(term);

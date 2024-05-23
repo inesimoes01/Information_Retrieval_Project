@@ -103,7 +103,7 @@ public class IndexUtil {
 //        System.gc();
         //Merging.mergeInvertedIndex(95);
 //        System.gc();
-        // Merging.mergeLexicon(95);
+        Merging.mergeLexicon(90);
         System.out.println("Merging took " + (System.currentTimeMillis() - start) / 1000 + "s");
 
     }

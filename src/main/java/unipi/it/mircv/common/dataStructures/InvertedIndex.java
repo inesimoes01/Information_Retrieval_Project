@@ -30,7 +30,7 @@ public class InvertedIndex {
                 @Override
                 public int compare(Posting p1, Posting p2) {
                     // Compare based on the frequency (you can change this based on your sorting criteria)
-                    return Integer.compare(p1.getFreq(), p2.getFreq());
+                    return Integer.compare(p1.getDocId(), p2.getDocId());
                 }
             });
 

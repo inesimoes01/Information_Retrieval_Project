@@ -20,7 +20,7 @@ public class TermDictionary {
     private int endOffset;
     private int startOffset;
 
-    public TermDictionary(String term, int collectionFrequency, int documentFrequency, int offsetDocId, int offsetFreq, int startOffset, int endOffset, Double termUpperBoundTFIDF) {
+    public TermDictionary(String term, int collectionFrequency, int documentFrequency, int offsetDocId, int offsetFreq, int startOffset, int endOffset, Double termUpperBoundTFIDF, Double termUpperBoundBM25) {
         this.term = term;
         this.collectionFrequency = collectionFrequency;
         this.documentFrequency = documentFrequency;
@@ -29,6 +29,7 @@ public class TermDictionary {
         this.startOffset = startOffset;
         this.endOffset = endOffset;
         this.termUpperBoundTFIDF = termUpperBoundTFIDF;
+        this.termUpperBoundBM25 = termUpperBoundBM25;
     }
 
     public TermDictionary(){}
@@ -106,7 +107,8 @@ public class TermDictionary {
     }
 
     public Double getTermUpperBound() {
-        return termUpperBoundTFIDF;
+        if (Flags.isIsTFIDF_flag()) return termUpperBoundTFIDF;
+        else return termUpperBoundBM25;
 
     }
 

@@ -1,25 +1,54 @@
 package unipi.it.mircv.queryProcessing.dataStructures;
 
+import unipi.it.mircv.common.dataStructures.Posting;
+import unipi.it.mircv.common.dataStructures.TermDictionary;
+
+import java.util.ArrayList;
+
 public class PostingList {
+    private String term;
+    private ArrayList<Posting> pl;
+    private int currentPosition;
 
-    Integer docId;
 
-    Integer freq;
-
-    public PostingList(Integer docId, Integer freq) {
-        this.docId = docId;
-        this.freq = freq;
+    // current posting of the iterator
+    public Posting getCurrentPosting() {
+        if (currentPosition == -1) {
+            return null;
+        }
+        if (currentPosition < pl.size()) {
+            return pl.get(currentPosition);
+        } else {
+            return null;
+        }
     }
 
-    public Integer getDocId() {
-        return docId;
+    // updates next posting of the iterator and updates the current position
+    public Posting nextPosting() {
+        if (currentPosition + 1 < pl.size()) {
+            currentPosition++;
+            return pl.get(currentPosition);
+        }
+        return null;
     }
 
 
-
-    public Integer getFreq() {
-        return freq;
+    public String getTerm() {
+        return term;
     }
+
+    public void setTerm(String term) {
+        this.term = term;
+    }
+
+    public ArrayList<Posting> getPl() {
+        return pl;
+    }
+
+    public void setPl(ArrayList<Posting> pl) {
+        this.pl = pl;
+    }
+
 
 
 }

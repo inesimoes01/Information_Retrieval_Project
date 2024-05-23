@@ -3,8 +3,7 @@ package unipi.it.mircv.queryProcessing;
 
 import unipi.it.mircv.common.Flags;
 import unipi.it.mircv.common.Paths;
-import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
-import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
+import unipi.it.mircv.common.dataStructures.TermDictionary;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,8 +15,8 @@ import java.util.List;
 public class Ranking {
 
     // tunable contants
-    private final double K1 = 1.5;
-    private final double B = 1;
+    private static final double K1 = 1.5;
+    private static final double B = 1;
 
     /**
      * Ranking can be done using TFIDF or BM25
@@ -41,53 +40,57 @@ public class Ranking {
     }
 
     // IDF(q) * TF(q, D) / (TF(q, D) + k1 * (1 — b + b * (|D| / avgdl))
-    // D = document length
-    // avgdl = average document length in the collection
     private double computeBM25(Integer nTermInDocument, Integer nTotalDocs, Integer nTotalDocsWithTerm, Integer lengthDocument, double avgDocLenCollection){
         return computeIDF(nTotalDocs, nTotalDocsWithTerm) * computeTF(nTermInDocument) / computeTF(nTermInDocument) + K1 * (1 - B + B * ((double) lengthDocument / avgDocLenCollection));
     }
 
-    /**
-     * TF(t, d) = 1 + log(n)
-     * - n is the number of times term t appears in the document d.
-     */
-    private double computeTF(int nTermInDocument){
+    // TF(t, d) = 1 + log(n)
+    private static double computeTF(int nTermInDocument){
         if (nTermInDocument > 0) return 1 + Math.log10(nTermInDocument);
         else return 0;
     }
 
-    /**
-     * idf(t, D) = log (N/( n))
-     * - N is the number of documents in the data set.
-     * - n is the number of documents that contain the term t among the data set.
-     */
-    private double computeIDF(int nTotalDocs, int nTotalDocsWithTerm) {
+    // idf(t, D) = log (N/( n))
+    private static double computeIDF(int nTotalDocs, int nTotalDocsWithTerm) {
         return Math.log10((double) nTotalDocs / nTotalDocsWithTerm);
     }
 
 
-
-    public double computeRanking_QP(TermDictionary term, Integer docId) throws IOException {
-        if (Flags.isIsTFIDF_flag()) return computeTFIDF_QP(term, docId);
-        else return computeBM25_QP(term, docId);
+    public static double computeRanking_QP(TermDictionary term, int freq, int docLen) throws IOException {
+        if (Flags.isIsTFIDF_flag()) return computeTFIDF_QP(term, freq);
+        else return computeBM25_QP(term, freq, docLen);
     }
 
-    private double computeTFIDF_QP(TermDictionary term, Integer docId) {
-        double TF = computeTF(term.getPostingList().get(docId));
-        double IDF = computeIDF(OutputResultsReader.getnTotalDocuments(), term.getDocumentFrequency());
-//            System.out.println("TF " + term.getPostingByDocId(term.getPostingList(), doc.getDocId()).getFreq() + " / " + doc.getLength());
-//            System.out.println("IDF " + OutputResultsReader.getnTotalDocuments() + " / " + term.getDocumentFrequency());
+    private static double computeTFIDF_QP(TermDictionary term, int freq) {
+        // number of times term t appears in the document d.
+        int nTermInDocument = freq;
+        // total number of documents in the data set.
+        int nTotalDocs = OutputResultsReader.getnTotalDocuments();
+        // number of documents that contain the term t among the data set
+        int nTotalDocsWithTerm = term.getDocumentFrequency();
+
+        double TF;
+        double IDF;
+
+        if (nTermInDocument > 0) TF = 1 + Math.log10(nTermInDocument);
+        else TF = 0;
+        IDF = Math.log10((double) nTotalDocs / nTotalDocsWithTerm);
+
         return TF * IDF;
 
+//            System.out.println("TF " + term.getPostingByDocId(term.getPostingList(), doc.getDocId()).getFreq() + " / " + doc.getLength());
+//            System.out.println("IDF " + OutputResultsReader.getnTotalDocuments() + " / " + term.getDocumentFrequency());
+
+
     }
 
-    private double computeBM25_QP(TermDictionary term, Integer doc) throws IOException {
+    private static double computeBM25_QP(TermDictionary term, int freq, int docLen) throws IOException {
         int nTotalDocs = OutputResultsReader.getnTotalDocuments();
-        Integer nTotalDocsWithTerm = term.getDocumentFrequency();
-        Integer nTermInDocument = term.getPostingList().get(doc);
-        Integer lengthDocument = QueryProcessing.getDocumentIndex().get(doc);
-        List<String> lines = Files.readAllLines(Paths.PATH_AVGDOCLEN, StandardCharsets.UTF_8);
-        double avgDocLenCollection = Double.parseDouble(lines.get(0));
+        int nTotalDocsWithTerm = term.getDocumentFrequency();
+        int nTermInDocument = freq;
+        int lengthDocument = docLen;
+        double avgDocLenCollection = OutputResultsReader.getAverageDocLen();
+
         //System.out.println("BM25 " + computeIDF(nTotalDocs, nTotalDocsWithTerm) + " * " + computeTF(nTermInDocument) + " / " + computeTF(nTermInDocument) + " + " + K1 + " * (1 - " + B + " + " + B + " * (" + lengthDocument + " / " + avgDocLenCollection);
         return computeIDF(nTotalDocs, nTotalDocsWithTerm) * computeTF(nTermInDocument) / computeTF(nTermInDocument) + K1 * (1 - B + B * ((double) lengthDocument / avgDocLenCollection));
 

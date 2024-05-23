@@ -2,9 +2,7 @@ package unipi.it.mircv;
 
 
 import unipi.it.mircv.common.Flags;
-import unipi.it.mircv.common.Paths;
-import unipi.it.mircv.evalution.Evaluation;
-import unipi.it.mircv.indexing.NewIndex;
+import unipi.it.mircv.indexing.Indexing;
 
 import unipi.it.mircv.queryProcessing.QueryProcessing;
 
@@ -29,7 +27,7 @@ public class App
                     isValid = true;
 
                     long start_time = System.currentTimeMillis();
-                    NewIndex.run();
+                    Indexing.run();
                     //Reader.processCollection(Paths.PATH_COLLECTION);
 
                     long end_time = System.currentTimeMillis();

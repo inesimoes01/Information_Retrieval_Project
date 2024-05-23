@@ -11,11 +11,13 @@ public class TerminalDemo {
 
         query = getUserInput(input, "Enter your query: ");
 
-        String processingType = getValidInput(input, "Conjunctive (c) or Disjunctive (d) processing? ", "c", "d");
-        Flags.setIsConjunctive_flag(processingType.equals("c"));
-
         String processingType2 = getValidInput(input, "DAAT (d) or MaxScore (m) processing? ", "d", "m");
         Flags.setIsDAAT_flag(processingType2.equals("d"));
+
+        if(Flags.isIsDAAT_flag()){
+            String processingType = getValidInput(input, "Conjunctive (c) or Disjunctive (d) processing? ", "c", "d");
+            Flags.setIsConjunctive_flag(processingType.equals("c"));
+        }
 
         String rankingType = getValidInput(input, "TFIDF (t) or BM25 (b) ranking? ", "t", "b");
         Flags.setIsTFIDF_flag(rankingType.equals("t"));

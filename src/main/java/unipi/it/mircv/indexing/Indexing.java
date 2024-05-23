@@ -1,28 +1,21 @@
 package unipi.it.mircv.indexing;
 
 
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import unipi.it.mircv.common.Paths;
-import unipi.it.mircv.indexing.dataStructures.*;
+import unipi.it.mircv.common.dataStructures.*;
 import unipi.it.mircv.preprocessing.Preprocessing;
 import unipi.it.mircv.preprocessing.Tokenization;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class NewIndex {
+public class Indexing {
 
-    private static final int N_DOCS = 5000;
-    private static final int BUFFER_SIZE = 4096;
     private static int blockNumber = 0;
 
     public static ArrayList<String> termListToSort = new ArrayList<>();
@@ -34,18 +27,16 @@ public class NewIndex {
         InvertedIndex invertedIndex = new InvertedIndex();
         DocumentIndex documentIndex = new DocumentIndex();
 
-        Preprocessing preprocessing = new Preprocessing();
-        long reading_files_time = 0;
-        long start_time = 0;
-        long end_time = 0;
+        long reading_files_time;
+        long start_time;
+        long end_time;
 
 //        deleteFilesInFolder("data/output");
 //        deleteFilesInFolder("data/output/merged");
 //        deleteFilesInFolder("data/output/aux_folder");
         System.out.println("Finished deleting");
 
-        Pattern pattern = Pattern.compile("^(\\d+)\\s+(.*)$");
-        int len;
+
         int numberOfDocs = 0;
 
         start_time = System.currentTimeMillis();
@@ -75,7 +66,7 @@ public class NewIndex {
                 handleMemory(docNo, invertedIndex, lexicon, documentIndex);
 
                 // process text and create a new doc struct
-                String processed_text = preprocessing.clean(text);
+                String processed_text = Preprocessing.clean(text);
                 if (processed_text.isEmpty()) continue;
                 Tokenization.tokenize(processed_text);
                 documentIndex.getDocumentIndex().put(docNo, processed_text.length());
@@ -139,7 +130,7 @@ public class NewIndex {
     }
 
     private static void mergeAllStructures(){
-        IndexUtil.mergeDocumentIndex(blockNumber-1);
+        Merging.mergeDocumentIndex(blockNumber);
         Merging.mergeInvertedIndex(blockNumber);
         Merging.mergeLexicon(blockNumber-1);
     }
@@ -155,9 +146,12 @@ public class NewIndex {
     }
 
     private static void saveBlockInformation(InvertedIndex invertedIndex, Lexicon lexicon, DocumentIndex documentIndex){
-        IndexUtil.writeBlockToDisk(blockNumber, documentIndex, lastDocId);
-        IndexUtil.writeBlockToDisk(blockNumber, lexicon, lastDocId);
-        IndexUtil.writeBlockToDisk(blockNumber, invertedIndex, lastDocId);
+//        IndexUtil.writeBlockToDisk(blockNumber, documentIndex);
+//        IndexUtil.writeBlockToDisk(blockNumber, lexicon);
+//        IndexUtil.writeBlockToDisk(blockNumber, invertedIndex);
+        IndexUtil.writeBlockToDisk(blockNumber, documentIndex);
+        IndexUtil.writeBlockToDisk(blockNumber, lexicon);
+        IndexUtil.writeBlockToDisk(blockNumber, invertedIndex);
 
         lexicon.getLexicon().clear();
         documentIndex.getDocumentIndex().clear();
@@ -178,7 +172,6 @@ public class NewIndex {
                 for (File file : files) {
                     if (file.isFile()) {
                         file.delete();
-                        //System.out.println("Deleted file: " + file.getAbsolutePath());
                     }
                 }
             } else {

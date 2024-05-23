@@ -1,26 +1,23 @@
 package unipi.it.mircv.indexing;
 
-import org.apache.commons.io.FileUtils;
 import unipi.it.mircv.common.Paths;
 import unipi.it.mircv.compression.UnaryInteger;
 import unipi.it.mircv.compression.VariableByte;
-import unipi.it.mircv.indexing.dataStructures.LexiconEntry;
-import unipi.it.mircv.indexing.dataStructures.Posting;
-import unipi.it.mircv.indexing.dataStructures.PostingEntry;
-import unipi.it.mircv.indexing.dataStructures.TermStats;
+import unipi.it.mircv.common.dataStructures.LexiconEntry;
+import unipi.it.mircv.common.dataStructures.Posting;
+import unipi.it.mircv.common.dataStructures.PostingEntry;
+import unipi.it.mircv.common.dataStructures.TermStats;
 import unipi.it.mircv.queryProcessing.Ranking;
 
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.io.*;
 
 public class Merging {
+
+
     public static void mergeLexicon(int blockCounter){
-        File directory = new File("data/output/");
+        File directory = new File(Paths.PATH_OUTPUT_FOLDER);
         if (!directory.exists()) { directory.mkdirs(); }
 
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(Paths.PATH_LEXICON_MERGED));
@@ -48,9 +45,6 @@ public class Merging {
 
             while (!priorityQueue.isEmpty()) {
                 LexiconEntry currentEntry = priorityQueue.poll();
-                String term_aux = currentEntry.getTerm();
-                int cf_aux = currentEntry.getCf();
-                int df_aux = currentEntry.getDf();
                 int blockIndex_aux = currentEntry.getBlockIndex();
 
                 // merge term statistics
@@ -120,7 +114,6 @@ public class Merging {
             }
 
             String prevTerm = " ";
-            int lastOffset = 0;
             while (!priorityQueue.isEmpty()) {
                 PostingEntry entry_aux = priorityQueue.poll();
                 String term_aux = entry_aux.getTerm();
@@ -134,7 +127,7 @@ public class Merging {
 
                 // if the current term is equal to the previous term, merge posting lists together
                 if (!prevTerm.equals(term_aux)){
-                    writeMergedPostings(term_aux, postingList, raf, auxFile, offsetsHelper);
+                    writeMergedPostings(term_aux, postingList, raf, offsetsHelper);
                     postingListMap.remove(term_aux);
                 }
                 // if the current term is different from the previous term, write it to the disk and update offsets
@@ -144,7 +137,7 @@ public class Merging {
             for (Map.Entry<String, ArrayList<Posting>> entry : postingListMap.entrySet()) {
                 String term_aux = entry.getKey();
                 ArrayList<Posting> postingList = entry.getValue();
-                writeMergedPostings(term_aux, postingList, raf, auxFile, offsetsHelper);
+                writeMergedPostings(term_aux, postingList, raf, offsetsHelper);
             }
 
             writeOffsets(offsetsHelper, auxFile);
@@ -174,8 +167,69 @@ public class Merging {
 
     }
 
+    public static void mergeDocumentIndex(int blockCounter) {
+        BufferedReader[] documentIndexReaders;
+        ArrayList<String> documentIndexEntries;
 
-    private static void writeMergedPostings(String term, ArrayList<Posting> postingList, RandomAccessFile raf, BufferedWriter auxFile, HashMap<String, long[]> offsetsHelper) throws IOException {
+
+        documentIndexEntries = new ArrayList<>();
+        double avgLen;
+        int count=0;
+        int totLen=0;
+
+        documentIndexReaders = new BufferedReader[blockCounter];
+        // initialize document index reader
+        for (int i = 0; i < blockCounter; i++) {
+            try {
+                documentIndexReaders[i] = new BufferedReader(new FileReader("data/output/DocumentIndex" + i + ".txt"));
+            } catch (IOException e) {
+                e.printStackTrace(); // Handle the exception appropriately
+            }
+        }
+
+
+        // Read from document index files and merge
+        try(BufferedWriter myWriterDocumentIndex = new BufferedWriter(new FileWriter(Paths.PATH_DOCUMENT_INDEX_MERGED))) {
+            for (int i = 0; i < blockCounter; i++) {
+                String line = documentIndexReaders[i].readLine(); // read the first line
+                while (line != null) {
+                    documentIndexEntries.add(line);
+                    // Add logging statements to print document details
+                    for (int j = 0; j < 2; j++) {
+                        line = documentIndexReaders[i].readLine();
+                        documentIndexEntries.add(line);
+                        // Add logging statements to print additional lines of the document
+                    }
+                    line = documentIndexReaders[i].readLine();
+                }
+            }
+
+            // Write the merged entries to the output file
+            for (String entry : documentIndexEntries) {
+                if (entry != null) {
+                    String[] parts = entry.split("\\s+");
+                    count++;
+                    totLen += Integer.parseInt(parts[1]);
+                    myWriterDocumentIndex.write(entry);
+                    myWriterDocumentIndex.newLine();
+                }
+            }
+
+            avgLen= (double) totLen / count;
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(Paths.PATH_AVGDOCLEN))) {
+                writer.write(avgLen +"");
+                writer.newLine();
+                writer.write(count +"");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle the exception appropriately
+        }
+    }
+
+
+    private static void writeMergedPostings(String term, ArrayList<Posting> postingList, RandomAccessFile raf, HashMap<String, long[]> offsetsHelper) throws IOException {
         raf.seek(0);
         ArrayList<Integer> docIds = new ArrayList<>();
         ArrayList<Integer> freqs = new ArrayList<>();
@@ -246,12 +300,6 @@ public class Merging {
                 System.out.println("kill " + term);
             }
         }
-
-
-
-        // TODO check if it is better to save in a file as you go or only on the last step of the algorithm
-//        auxFile.write(term + " " + offsetDocID + " " + offsetFreq + " " + endLineOffset);
-//        auxFile.newLine();
     }
 
 
@@ -319,7 +367,7 @@ public class Merging {
         int totalNumberOfDocs = 0;
 
         // get statistics calculated before
-        try (BufferedReader br = new BufferedReader(new FileReader("data/output/avgDocLen.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(Paths.PATH_AVGDOCLEN))) {
             avgDocLen = br.readLine();
             totalNumberOfDocs = Integer.parseInt(br.readLine());
         } catch (IOException e) {

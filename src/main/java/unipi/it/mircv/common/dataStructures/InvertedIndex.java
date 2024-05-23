@@ -1,4 +1,4 @@
-package unipi.it.mircv.indexing.dataStructures;
+package unipi.it.mircv.common.dataStructures;
 
 import java.util.*;
 
@@ -43,35 +43,7 @@ public class InvertedIndex {
         Collections.sort(sortedDocId);
         return sortedDocId;
     }
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
 
-        for (Map.Entry<String, ArrayList<Posting>> entry : invertedIndex.entrySet()) {
-            String term = entry.getKey();
-            ArrayList<Posting> postings = entry.getValue();
-
-            sb.append(term).append(": ");
-
-            for (Posting posting : postings) {
-                sb.append(posting).append(", ");
-            }
-
-            // Remove the trailing comma and space
-            if (!postings.isEmpty()) {
-                sb.setLength(sb.length() - 2);
-            }
-
-            sb.append("\n");
-        }
-
-        String result = sb.toString();
-
-        // Add debugging information
-        System.out.println("Generated String: " + result);
-
-        return result;
-    }
 
 
 }

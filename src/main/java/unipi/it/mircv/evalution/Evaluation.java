@@ -5,6 +5,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import unipi.it.mircv.common.Flags;
 import unipi.it.mircv.common.Paths;
+import unipi.it.mircv.common.dataStructures.TopDocuments;
 import unipi.it.mircv.queryProcessing.QueryProcessing;
 
 import java.awt.*;
@@ -45,7 +46,7 @@ public class Evaluation {
         if (Flags.isIsConjunctive_flag()) query_type = "Conjunctive";
         else query_type = "Disjunctive";
 
-        File file = new File(Paths.PATH_EVALUATION_RESULTS + "EvaluationResults_" + scoringStrategy + "_" + ranking + "_" + query_type + ".txt");
+        File file = new File(Paths.PATH_EVALUATION_RESULTS + "EvaluationResults_" + scoringStrategy + "_" + ranking + "_TESTE" + query_type + ".txt");
 
         int number_of_queries = 0;
 
@@ -67,7 +68,7 @@ public class Evaluation {
                 QueryProcessing.processing(query.getQuery(), query);
                 totalTimeForQueryProcessing += QueryProcessing.getTimeForQueryProcessing();
                 number_of_queries++;
-                saveEvaluationResults(file, query);
+                saveEvaluationResults(file, query, QueryProcessing.getTimeForQueryProcessing());
 
             }
         } catch (IOException ex) {
@@ -81,16 +82,19 @@ public class Evaluation {
     }
 
 
-    private void saveEvaluationResults(File file, QueryStructure query) throws IOException {
+    private void saveEvaluationResults(File file, QueryStructure query, long time) throws IOException {
         FileWriter myWriter = new FileWriter(file, true);
 
         // for all the retrieved documents
-        for (Integer i : query.getDocumentEval().keySet()) {
+        for (int i = 0; i < query.getDocumentEval().size(); i++) {
+            TopDocuments doc = query.getDocumentEval().poll();
+            assert doc != null;
+
             String resultLine;
-            int score = (int) Math.ceil(query.getDocumentEval().get(i));
-            resultLine = query.getQueryID() + " Q0 " + i + " " + score + "\n";
+            resultLine = query.getQueryID() + " Q0 " + doc.getDocId() + " " + doc.getScore() + " " + time + "\n";
             myWriter.write(resultLine);
         }
+
         myWriter.close();
 
     }

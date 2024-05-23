@@ -8,9 +8,9 @@ public class Flags {
 
 
     private static boolean isConjunctive_flag;
-    private static boolean isEvaluation = true;
-    private static boolean isTFIDF_flag = true;
-    private static boolean isDAAT_flag = true;
+    private static boolean isEvaluation;
+    private static boolean isTFIDF_flag;
+    private static boolean isDAAT_flag;
     private static int numberOfDocuments;
 
     public static void setIsTFIDF_flag(boolean isTFIDF_flag) {

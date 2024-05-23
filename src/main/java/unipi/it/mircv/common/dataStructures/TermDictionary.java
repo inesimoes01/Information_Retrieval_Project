@@ -1,9 +1,7 @@
-package unipi.it.mircv.queryProcessing.dataStructures;
+package unipi.it.mircv.common.dataStructures;
 
-import org.apache.lucene.index.Term;
 import unipi.it.mircv.common.Flags;
-import unipi.it.mircv.indexing.dataStructures.Posting;
-import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
+import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
 
 import java.util.*;
 
@@ -11,7 +9,7 @@ public class TermDictionary {
     private String term;
 
     //private ArrayList<Posting> postingList = new ArrayList<>();
-    private HashMap<Integer, Integer> postingList = new HashMap<>();
+    private PostingList postingList;
 
     private int collectionFrequency;
     private int documentFrequency;
@@ -125,12 +123,15 @@ public class TermDictionary {
         this.startOffset = startOffset;
     }
 
-    public HashMap<Integer, Integer>  getPostingList() {
+    public PostingList getPostingList() {
         return postingList;
     }
 
-    public void setPostingList(HashMap<Integer, Integer>  postingList) {
+    public void setPostingList(PostingList postingList) {
         this.postingList = postingList;
     }
 
+    public void remove(int i) {
+
+    }
 }

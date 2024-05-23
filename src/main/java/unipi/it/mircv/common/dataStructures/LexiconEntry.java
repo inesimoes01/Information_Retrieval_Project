@@ -1,4 +1,4 @@
-package unipi.it.mircv.indexing.dataStructures;
+package unipi.it.mircv.common.dataStructures;
 
 public class LexiconEntry {
 

@@ -120,8 +120,8 @@ public class RemoveStopWords {
 
 
     public static String removeStopWords(String document){
-        StringBuilder result = new StringBuilder(); //StringBuilder to rebuild the document after split and stemming
-        String[] tokens = document.split(" "); //Split the string using " " as splitter
+        StringBuilder result = new StringBuilder();
+        String[] tokens = document.split(" ");
 
         for(String token : tokens){
             if(!stopWords.contains(token)){

@@ -1,18 +1,12 @@
 package unipi.it.mircv.queryProcessing;
 
-import com.sun.source.tree.Tree;
 import unipi.it.mircv.common.*;
 
+import unipi.it.mircv.common.dataStructures.*;
 import unipi.it.mircv.evalution.Evaluation;
 import unipi.it.mircv.evalution.QueryStructure;
-import unipi.it.mircv.indexing.dataStructures.Doc;
-import unipi.it.mircv.indexing.dataStructures.Posting;
 import unipi.it.mircv.preprocessing.Preprocessing;
-import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
-import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
-import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
 
-import javax.swing.plaf.basic.BasicScrollPaneUI;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -22,8 +16,6 @@ public class QueryProcessing {
     private static long timeForQueryProcessing;
     private static TreeMap<String, TermDictionary> lexicon = new TreeMap<>();
     private static TreeMap<Integer, Integer> documentIndex = new TreeMap<>();
-
-
 
     private static List<Integer> queriesIds = new ArrayList<>();
 
@@ -49,7 +41,7 @@ public class QueryProcessing {
 
         } else {
 
-            queriesIds = saveQueriesToCompare();
+            //queriesIds = saveQueriesToCompare();
 
 //            Flags.setIsDAAT_flag(true);
 //            Flags.setIsTFIDF_flag(true);
@@ -69,75 +61,81 @@ public class QueryProcessing {
 //            Flags.setNumberOfDocuments(500);
 //            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
 
-            Flags.setIsDAAT_flag(false);
-            Flags.setIsTFIDF_flag(false);
-            Flags.setIsConjunctive_flag(true);
-            Flags.setNumberOfDocuments(500);
-            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+//            Flags.setIsDAAT_flag(false);
+//            Flags.setIsTFIDF_flag(false);
+//            Flags.setIsConjunctive_flag(true);
+//            Flags.setNumberOfDocuments(500);
+//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
 
             Flags.setIsDAAT_flag(false);
             Flags.setIsTFIDF_flag(true);
             Flags.setIsConjunctive_flag(false);
             Flags.setNumberOfDocuments(500);
             evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
-
-            Flags.setIsDAAT_flag(false);
-            Flags.setIsTFIDF_flag(false);
-            Flags.setIsConjunctive_flag(false);
-            Flags.setNumberOfDocuments(500);
-            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
-
-            Flags.setIsDAAT_flag(true);
-            Flags.setIsTFIDF_flag(true);
-            Flags.setIsConjunctive_flag(false);
-            Flags.setNumberOfDocuments(500);
-            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
-
-            Flags.setIsDAAT_flag(true);
-            Flags.setIsTFIDF_flag(true);
-            Flags.setIsConjunctive_flag(false);
-            Flags.setNumberOfDocuments(500);
-            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+//
+//            Flags.setIsDAAT_flag(false);
+//            Flags.setIsTFIDF_flag(false);
+//            Flags.setIsConjunctive_flag(false);
+//            Flags.setNumberOfDocuments(500);
+//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+//
+//            Flags.setIsDAAT_flag(true);
+//            Flags.setIsTFIDF_flag(true);
+//            Flags.setIsConjunctive_flag(false);
+//            Flags.setNumberOfDocuments(500);
+//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
+//
+//            Flags.setIsDAAT_flag(true);
+//            Flags.setIsTFIDF_flag(true);
+//            Flags.setIsConjunctive_flag(false);
+//            Flags.setNumberOfDocuments(500);
+//            evaluation.mainEvaluation(Paths.PATH_EVALUATION_INPUT);
 
         }
 
     }
     public static void processing(String query, QueryStructure struct) throws IOException {
-        Preprocessing preprocessing = new Preprocessing();
         List<TermDictionary> termList = new ArrayList<>();
         long start_time = System.currentTimeMillis();
 
-        // clean text by prepocessing
-        query = preprocessing.clean(query);
+        // clean text by pre-processing
+        query = Preprocessing.clean(query);
         String[] queryPartsOriginal = query.split(" ");
+
+        PriorityQueue<TopDocuments> scoredResults = new PriorityQueue<>(new TopDocumentsComparator());
+        scoredResults = ScoringStrategy.scoringStrategy(queryPartsOriginal, Flags.getNumberOfDocuments());
 
         // save relevant docs with disjunctive or conjunctive querying
         List<Integer> relevantDocs;
         List<String> termsToRemove = new ArrayList<>();
-        relevantDocs = Processing.processingStrategy(termList, queryPartsOriginal, termsToRemove);
+        relevantDocs = ConjuntiveDisjunctive.processingStrategy(termList, queryPartsOriginal, termsToRemove);
         assert relevantDocs != null;
 
-
         // scoring results using DAAT or MaxScore and TFDIF or BM25
-        if (relevantDocs != null) {
-            if (!relevantDocs.isEmpty()) {
-                Map<Integer, Double> scoredResults = ScoringStrategy.scoringStrategy(termList, relevantDocs, Flags.getNumberOfDocuments());
-
-                if (Flags.isIsEvaluation()) {
-                    struct.setDocumentEval(scoredResults);
-
-                } else {
-                    for (Map.Entry<Integer, Double> doc : scoredResults.entrySet()) {
-                        System.out.println(doc.getKey() + " " + doc.getValue());
-                    }
-                }
+//        if (relevantDocs != null) {
+//            if (!relevantDocs.isEmpty()) {
+//                //Map<Integer, Double> scoredResults = ScoringStrategy.scoringStrategy(termList, relevantDocs, Flags.getNumberOfDocuments());
+//
+//                if (Flags.isIsEvaluation()) {
+//                    struct.setDocumentEval(scoredResults);
+//
+//                } else {
+//                    for (Map.Entry<Integer, Double> doc : scoredResults.entrySet()) {
+//                        System.out.println(doc.getKey() + " " + doc.getValue());
+//                    }
+//                }
+//            }
+//        }
+        if (!Flags.isIsEvaluation()) {
+            for (int i = 0; i < scoredResults.size(); i++) {
+                TopDocuments doc = scoredResults.poll();
+                System.out.println(doc.getDocId() + " " + doc.getScore());
             }
-        }
-
+        } else struct.setDocumentEval(scoredResults);
         long end_time = System.currentTimeMillis();
         timeForQueryProcessing = end_time - start_time;
         if(!Flags.isIsEvaluation()){
-            System.out.println("Query Processing took " + (double) timeForQueryProcessing/1000 + " seconds.");
+            System.out.println("Query Processing took " + (double) timeForQueryProcessing + " m seconds.");
         }
 
     }
@@ -148,7 +146,7 @@ public class QueryProcessing {
         return timeForQueryProcessing;
     }
 
-    private static void loadLexicon(){
+    static void loadLexicon(){
         try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(Paths.PATH_LEXICON_MERGED)))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -166,7 +164,7 @@ public class QueryProcessing {
         }
     }
 
-    private static void loadDocumentIndex(){
+    static void loadDocumentIndex(){
         try (BufferedReader reader = new BufferedReader(new FileReader(String.valueOf(Paths.PATH_DOCUMENT_INDEX_MERGED)))) {
             String line;
             while ((line = reader.readLine()) != null) {

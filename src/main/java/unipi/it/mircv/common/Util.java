@@ -3,13 +3,10 @@ package unipi.it.mircv.common;
 import org.apache.commons.io.FileUtils;
 import unipi.it.mircv.compression.UnaryInteger;
 import unipi.it.mircv.compression.VariableByte;
-import unipi.it.mircv.indexing.dataStructures.*;
+import unipi.it.mircv.common.dataStructures.TermStats;
 import unipi.it.mircv.queryProcessing.Ranking;
 
 import java.io.*;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryPoolMXBean;
-import java.lang.management.MemoryUsage;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;

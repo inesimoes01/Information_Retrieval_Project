@@ -1,7 +1,7 @@
 package unipi.it.mircv.common;
 
 import junit.framework.TestCase;
-import unipi.it.mircv.indexing.dataStructures.Lexicon;
+import unipi.it.mircv.common.dataStructures.Lexicon;
 
 
 import java.util.ArrayList;

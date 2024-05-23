@@ -8,7 +8,7 @@ public class Stemmer {
         PorterStemmer stem = new PorterStemmer(); //Initialize the stemmer
         StringBuilder result = new StringBuilder(); //StringBuilder to rebuild the document after split and stemming
 
-        String[] tokens = document.split(" "); //Split the string using " " as splitter
+        String[] tokens = document.split(" ");
 
         //Foreach token stem it and append it to the StringBuilder
         for(String token : tokens){

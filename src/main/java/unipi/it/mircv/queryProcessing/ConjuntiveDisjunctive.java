@@ -2,14 +2,14 @@ package unipi.it.mircv.queryProcessing;
 
 import unipi.it.mircv.common.Flags;
 import unipi.it.mircv.queryProcessing.dataStructures.DocumentQP;
-import unipi.it.mircv.queryProcessing.dataStructures.TermDictionary;
+import unipi.it.mircv.common.dataStructures.TermDictionary;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Processing {
+public class ConjuntiveDisjunctive {
 
     public static List<Integer> processingStrategy(List<TermDictionary> termList, String[] query, List<String> termNonExistent) throws IOException {
         if (Flags.isIsConjunctive_flag()) return conjunctiveProcessing(termList, query, termNonExistent);

@@ -1,7 +1,11 @@
 package unipi.it.mircv.evalution;
 
+import unipi.it.mircv.common.dataStructures.TopDocuments;
+import unipi.it.mircv.common.dataStructures.TopDocumentsComparator;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 public class QueryStructure {
 
@@ -13,8 +17,7 @@ public class QueryStructure {
     private Integer queryID;
 
     // documentID and Evalution
-    private Map<Integer, Double> documentEval = new HashMap<>();
-
+    private PriorityQueue<TopDocuments> documentEval = new PriorityQueue<>(new TopDocumentsComparator());
 
 
     public String getQuery() {
@@ -33,11 +36,11 @@ public class QueryStructure {
         this.queryID = queryID;
     }
 
-    public Map<Integer, Double> getDocumentEval() {
+    public PriorityQueue<TopDocuments> getDocumentEval() {
         return documentEval;
     }
 
-    public void setDocumentEval(Map<Integer, Double> topResults) {
+    public void setDocumentEval(PriorityQueue<TopDocuments> topResults) {
         this.documentEval = topResults;
     }
 

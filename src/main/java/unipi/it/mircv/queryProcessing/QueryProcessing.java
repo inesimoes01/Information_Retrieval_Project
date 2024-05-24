@@ -31,11 +31,15 @@ public class QueryProcessing {
         loadDocumentIndex();
         OutputResultsReader.saveTotalNumberDocs();
 
+        int queryID = 0;
+
         if (!Flags.isIsEvaluation()){
             do {
+                System.out.println("QueryID " + queryID);
                 processing(terminal.runTerminal(), null);
                 System.out.print("Do you want to another query? (y/n): ");
                 userInput = scanner.nextLine();
+                queryID ++;
             } while (userInput.equalsIgnoreCase("y"));
 
 

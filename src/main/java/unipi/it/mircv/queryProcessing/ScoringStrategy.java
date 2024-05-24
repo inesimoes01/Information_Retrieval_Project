@@ -1,18 +1,14 @@
 package unipi.it.mircv.queryProcessing;
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.DoubleValues;
 import unipi.it.mircv.common.Flags;
 import unipi.it.mircv.common.Paths;
 import unipi.it.mircv.common.dataStructures.*;
 
-import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
+import unipi.it.mircv.common.dataStructures.PostingList;
 
-import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.sql.PseudoColumnUsage;
 import java.util.*;
 
 public class ScoringStrategy {

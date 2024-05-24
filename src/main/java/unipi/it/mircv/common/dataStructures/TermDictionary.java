@@ -1,7 +1,6 @@
 package unipi.it.mircv.common.dataStructures;
 
 import unipi.it.mircv.common.Flags;
-import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
 
 import java.util.*;
 

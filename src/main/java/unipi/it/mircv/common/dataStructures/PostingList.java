@@ -1,4 +1,4 @@
-package unipi.it.mircv.queryProcessing.dataStructures;
+package unipi.it.mircv.common.dataStructures;
 
 import unipi.it.mircv.common.dataStructures.Posting;
 import unipi.it.mircv.common.dataStructures.TermDictionary;

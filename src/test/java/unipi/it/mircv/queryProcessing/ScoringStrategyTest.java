@@ -2,7 +2,7 @@ package unipi.it.mircv.queryProcessing;
 
 import junit.framework.TestCase;
 import unipi.it.mircv.common.dataStructures.Posting;
-import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
+import unipi.it.mircv.common.dataStructures.PostingList;
 
 import java.util.ArrayList;
 

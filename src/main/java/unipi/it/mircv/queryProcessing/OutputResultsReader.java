@@ -5,12 +5,9 @@ import unipi.it.mircv.common.dataStructures.Posting;
 import unipi.it.mircv.compression.UnaryInteger;
 import unipi.it.mircv.compression.VariableByte;
 import unipi.it.mircv.common.dataStructures.TermDictionary;
-import unipi.it.mircv.queryProcessing.dataStructures.PostingList;
+import unipi.it.mircv.common.dataStructures.PostingList;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 public class OutputResultsReader {
